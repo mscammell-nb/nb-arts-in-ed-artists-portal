@@ -2,10 +2,10 @@
 module.exports = {
   darkMode: ["class"],
   content: [
-    './pages/**/*.{js,jsx}',
-    './components/**/*.{js,jsx}',
-    './app/**/*.{js,jsx}',
-    './src/**/*.{js,jsx}',
+    "./pages/**/*.{js,jsx}",
+    "./components/**/*.{js,jsx}",
+    "./app/**/*.{js,jsx}",
+    "./src/**/*.{js,jsx}",
   ],
   prefix: "",
   theme: {
@@ -34,6 +34,14 @@ module.exports = {
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",
+        },
+        bocesPrimary: {
+          DEFAULT: "hsl(var(--boces-primary))",
+          foreground: "hsl(var(--boces-primary-foreground))",
+        },
+        bocesSecondary: {
+          DEFAULT: "hsl(var(--boces-secondary))",
+          foreground: "hsl(var(--boces-secondary-foreground))",
         },
         muted: {
           DEFAULT: "hsl(var(--muted))",
@@ -74,4 +82,4 @@ module.exports = {
     },
   },
   plugins: [require("tailwindcss-animate")],
-}
+};
