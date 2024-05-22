@@ -21,12 +21,12 @@ const PasswordInput = React.forwardRef(({ className, ...props }, ref) => {
         />
         <div className="absolute right-3 top-3">
           {showPassword ? (
-            <EyeOpenIcon
+            <EyeNoneIcon
               className="select-none hover:cursor-pointer"
               onClick={() => setShowPassword(false)}
             />
           ) : (
-            <EyeNoneIcon
+            <EyeOpenIcon
               className="select-none hover:cursor-pointer"
               onClick={() => setShowPassword(true)}
             />

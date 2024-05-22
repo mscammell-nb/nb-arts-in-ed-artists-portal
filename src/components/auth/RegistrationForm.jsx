@@ -3,13 +3,13 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "react-router-dom";
+import { PasswordInput } from "../ui/password-input";
 
 const RegistrationForm = () => {
   const handleFormSubmit = (e) => {
@@ -30,12 +30,32 @@ const RegistrationForm = () => {
           <form onSubmit={handleFormSubmit}>
             <div className="grid gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">
+                  Email
+                  <span className="text-red-600">*</span>
+                </Label>
                 <Input id="email" type="email" required />
               </div>
+
               <div className="grid gap-2">
-                <Label htmlFor="password">Password</Label>
-                <Input id="password" type="password" required />
+                <Label htmlFor="phone">Phone</Label>
+                <Input id="phone" type="" required />
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="password">
+                  Password
+                  <span className="text-red-600">*</span>
+                </Label>
+                <PasswordInput id="password" required />
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="confirm-password">
+                  Confirm Password
+                  <span className="text-red-600">*</span>
+                </Label>
+                <PasswordInput id="confirm-password" required />
               </div>
             </div>
             <Button
@@ -46,7 +66,7 @@ const RegistrationForm = () => {
               Sign up
             </Button>
           </form>
-          <div className="text-center text-sm pt-2">
+          <div className="pt-2 text-center text-sm">
             Already have an account?{" "}
             <Link to="/auth/login" className="underline">
               Sign in

@@ -4,7 +4,7 @@ const MainLayout = () => {
   return (
     <div className="flex min-h-screen flex-col">
       <header>
-        <nav className="p-5 shadow">
+        <nav className="border border-slate-200 p-5 shadow-lg">
           <div className="max-w-36">
             <img
               src="https://www.nassauboces.org/cms/lib/NY01928409/Centricity/Template/GlobalAssets/images///logos/NBlogo-website3.png"
@@ -14,11 +14,11 @@ const MainLayout = () => {
         </nav>
       </header>
 
-      <main className="grow p-5">
+      <main className="grow bg-slate-50 p-5">
         <Outlet />
       </main>
 
-      <footer className="bg-bocesPrimary p-5 text-white flex flex-col items-center text-sm">
+      <footer className="flex flex-col items-center bg-bocesPrimary p-5 text-sm text-white">
         <p>
           &copy; 2002 Nassau BOCES. All Rights Reserved.{" "}
           <a
