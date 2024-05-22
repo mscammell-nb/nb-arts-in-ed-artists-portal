@@ -4,18 +4,22 @@ import RegisterForm from "./components/auth/RegistrationForm";
 import LoginForm from "./components/auth/LoginForm";
 import ProtectedRoutesWrapper from "./components/auth/ProtectedRoutesWrapper";
 import DashboardPage from "./components/pages/DashboardPage";
+import { store } from "./redux/store";
+import { Provider } from "react-redux";
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<MainLayout />}>
-        <Route path="/auth/register" element={<RegisterForm />} />
-        <Route path="/auth/login" element={<LoginForm />} />
-        <Route path="/" element={<ProtectedRoutesWrapper user={432} />}>
-          <Route path="/dashboard" element={<DashboardPage />} />
+    <Provider store={store}>
+      <Routes>
+        <Route path="/" element={<MainLayout />}>
+          <Route path="/auth/register" element={<RegisterForm />} />
+          <Route path="/auth/login" element={<LoginForm />} />
+          <Route path="/" element={<ProtectedRoutesWrapper />}>
+            <Route path="/dashboard" element={<DashboardPage />} />
+          </Route>
         </Route>
-      </Route>
-    </Routes>
+      </Routes>
+    </Provider>
   );
 }
 
