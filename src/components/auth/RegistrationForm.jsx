@@ -10,11 +10,30 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "react-router-dom";
 import { PasswordInput } from "../ui/password-input";
+import { useRegisterUserMutation } from "@/redux/api/authApi";
+import { ReloadIcon } from "@radix-ui/react-icons";
 
 const RegistrationForm = () => {
-  const handleFormSubmit = (e) => {
+  const [registerUser, { data, isLoading, isSuccess, isError, error }] =
+    useRegisterUserMutation();
+
+  if (isSuccess && data) {
+    console.log("data: ", data);
+  }
+
+  if (isError) {
+    console.log("error: ", error);
+  }
+
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
-    console.log(e);
+    const formData = new FormData(e.target);
+    const payload = Object.fromEntries(formData);
+    await registerUser({
+      ...payload,
+      role: "VENDOR",
+      quickbaseToken: "no token for now",
+    });
   };
 
   return (
@@ -34,12 +53,12 @@ const RegistrationForm = () => {
                   Email
                   <span className="text-red-600">*</span>
                 </Label>
-                <Input id="email" type="email" required />
+                <Input id="email" type="email" name="email" required />
               </div>
 
               <div className="grid gap-2">
                 <Label htmlFor="phone">Phone</Label>
-                <Input id="phone" type="" required />
+                <Input id="phone" type="" name="phone" required />
               </div>
 
               <div className="grid gap-2">
@@ -47,7 +66,7 @@ const RegistrationForm = () => {
                   Password
                   <span className="text-red-600">*</span>
                 </Label>
-                <PasswordInput id="password" required />
+                <PasswordInput id="password" name="password" required />
               </div>
 
               <div className="grid gap-2">
@@ -55,15 +74,23 @@ const RegistrationForm = () => {
                   Confirm Password
                   <span className="text-red-600">*</span>
                 </Label>
-                <PasswordInput id="confirm-password" required />
+                <PasswordInput
+                  id="confirm-password"
+                  name="confirm-password"
+                  required
+                />
               </div>
             </div>
             <Button
               type="submit"
               variant="bocesPrimary"
               className="mt-7 w-full"
+              disabled={isLoading}
             >
-              Sign up
+              {isLoading && (
+                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              {isLoading ? "Please wait" : "Sign up"}
             </Button>
           </form>
           <div className="pt-2 text-center text-sm">

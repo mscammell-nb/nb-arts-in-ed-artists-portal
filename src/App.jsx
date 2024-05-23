@@ -4,7 +4,7 @@ import RegisterForm from "./components/auth/RegistrationForm";
 import LoginForm from "./components/auth/LoginForm";
 import ProtectedRoutesWrapper from "./components/auth/ProtectedRoutesWrapper";
 import DashboardPage from "./components/pages/DashboardPage";
-import { store } from "./redux/store";
+import store from "./redux/store";
 import { Provider } from "react-redux";
 
 function App() {
