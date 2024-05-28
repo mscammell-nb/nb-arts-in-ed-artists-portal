@@ -26,7 +26,6 @@ const RegistrationForm = () => {
 
   useEffect(() => {
     if (isSuccess && data) {
-      console.log("data: ", data);
       dispatch(setUser(data));
       toast({
         variant: "success",

@@ -1,19 +1,49 @@
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "react-router-dom";
 import { PasswordInput } from "../ui/password-input";
+import { useLoginUserMutation } from "@/redux/api/authApi";
+import { useEffect } from "react";
+import { useToast } from "../ui/use-toast";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setUser } from "@/redux/slices/authSlice";
 
 const LoginForm = () => {
-  const handleFormSubmit = (e) => {
+  const [loginUser, { data, isLoading, isSuccess, isError, error }] =
+    useLoginUserMutation();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    if (isSuccess && data) {
+      dispatch(setUser(data));
+      toast({
+        variant: "success",
+        title: "Operation successful!",
+        description: "You have logged in successfully. Welcome back!",
+      });
+      navigate("/dashboard");
+    }
+
+    if (isError && error) {
+      console.log("error: ", error);
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: `${error.data.code}`,
+      });
+    }
+  }, [isSuccess, data, isError, error, toast]);
+
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
-    console.log(e);
+    const formData = new FormData(e.target);
+    const payload = Object.fromEntries(formData);
+    await loginUser(payload);
   };
 
   return (
@@ -27,11 +57,11 @@ const LoginForm = () => {
             <div className="grid gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" required />
+                <Input id="email" type="email" name="email" required />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="password">Password</Label>
-                <PasswordInput id="password" required />
+                <PasswordInput id="password" name="password" required />
               </div>
             </div>
             <Button
@@ -42,7 +72,7 @@ const LoginForm = () => {
               Sign in
             </Button>
           </form>
-          <div className="text-center text-sm pt-2">
+          <div className="pt-2 text-center text-sm">
             Don't have an account?{" "}
             <Link to="/auth/register" className="underline">
               Register
