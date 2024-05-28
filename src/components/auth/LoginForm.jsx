@@ -10,6 +10,7 @@ import { useToast } from "../ui/use-toast";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setUser } from "@/redux/slices/authSlice";
+import { ReloadIcon } from "@radix-ui/react-icons";
 
 const LoginForm = () => {
   const [loginUser, { data, isLoading, isSuccess, isError, error }] =
@@ -68,8 +69,12 @@ const LoginForm = () => {
               type="submit"
               variant="bocesPrimary"
               className="mt-7 w-full"
+              disabled={isLoading}
             >
-              Sign in
+              {isLoading && (
+                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              {isLoading ? "Please wait" : "Sign ip"}
             </Button>
           </form>
           <div className="pt-2 text-center text-sm">
