@@ -1,4 +1,5 @@
 import { Outlet } from "react-router-dom";
+import { Toaster } from "@/components/ui/toaster";
 
 const MainLayout = () => {
   return (
@@ -20,7 +21,7 @@ const MainLayout = () => {
 
       <footer className="flex flex-col items-center bg-bocesPrimary p-5 text-sm text-white">
         <p>
-          &copy; 2002 Nassau BOCES. All Rights Reserved.{" "}
+          &copy; 2024 Nassau BOCES. All Rights Reserved.{" "}
           <a
             className="underline"
             href="https://nbws.nasboces.org/artsined/main/company/terms.asp"
@@ -40,6 +41,8 @@ const MainLayout = () => {
         </p>
         <p>Produced by SynergyMedia, Inc.</p>
       </footer>
+
+      <Toaster />
     </div>
   );
 };

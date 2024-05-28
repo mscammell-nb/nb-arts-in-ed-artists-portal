@@ -8,22 +8,38 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { PasswordInput } from "../ui/password-input";
 import { useRegisterUserMutation } from "@/redux/api/authApi";
 import { ReloadIcon } from "@radix-ui/react-icons";
+import { useToast } from "@/components/ui/use-toast";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { setUser } from "@/redux/slices/authSlice";
 
 const RegistrationForm = () => {
   const [registerUser, { data, isLoading, isSuccess, isError, error }] =
     useRegisterUserMutation();
+    const dispatch = useDispatch()
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
-  if (isSuccess && data) {
-    console.log("data: ", data);
-  }
+  useEffect(() => {
+    if (isSuccess && data) {
+      console.log("data: ", data);
+      dispatch(setUser(data))
+      navigate("/dashboard");
+    }
 
-  if (isError) {
-    console.log("error: ", error);
-  }
+    if (isError && error) {
+      console.log("error: ", error);
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: `${error.data.code}`,
+      });
+    }
+  }, [isSuccess, data, isError, error, toast]);
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
