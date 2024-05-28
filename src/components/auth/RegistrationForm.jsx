@@ -20,14 +20,19 @@ import { setUser } from "@/redux/slices/authSlice";
 const RegistrationForm = () => {
   const [registerUser, { data, isLoading, isSuccess, isError, error }] =
     useRegisterUserMutation();
-    const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
     if (isSuccess && data) {
       console.log("data: ", data);
-      dispatch(setUser(data))
+      dispatch(setUser(data));
+      toast({
+        variant: "success",
+        title: "Operation successful!",
+        description: "Your account has been created.",
+      });
       navigate("/dashboard");
     }
 
