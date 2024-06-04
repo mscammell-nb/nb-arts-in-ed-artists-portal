@@ -16,6 +16,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { setUser } from "@/redux/slices/authSlice";
+import { formatAuthErrorMessage } from "@/utils/functionUtils";
 
 const RegistrationForm = () => {
   const [registerUser, { data, isLoading, isSuccess, isError, error }] =
@@ -40,7 +41,7 @@ const RegistrationForm = () => {
       toast({
         variant: "destructive",
         title: "Uh oh! Something went wrong.",
-        description: `${error.data.code}`,
+        description: `${formatAuthErrorMessage(error.data.code)}`,
       });
     }
   }, [isSuccess, data, isError, error, toast]);
@@ -57,7 +58,7 @@ const RegistrationForm = () => {
   };
 
   return (
-    <div className="flex w-full justify-center pt-16">
+    <div className="flex w-full justify-center py-16">
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle className="text-2xl">Register</CardTitle>

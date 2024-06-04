@@ -35,7 +35,7 @@ const LoginForm = () => {
       toast({
         variant: "destructive",
         title: "Uh oh! Something went wrong.",
-        description: `${error.data.code}`,
+        description: `${error.data}`,
       });
     }
   }, [isSuccess, data, isError, error, toast]);
@@ -48,7 +48,7 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="flex w-full justify-center pt-16">
+    <div className="flex w-full justify-center py-16">
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle className="text-2xl">Login</CardTitle>
