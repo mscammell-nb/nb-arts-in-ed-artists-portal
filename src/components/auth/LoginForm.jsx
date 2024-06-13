@@ -25,7 +25,7 @@ const LoginForm = () => {
       toast({
         variant: "success",
         title: "Operation successful!",
-        description: "You have logged in successfully. Welcome back!",
+        description: "You have logged in successfully!",
       });
       navigate("/dashboard");
     }
@@ -74,7 +74,7 @@ const LoginForm = () => {
               {isLoading && (
                 <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
               )}
-              {isLoading ? "Please wait" : "Sign ip"}
+              {isLoading ? "Please wait" : "Sign in"}
             </Button>
           </form>
           <div className="pt-2 text-center text-sm">

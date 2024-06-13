@@ -59,7 +59,7 @@ const RegistrationForm = () => {
 
   return (
     <div className="flex w-full justify-center py-16">
-      <Card className="w-full max-w-sm">
+      <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="text-2xl">Register</CardTitle>
           <CardDescription>
@@ -70,30 +70,45 @@ const RegistrationForm = () => {
           <form onSubmit={handleFormSubmit}>
             <div className="grid gap-4">
               <div className="grid gap-2">
+                <Label>
+                  Artist/Org<span className="text-red-600">*</span>
+                </Label>
+                <Input id="artist/org" type="text" name="artist/org" required />
+              </div>
+
+              <div className="grid gap-2">
                 <Label htmlFor="email">
-                  Email
-                  <span className="text-red-600">*</span>
+                  Email<span className="text-red-600">*</span>
                 </Label>
                 <Input id="email" type="email" name="email" required />
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="phone">Phone</Label>
+                <Label htmlFor="phone">
+                  Phone<span className="text-red-600">*</span>
+                </Label>
                 <Input id="phone" type="" name="phone" required />
               </div>
 
               <div className="grid gap-2">
+                <Label htmlFor="alternative-phone">Alternative Phone</Label>
+                <Input
+                  id="alternative-phone"
+                  type=""
+                  name="alternative-phone"
+                />
+              </div>
+
+              <div className="grid gap-2">
                 <Label htmlFor="password">
-                  Password
-                  <span className="text-red-600">*</span>
+                  Password<span className="text-red-600">*</span>
                 </Label>
                 <PasswordInput id="password" name="password" required />
               </div>
 
               <div className="grid gap-2">
                 <Label htmlFor="confirm-password">
-                  Confirm Password
-                  <span className="text-red-600">*</span>
+                  Confirm Password<span className="text-red-600">*</span>
                 </Label>
                 <PasswordInput
                   id="confirm-password"
