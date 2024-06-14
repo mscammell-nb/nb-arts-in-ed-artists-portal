@@ -13,8 +13,6 @@ const EvaluationForm = () => {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => console.log(data);
-
   const questions = [
     "Was it apparent that students had used your study guide/support materials?",
     "Were students attentive and engaged during your presentation?",
@@ -24,6 +22,24 @@ const EvaluationForm = () => {
     "Did the school provide you with appropriate space and equipment?",
     "Were you able to begin your presentation at the agreed-upon time?",
   ];
+
+  const onSubmit = (data) => {
+    const formattedData = {
+      additionalComments: data.additionalComments,
+      approverName: data.approverName,
+      wereServicesPerformed: data.wereServicesPerformed === "yes",
+    };
+
+    questions.forEach((question, index) => {
+      formattedData[`question${index + 1}`] = {
+        prompt: question,
+        response: data[`question${index + 1}`],
+        number: index + 1,
+      };
+    });
+
+    console.log(formattedData);
+  };
 
   return (
     <>
