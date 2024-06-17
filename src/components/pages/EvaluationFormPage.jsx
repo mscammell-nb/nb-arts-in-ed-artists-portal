@@ -4,35 +4,64 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
 import { Textarea } from "../ui/textarea";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
-const schema = yup
-  .object({
-    wereServicesPerformed: yup.string().required("The "),
-    approverName: yup
-      .string()
-      .required("The approver name field can't be empty."),
+// TODO: Add more complex rules to the yup schema
+
+const questions = [
+  "Was it apparent that students had used your study guide/support materials?",
+  "Were students attentive and engaged during your presentation?",
+  "Did teachers assist you in maintaining students' appropriate conduct/behavior during your presentation?",
+  "Did teachers remain with their class during your presentation?",
+  "Was the space clean and clear and set up as you had requested?",
+  "Did the school provide you with appropriate space and equipment?",
+  "Were you able to begin your presentation at the agreed-upon time?",
+];
+
+let schema = yup.object().shape({});
+
+questions.forEach((question, index) => {
+  const fieldName = `question${index + 1}`;
+  schema = schema.shape({
+    [fieldName]: yup.string().required(`This field is required.`),
+  });
+});
+
+schema = schema
+  .shape({
+    wereServicesPerformed: yup.string().required("This field is required."),
+    approverName: yup.string().required("This field can't be empty."),
+    additionalComments: yup.string(),
   })
   .required();
 
 const EvaluationFormPage = () => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({ resolver: yupResolver(schema) });
+  const defaultValues = questions.reduce(
+    (values, question, index) => {
+      values[`question${index + 1}`] = "";
+      return values;
+    },
+    {
+      wereServicesPerformed: "",
+      approverName: "",
+      additionalComments: "",
+    },
+  );
 
-  const questions = [
-    "Was it apparent that students had used your study guide/support materials?",
-    "Were students attentive and engaged during your presentation?",
-    "Did teachers assist you in maintaining students' appropriate conduct/behavior during your presentation?",
-    "Did teachers remain with their class during your presentation?",
-    "Was the space clean and clear and set up as you had requested?",
-    "Did the school provide you with appropriate space and equipment?",
-    "Were you able to begin your presentation at the agreed-upon time?",
-  ];
+  const form = useForm({
+    resolver: yupResolver(schema),
+    defaultValues,
+  });
 
   const onSubmit = (data) => {
     const formattedData = {
@@ -52,99 +81,132 @@ const EvaluationFormPage = () => {
     console.log(formattedData);
   };
 
-  if (errors) console.log("Errors: ", errors); // TODO: delete this later
-
   return (
     <>
       <h1 className="mb-5 text-4xl font-semibold">Evaluation Form</h1>
 
       <Separator className="my-4" />
 
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="space-y-4">
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="w-full space-y-6"
+        >
           <h2 className="text-lg font-semibold">
-            SERVICES PERFORMANCE COMFIRMATION
+            SERVICES PERFORMANCE CONFIRMATION
           </h2>
-          <div className="flex gap-10">
-            <RadioGroup
-              className="flex items-center"
-              {...register("wereServicesPerformed")}
-            >
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="yes" id="r1" />
-                <Label htmlFor="r1">Yes</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="no" id="r2" />
-                <Label htmlFor="r2">No</Label>
-              </div>
-            </RadioGroup>
-            {errors.wereServicesPerformed && (
-              <span>This field is required</span>
+          <FormField
+            control={form.control}
+            name="wereServicesPerformed"
+            render={({ field }) => (
+              <FormItem className="space-y-3">
+                <FormLabel>Did the artist perform services</FormLabel>
+                <FormControl>
+                  <RadioGroup
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    className="flex flex-col space-y-1"
+                  >
+                    <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormControl>
+                        <RadioGroupItem value="yes" />
+                      </FormControl>
+                      <FormLabel className="font-normal">Yes</FormLabel>
+                    </FormItem>
+                    <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormControl>
+                        <RadioGroupItem value="no" />
+                      </FormControl>
+                      <FormLabel className="font-normal">No</FormLabel>
+                    </FormItem>
+                  </RadioGroup>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
             )}
-            <div className="space-x-3">
-              <Label htmlFor="name" className="inline-block">
-                Your name:
-              </Label>
-              <Input
-                id="name"
-                type="text"
-                placeholder="Type here..."
-                className="inline-block w-64 max-w-lg"
-                {...register("approverName")}
-              />
-              {errors.approverName && <span>This field is required</span>}
-            </div>
-          </div>
-        </div>
+          />
+          <FormField
+            control={form.control}
+            name="approverName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Approver name</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Type here..."
+                    {...field}
+                    className="max-w-80"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <Separator className="my-4" />
+          <Separator className="my-4" />
 
-        <div className="space-y-4">
           <h2 className="text-lg font-semibold">
             ARTIST'S EVALUATION OF THIS EXPERIENCE
           </h2>
-          <ol className="space-y-10">
-            {questions.map((question, index) => (
-              <li className="grid grid-cols-2" key={index}>
-                <p>{question}</p>
-                <RadioGroup className="ml-10 flex items-center">
-                  <RadioGroupItem
-                    value="yes"
-                    id={`q${index + 1}yes`}
-                    {...register(`question${index + 1}`)}
-                  />
-                  <Label htmlFor={`q${index + 1}yes`}>Yes</Label>
-                  <RadioGroupItem
-                    value="no"
-                    id={`q${index + 1}no`}
-                    {...register(`question${index + 1}`)}
-                  />
-                  <Label htmlFor={`q${index + 1}no`}>No</Label>
-                </RadioGroup>
-                {errors[`question${index + 1}`] && (
-                  <span>This field is required</span>
-                )}
-              </li>
-            ))}
-            <li className="space-y-2">
-              <Label htmlFor="additional-comments">
-                Please include any additional comments
-              </Label>
-              <Textarea
-                id="additional-comments"
-                className="h-44 w-[500px]"
-                placeholder="Type here..."
-                {...register("additionalComments")}
-              />
-            </li>
-          </ol>
-        </div>
 
-        <Button type="submit" variant="bocesPrimary" size="lg" className="my-5">
-          Submit
-        </Button>
-      </form>
+          {/* TODO: figure out where is that margin top coming from and get rid of it */}
+
+          {questions.map((question, index) => (
+            <FormField
+              key={index}
+              control={form.control}
+              name={`question${index + 1}`}
+              render={({ field }) => (
+                <FormItem className="space-y-3">
+                  <FormLabel>{question}</FormLabel>
+                  <FormControl>
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      className="flex flex-col space-y-1"
+                    >
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="yes" />
+                        </FormControl>
+                        <FormLabel className="font-normal">Yes</FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="no" />
+                        </FormControl>
+                        <FormLabel className="font-normal">No</FormLabel>
+                      </FormItem>
+                    </RadioGroup>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          ))}
+
+          <FormField
+            control={form.control}
+            name="additionalComments"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Additional comments</FormLabel>
+                <FormControl>
+                  <Textarea
+                    placeholder="Type here..."
+                    className="h-44 w-[500px]"
+                    {...field}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+
+          <Button type="submit" variant="bocesPrimary" size="lg">
+            Submit
+          </Button>
+        </form>
+      </Form>
     </>
   );
 };
