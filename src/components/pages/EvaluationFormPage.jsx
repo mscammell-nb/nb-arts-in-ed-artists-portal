@@ -5,13 +5,24 @@ import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
 import { Textarea } from "../ui/textarea";
 import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 
-const EvaluationForm = () => {
+const schema = yup
+  .object({
+    wereServicesPerformed: yup.string().required("The "),
+    approverName: yup
+      .string()
+      .required("The approver name field can't be empty."),
+  })
+  .required();
+
+const EvaluationFormPage = () => {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm({ resolver: yupResolver(schema) });
 
   const questions = [
     "Was it apparent that students had used your study guide/support materials?",
@@ -52,24 +63,19 @@ const EvaluationForm = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="space-y-4">
           <h2 className="text-lg font-semibold">
-            DID THE ARTIST PERFORM THEIR SERVICES?
+            SERVICES PERFORMANCE COMFIRMATION
           </h2>
           <div className="flex gap-10">
-            <RadioGroup className="flex items-center">
+            <RadioGroup
+              className="flex items-center"
+              {...register("wereServicesPerformed")}
+            >
               <div className="flex items-center space-x-2">
-                <RadioGroupItem
-                  value="yes"
-                  id="r1"
-                  {...register("wereServicesPerformed", { required: true })}
-                />
+                <RadioGroupItem value="yes" id="r1" />
                 <Label htmlFor="r1">Yes</Label>
               </div>
               <div className="flex items-center space-x-2">
-                <RadioGroupItem
-                  value="no"
-                  id="r2"
-                  {...register("wereServicesPerformed", { required: true })}
-                />
+                <RadioGroupItem value="no" id="r2" />
                 <Label htmlFor="r2">No</Label>
               </div>
             </RadioGroup>
@@ -85,9 +91,7 @@ const EvaluationForm = () => {
                 type="text"
                 placeholder="Type here..."
                 className="inline-block w-64 max-w-lg"
-                {...register("approverName", {
-                  required: "Your name is required",
-                })}
+                {...register("approverName")}
               />
               {errors.approverName && <span>This field is required</span>}
             </div>
@@ -108,13 +112,13 @@ const EvaluationForm = () => {
                   <RadioGroupItem
                     value="yes"
                     id={`q${index + 1}yes`}
-                    {...register(`question${index + 1}`, { required: true })}
+                    {...register(`question${index + 1}`)}
                   />
                   <Label htmlFor={`q${index + 1}yes`}>Yes</Label>
                   <RadioGroupItem
                     value="no"
                     id={`q${index + 1}no`}
-                    {...register(`question${index + 1}`, { required: true })}
+                    {...register(`question${index + 1}`)}
                   />
                   <Label htmlFor={`q${index + 1}no`}>No</Label>
                 </RadioGroup>
@@ -145,4 +149,4 @@ const EvaluationForm = () => {
   );
 };
 
-export default EvaluationForm;
+export default EvaluationFormPage;
