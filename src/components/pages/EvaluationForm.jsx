@@ -41,6 +41,8 @@ const EvaluationForm = () => {
     console.log(formattedData);
   };
 
+  if (errors) console.log("Errors: ", errors); // TODO: delete this later
+
   return (
     <>
       <h1 className="mb-5 text-4xl font-semibold">Evaluation Form</h1>
@@ -83,7 +85,9 @@ const EvaluationForm = () => {
                 type="text"
                 placeholder="Type here..."
                 className="inline-block w-64 max-w-lg"
-                {...register("approverName", { required: true })}
+                {...register("approverName", {
+                  required: "Your name is required",
+                })}
               />
               {errors.approverName && <span>This field is required</span>}
             </div>
@@ -125,7 +129,7 @@ const EvaluationForm = () => {
               </Label>
               <Textarea
                 id="additional-comments"
-                className="h-44 w-1/3"
+                className="h-44 w-[500px]"
                 placeholder="Type here..."
                 {...register("additionalComments")}
               />
