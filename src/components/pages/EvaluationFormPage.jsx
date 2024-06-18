@@ -1,4 +1,3 @@
-import { Label } from "@radix-ui/react-label";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
@@ -17,6 +16,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
 // TODO: Add more complex rules to the yup schema
+// TODO: see if I can get the radio button checkmarks to go away when the form is reset.
 
 const questions = [
   "Was it apparent that students had used your study guide/support materials?",
@@ -30,7 +30,7 @@ const questions = [
 
 let schema = yup.object().shape({});
 
-questions.forEach((question, index) => {
+questions.forEach((_, index) => {
   const fieldName = `question${index + 1}`;
   schema = schema.shape({
     [fieldName]: yup.string().required(`This field is required.`),
@@ -46,8 +46,9 @@ schema = schema
   .required();
 
 const EvaluationFormPage = () => {
+
   const defaultValues = questions.reduce(
-    (values, question, index) => {
+    (values, _, index) => {
       values[`question${index + 1}`] = "";
       return values;
     },
@@ -79,6 +80,7 @@ const EvaluationFormPage = () => {
     });
 
     console.log(formattedData);
+    form.reset(defaultValues);
   };
 
   return (
@@ -100,7 +102,7 @@ const EvaluationFormPage = () => {
             name="wereServicesPerformed"
             render={({ field }) => (
               <FormItem className="space-y-3">
-                <FormLabel>Did the artist perform services</FormLabel>
+                <FormLabel>Did the artist perform their services</FormLabel>
                 <FormControl>
                   <RadioGroup
                     onValueChange={field.onChange}

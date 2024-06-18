@@ -17,8 +17,54 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { setUser } from "@/redux/slices/authSlice";
 import { formatAuthErrorMessage } from "@/utils/functionUtils";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+
+const schema = yup.object({
+  artistOrg: yup.string().required(),
+  email: yup.string().email().required(),
+  password: yup.string().required(),
+  phone: yup.number().required(),
+  altPhone: yup.number(),
+  street1: yup.string().required(),
+  street2: yup.string(),
+  city: yup.string().required(),
+  state: yup.string().required(),
+  zipCode: yup.number().required(),
+});
+
+// TODO: make yup schema validation more complex
 
 const RegistrationForm = () => {
+  const form = useForm({
+    resolver: yupResolver(schema),
+    defaultValues: {
+      artistOrg: "",
+      email: "",
+      password: "",
+      phone: "",
+      altPhone: "",
+      street1: "",
+      street2: "",
+      city: "",
+      state: "",
+      zipCode: "",
+    },
+  });
+
+  const onSubmit = (data) => {
+    console.log(data);
+  };
+
   const [registerUser, { data, isLoading, isSuccess, isError, error }] =
     useRegisterUserMutation();
   const dispatch = useDispatch();
@@ -66,75 +112,155 @@ const RegistrationForm = () => {
             Enter your credentials below to create an account.
           </CardDescription>
         </CardHeader>
+
         <CardContent>
-          <form onSubmit={handleFormSubmit}>
-            <div className="grid gap-4">
-              <div className="grid gap-2">
-                <Label>
-                  Artist/Org<span className="text-red-600">*</span>
-                </Label>
-                <Input id="artist/org" type="text" name="artist/org" required />
-              </div>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              <FormField
+                control={form.control}
+                name="artistOrg"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Artist / Organization</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-              <div className="grid gap-2">
-                <Label htmlFor="email">
-                  Email<span className="text-red-600">*</span>
-                </Label>
-                <Input id="email" type="email" name="email" required />
-              </div>
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-              <div className="grid gap-2">
-                <Label htmlFor="phone">
-                  Phone<span className="text-red-600">*</span>
-                </Label>
-                <Input id="phone" type="" name="phone" required />
-              </div>
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <PasswordInput {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-              <div className="grid gap-2">
-                <Label htmlFor="alternative-phone">Alternative Phone</Label>
-                <Input
-                  id="alternative-phone"
-                  type=""
-                  name="alternative-phone"
-                />
-              </div>
+              <FormField
+                control={form.control}
+                name="phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Phone</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-              <div className="grid gap-2">
-                <Label htmlFor="password">
-                  Password<span className="text-red-600">*</span>
-                </Label>
-                <PasswordInput id="password" name="password" required />
-              </div>
+              <FormField
+                control={form.control}
+                name="altPhone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Alt phone</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-              <div className="grid gap-2">
-                <Label htmlFor="confirm-password">
-                  Confirm Password<span className="text-red-600">*</span>
-                </Label>
-                <PasswordInput
-                  id="confirm-password"
-                  name="confirm-password"
-                  required
-                />
-              </div>
-            </div>
-            <Button
-              type="submit"
-              variant="bocesPrimary"
-              className="mt-7 w-full"
-              disabled={isLoading}
-            >
-              {isLoading && (
-                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-              )}
-              {isLoading ? "Please wait" : "Sign up"}
-            </Button>
-          </form>
-          <div className="pt-2 text-center text-sm">
-            Already have an account?{" "}
-            <Link to="/auth/login" className="underline">
-              Sign in
-            </Link>
-          </div>
+              <FormField
+                control={form.control}
+                name="street1"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Street 1</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="street2"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Street 2</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="city"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>City</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="state"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>State</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="zipCode"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Zip code</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <Button type="submit" variant="bocesPrimary" size="lg">
+                Submit
+              </Button>
+            </form>
+          </Form>
         </CardContent>
       </Card>
     </div>
