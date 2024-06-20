@@ -28,6 +28,7 @@ import {
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import { useAddArtistMutation } from "@/redux/api/artistsApi";
 
 const schema = yup.object({
   artistOrg: yup.string().required(),
@@ -55,6 +56,22 @@ const schema = yup.object({
 // TODO: make yup schema validation more complex
 
 const RegistrationForm = () => {
+  const [registerUser, { data, isLoading, isSuccess, isError, error }] =
+    useRegisterUserMutation();
+  const [
+    addArtist,
+    {
+      data: addArtistData,
+      isLoading: isAddArtistLoading,
+      isSuccess: isAddArtistSuccess,
+      isError: isAddArtistError,
+      error: addArtistError,
+    },
+  ] = useAddArtistMutation();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
   const form = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -73,16 +90,12 @@ const RegistrationForm = () => {
 
   const onSubmit = async (data) => {
     console.log(data);
-    const response = await registerUser(data);
-    console.log('RESPONSE: ', response);
+    const registerUserResponse = await registerUser(data);
+    console.log("registerUserResponse: ", registerUserResponse);
+    const { userUid } = registerUserResponse.data;
+    console.log("userUid: ", userUid);
     form.reset();
   };
-
-  const [registerUser, { data, isLoading, isSuccess, isError, error }] =
-    useRegisterUserMutation();
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const { toast } = useToast();
 
   useEffect(() => {
     if (isSuccess && data) {
@@ -104,17 +117,6 @@ const RegistrationForm = () => {
       });
     }
   }, [isSuccess, data, isError, error, toast]);
-
-  const handleFormSubmit = async (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const payload = Object.fromEntries(formData);
-    await registerUser({
-      ...payload,
-      role: "VENDOR",
-      quickbaseToken: "no token for now",
-    });
-  };
 
   return (
     <div className="flex w-full justify-center py-16">
