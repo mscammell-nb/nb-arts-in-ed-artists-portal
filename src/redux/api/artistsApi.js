@@ -1,7 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-const AUTHORIZATION_TOKEN = "b9dwzc_br69_0_b68448zwujbd4d3336nqbd2m7r2";
-
 export const artistsApi = createApi({
   reducerPath: "artistsApi",
   baseQuery: fetchBaseQuery({
@@ -15,7 +13,7 @@ export const artistsApi = createApi({
         headers: {
           "Content-Type": "application/json",
           "QB-Realm-Hostname": "nassauboces.quickbase.com",
-          Authorization: `QB-USER-TOKEN ${AUTHORIZATION_TOKEN}`,
+          Authorization: `QB-USER-TOKEN ${import.meta.env.VITE_QUICKBASE_AUTHORIZATION_TOKEN}`,
         },
         body,
       }),

@@ -7,8 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { PasswordInput } from "../ui/password-input";
 import { useRegisterUserMutation } from "@/redux/api/authApi";
 import { ReloadIcon } from "@radix-ui/react-icons";
@@ -16,7 +15,6 @@ import { useToast } from "@/components/ui/use-toast";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { setUser } from "@/redux/slices/authSlice";
-import { formatAuthErrorMessage } from "@/utils/functionUtils";
 import {
   Form,
   FormControl,
@@ -98,7 +96,7 @@ const RegistrationForm = () => {
 
   const formatDataForQuickbase = (data, userUid) => {
     const body = {
-      to: "bt9t5shi6", // TODO: move this to a .ENV file
+      to: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
       data: [
         {
           6: {
@@ -149,9 +147,7 @@ const RegistrationForm = () => {
   const onSubmit = async (data) => {
     const registerUserResponse = await registerUser(data);
     const { userUid } = registerUserResponse.data;
-    await addArtist(
-      formatDataForQuickbase(data, userUid),
-    );
+    await addArtist(formatDataForQuickbase(data, userUid));
     form.reset();
   };
 
