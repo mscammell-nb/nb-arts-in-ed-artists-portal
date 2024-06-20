@@ -34,9 +34,19 @@ const schema = yup.object({
   email: yup.string().email().required(),
   password: yup.string().required(),
   phone: yup.number().required(),
-  altPhone: yup.number(),
+  altPhone: yup
+    .number()
+    .nullable()
+    .transform((value, originalValue) =>
+      String(originalValue).trim() === "" ? null : value,
+    ),
   street1: yup.string().required(),
-  street2: yup.string(),
+  street2: yup
+    .string()
+    .nullable()
+    .transform((value, originalValue) =>
+      String(originalValue).trim() === "" ? null : value,
+    ),
   city: yup.string().required(),
   state: yup.string().required(),
   zipCode: yup.number().required(),
@@ -61,8 +71,11 @@ const RegistrationForm = () => {
     },
   });
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     console.log(data);
+    const response = await registerUser(data);
+    console.log('RESPONSE: ', response);
+    form.reset();
   };
 
   const [registerUser, { data, isLoading, isSuccess, isError, error }] =
@@ -121,7 +134,10 @@ const RegistrationForm = () => {
                 name="artistOrg"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Artist / Organization</FormLabel>
+                    <FormLabel>
+                      Artist / Organization
+                      <span className="text-red-600">*</span>
+                    </FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -135,7 +151,9 @@ const RegistrationForm = () => {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>
+                      Email<span className="text-red-600">*</span>
+                    </FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -149,7 +167,9 @@ const RegistrationForm = () => {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel>
+                      Password<span className="text-red-600">*</span>
+                    </FormLabel>
                     <FormControl>
                       <PasswordInput {...field} />
                     </FormControl>
@@ -163,7 +183,9 @@ const RegistrationForm = () => {
                 name="phone"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Phone</FormLabel>
+                    <FormLabel>
+                      Phone<span className="text-red-600">*</span>
+                    </FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -191,7 +213,9 @@ const RegistrationForm = () => {
                 name="street1"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Street 1</FormLabel>
+                    <FormLabel>
+                      Street 1<span className="text-red-600">*</span>
+                    </FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -219,7 +243,9 @@ const RegistrationForm = () => {
                 name="city"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>City</FormLabel>
+                    <FormLabel>
+                      City<span className="text-red-600">*</span>
+                    </FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -233,7 +259,9 @@ const RegistrationForm = () => {
                 name="state"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>State</FormLabel>
+                    <FormLabel>
+                      State<span className="text-red-600">*</span>
+                    </FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -247,7 +275,9 @@ const RegistrationForm = () => {
                 name="zipCode"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Zip code</FormLabel>
+                    <FormLabel>
+                      Zip code<span className="text-red-600">*</span>
+                    </FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -256,8 +286,16 @@ const RegistrationForm = () => {
                 )}
               />
 
-              <Button type="submit" variant="bocesPrimary" size="lg">
-                Submit
+              <Button
+                type="submit"
+                variant="bocesPrimary"
+                className="mt-7 w-full"
+                disabled={isLoading}
+              >
+                {isLoading && (
+                  <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                {isLoading ? "Please wait" : "Sign in"}
               </Button>
             </form>
           </Form>

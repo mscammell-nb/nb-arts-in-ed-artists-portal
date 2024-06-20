@@ -151,8 +151,6 @@ const EvaluationFormPage = () => {
             ARTIST'S EVALUATION OF THIS EXPERIENCE
           </h2>
 
-          {/* TODO: figure out where is that margin top coming from and get rid of it */}
-
           {questions.map((question, index) => (
             <FormField
               key={index}
