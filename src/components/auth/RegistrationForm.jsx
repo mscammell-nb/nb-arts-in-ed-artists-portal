@@ -147,15 +147,11 @@ const RegistrationForm = () => {
   };
 
   const onSubmit = async (data) => {
-    console.log(data);
     const registerUserResponse = await registerUser(data);
-    console.log("registerUserResponse: ", registerUserResponse);
     const { userUid } = registerUserResponse.data;
-    const addArtistResponse = await addArtist(
+    await addArtist(
       formatDataForQuickbase(data, userUid),
     );
-    console.log("addArtistResponse: ", addArtistResponse);
-    console.log("isAddArtistSuccess", isAddArtistSuccess);
     form.reset();
   };
 
@@ -174,13 +170,15 @@ const RegistrationForm = () => {
       });
       navigate("/dashboard");
     }
-console.log('my log: ', isRegisterUserError, registerUserError)
-    if (isRegisterUserError && registerUserError) {
-      console.log("registerUserError: ", registerUserError);
+
+    if (
+      (isRegisterUserError && registerUserError) ||
+      (isAddArtistError && addArtistError)
+    ) {
       toast({
         variant: "destructive",
         title: "Uh oh! Something went wrong.",
-        description: `${formatAuthErrorMessage(registerUserError.data.code)}`,
+        description: `${isRegisterUserError ? registerUserError.data.code : addArtistError.data.code}`,
       });
     }
   }, [
