@@ -88,12 +88,65 @@ const RegistrationForm = () => {
     },
   });
 
+  const formatDataForQuickbase = (data, userUid) => {
+    const body = {
+      to: "bt9t5shi6", // TODO: move this to a .ENV file
+      data: [
+        {
+          6: {
+            value: data.artistOrg,
+          },
+          7: {
+            value: data.email,
+          },
+          8: {
+            value: data.password,
+          },
+          9: {
+            value: data.phone,
+          },
+          10: {
+            value: userUid,
+          },
+          13: {
+            value: data.street1,
+          },
+          15: {
+            value: data.city,
+          },
+          16: {
+            value: data.state,
+          },
+          17: {
+            value: data.zipCode,
+          },
+          18: {
+            value: "United States",
+          },
+        },
+      ],
+    };
+
+    if (data.altPhone !== null) {
+      body.data[0][11] = data.altPhone;
+    }
+
+    if (data.street2 !== null) {
+      body.data[0][14] = data.street2;
+    }
+
+    return body;
+  };
+
   const onSubmit = async (data) => {
     console.log(data);
     const registerUserResponse = await registerUser(data);
     console.log("registerUserResponse: ", registerUserResponse);
     const { userUid } = registerUserResponse.data;
-    console.log("userUid: ", userUid);
+    const addArtistResponse = await addArtist(
+      formatDataForQuickbase(data, userUid),
+    );
+    console.log("addArtistResponse: ", addArtistResponse);
     form.reset();
   };
 
