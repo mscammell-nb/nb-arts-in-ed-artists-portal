@@ -56,8 +56,16 @@ const schema = yup.object({
 // TODO: make yup schema validation more complex
 
 const RegistrationForm = () => {
-  const [registerUser, { data, isLoading, isSuccess, isError, error }] =
-    useRegisterUserMutation();
+  const [
+    registerUser,
+    {
+      data: registerUserData,
+      isLoading: isRegisterUserLoading,
+      isSuccess: isRegisterUserSuccess,
+      isError: isRegisterUserError,
+      error: registerUserError,
+    },
+  ] = useRegisterUserMutation();
   const [
     addArtist,
     {
@@ -147,12 +155,18 @@ const RegistrationForm = () => {
       formatDataForQuickbase(data, userUid),
     );
     console.log("addArtistResponse: ", addArtistResponse);
+    console.log("isAddArtistSuccess", isAddArtistSuccess);
     form.reset();
   };
 
   useEffect(() => {
-    if (isSuccess && data) {
-      dispatch(setUser(data));
+    if (
+      isRegisterUserSuccess &&
+      registerUserData &&
+      isAddArtistSuccess &&
+      addArtistData
+    ) {
+      dispatch(setUser(registerUserData));
       toast({
         variant: "success",
         title: "Operation successful!",
@@ -160,16 +174,28 @@ const RegistrationForm = () => {
       });
       navigate("/dashboard");
     }
-
-    if (isError && error) {
-      console.log("error: ", error);
+console.log('my log: ', isRegisterUserError, registerUserError)
+    if (isRegisterUserError && registerUserError) {
+      console.log("registerUserError: ", registerUserError);
       toast({
         variant: "destructive",
         title: "Uh oh! Something went wrong.",
-        description: `${formatAuthErrorMessage(error.data.code)}`,
+        description: `${formatAuthErrorMessage(registerUserError.data.code)}`,
       });
     }
-  }, [isSuccess, data, isError, error, toast]);
+  }, [
+    isRegisterUserSuccess,
+    isAddArtistSuccess,
+    registerUserData,
+    addArtistData,
+    isRegisterUserError,
+    isAddArtistError,
+    registerUserError,
+    addArtistError,
+    toast,
+  ]);
+
+  const isRequestLoading = () => isRegisterUserLoading || isAddArtistLoading;
 
   return (
     <div className="flex w-full justify-center py-16">
@@ -345,12 +371,12 @@ const RegistrationForm = () => {
                 type="submit"
                 variant="bocesPrimary"
                 className="mt-7 w-full"
-                disabled={isLoading}
+                disabled={isRequestLoading()}
               >
-                {isLoading && (
+                {isRequestLoading() && (
                   <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
                 )}
-                {isLoading ? "Please wait" : "Sign in"}
+                {isRequestLoading() ? "Please wait" : "Sign in"}
               </Button>
             </form>
           </Form>

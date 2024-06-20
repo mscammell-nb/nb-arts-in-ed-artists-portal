@@ -3,6 +3,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 const AUTHORIZATION_TOKEN = "b9dwzc_br69_0_b68448zwujbd4d3336nqbd2m7r2";
 
 export const artistsApi = createApi({
+  reducerPath: "artistsApi",
   baseQuery: fetchBaseQuery({
     baseUrl: "https://api.quickbase.com/v1/records/",
   }),
