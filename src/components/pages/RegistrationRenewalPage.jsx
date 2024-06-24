@@ -1,15 +1,11 @@
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useToast } from "@/components/ui/use-toast";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
+import { useQueryForDataMutation } from "@/redux/api/quickbaseApi";
 import {
   Form,
   FormControl,
@@ -46,6 +42,18 @@ const schema = yup.object({
 });
 
 const RegistrationRenewalPage = () => {
+  const [queryForData, { data: userData, isLoading, isError, error }] =
+    useQueryForDataMutation();
+
+  useEffect(() => {
+    queryForData({
+      from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
+      select: [6, 9, 11, 13, 14, 15, 16, 17],
+      // TODO: Get the QB token (userUid) from the local storage.
+      where: "{10.EX.'kU4EmyvW0xYeE1ztfAOTbaTS5tq2'}",
+    });
+  }, [queryForData]);
+
   const form = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -60,7 +68,26 @@ const RegistrationRenewalPage = () => {
     },
   });
 
-  const onSubmit = data => console.log(data)
+  const { reset } = form;
+
+  useEffect(() => {
+    if (userData) {
+      const data = userData.data[0];
+      const defaultValues = {
+        artistOrg: data[6].value,
+        phone: data[9].value,
+        altPhone: data[11].value,
+        street1: data[13].value,
+        street2: data[14].value,
+        city: data[15].value,
+        state: data[16].value,
+        zipCode: data[17].value,
+      };
+      reset(defaultValues);
+    }
+  }, [userData, reset]);
+
+  const onSubmit = (data) => console.log(data);
 
   return (
     <div className="flex w-full justify-center py-16">

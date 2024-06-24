@@ -18,7 +18,20 @@ export const quickbaseApi = createApi({
         body,
       }),
     }),
+    queryForData: build.mutation({
+      query: (body) => ({
+        url: "/records/query",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "QB-Realm-Hostname": "nassauboces.quickbase.com",
+          Authorization: `QB-USER-TOKEN ${import.meta.env.VITE_QUICKBASE_AUTHORIZATION_TOKEN}`,
+        },
+        body,
+      }),
+    }),
   }),
 });
 
-export const { useAddOrUpdateRecordMutation } = quickbaseApi;
+export const { useAddOrUpdateRecordMutation, useQueryForDataMutation } =
+  quickbaseApi;
