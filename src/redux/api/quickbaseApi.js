@@ -1,14 +1,14 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-export const artistsApi = createApi({
-  reducerPath: "artistsApi",
+export const quickbaseApi = createApi({
+  reducerPath: "quickbaseApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://api.quickbase.com/v1/records/",
+    baseUrl: "https://api.quickbase.com/v1",
   }),
   endpoints: (build) => ({
-    addArtist: build.mutation({
+    addOrUpdateRecord: build.mutation({
       query: (body) => ({
-        url: "",
+        url: "/records",
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -21,4 +21,4 @@ export const artistsApi = createApi({
   }),
 });
 
-export const { useAddArtistMutation } = artistsApi;
+export const { useAddOrUpdateRecordMutation } = quickbaseApi;

@@ -26,7 +26,7 @@ import {
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { useAddArtistMutation } from "@/redux/api/artistsApi";
+import { useAddOrUpdateRecordMutation } from "@/redux/api/quickbaseApi";
 
 const schema = yup.object({
   artistOrg: yup.string().required(),
@@ -66,7 +66,7 @@ const RegistrationPage = () => {
     },
   ] = useRegisterUserMutation();
   const [
-    addArtist,
+    addOrupdateRecord,
     {
       data: addArtistData,
       isLoading: isAddArtistLoading,
@@ -74,7 +74,7 @@ const RegistrationPage = () => {
       isError: isAddArtistError,
       error: addArtistError,
     },
-  ] = useAddArtistMutation();
+  ] = useAddOrUpdateRecordMutation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -148,7 +148,7 @@ const RegistrationPage = () => {
   const onSubmit = async (data) => {
     const registerUserResponse = await registerUser(data);
     const { userUid } = registerUserResponse.data;
-    await addArtist(formatDataForQuickbase(data, userUid));
+    await addOrupdateRecord(formatDataForQuickbase(data, userUid));
     form.reset();
   };
 
