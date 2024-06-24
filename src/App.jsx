@@ -3,6 +3,7 @@ import MainLayout from "./layouts/MainLayout";
 import RegistrationPage from "./components/pages/RegistrationPage";
 import LoginPage from "./components/pages/LoginPage";
 import ProtectedRoutesWrapper from "./components/auth/ProtectedRoutesWrapper";
+import RegistrationRenewalPage from "./components/pages/RegistrationRenewalPage";
 import DashboardPage from "./components/pages/DashboardPage";
 import EvaluationPage from "./components/pages/EvaluationPage";
 import store from "./redux/store";
@@ -14,7 +15,10 @@ function App() {
       <Routes>
         <Route path="/" element={<MainLayout />}>
           <Route path="/registration" element={<RegistrationPage />} />
-          <Route path="/registration-renewal" element={<></>} />
+          <Route
+            path="/registration-renewal"
+            element={<RegistrationRenewalPage />}
+          />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/" element={<ProtectedRoutesWrapper />}>
             <Route path="/dashboard" element={<DashboardPage />} />

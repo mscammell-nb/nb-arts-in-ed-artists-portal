@@ -12,6 +12,8 @@ import { useDispatch } from "react-redux";
 import { setUser } from "@/redux/slices/authSlice";
 import { ReloadIcon } from "@radix-ui/react-icons";
 
+// TODO: edit form to use the form component from Shadcn/ui
+
 const LoginPage = () => {
   const [loginUser, { data, isLoading, isSuccess, isError, error }] =
     useLoginUserMutation();
@@ -35,7 +37,7 @@ const LoginPage = () => {
       toast({
         variant: "destructive",
         title: "Uh oh! Something went wrong.",
-        description: `${error.data}`,
+        description: `${error.data.code}`,
       });
     }
   }, [isSuccess, data, isError, error, toast]);
@@ -79,7 +81,7 @@ const LoginPage = () => {
           </form>
           <div className="pt-2 text-center text-sm">
             Don't have an account?{" "}
-            <Link to="/auth/register" className="underline">
+            <Link to="/registration" className="underline">
               Register
             </Link>
           </div>
