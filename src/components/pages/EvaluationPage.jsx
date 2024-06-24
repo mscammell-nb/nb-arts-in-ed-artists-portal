@@ -45,7 +45,7 @@ schema = schema
   })
   .required();
 
-const EvaluationFormPage = () => {
+const EvaluationPage = () => {
 
   const defaultValues = questions.reduce(
     (values, _, index) => {
@@ -211,4 +211,4 @@ const EvaluationFormPage = () => {
   );
 };
 
-export default EvaluationFormPage;
+export default EvaluationPage;

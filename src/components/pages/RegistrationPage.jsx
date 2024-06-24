@@ -52,8 +52,9 @@ const schema = yup.object({
 });
 
 // TODO: make yup schema validation more complex
+// TODO: include second password input and add validation logic
 
-const RegistrationForm = () => {
+const RegistrationPage = () => {
   const [
     registerUser,
     {
@@ -214,7 +215,7 @@ const RegistrationForm = () => {
                       <span className="text-red-600">*</span>
                     </FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input {...field} placeholder="Artist / Organization" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -230,7 +231,7 @@ const RegistrationForm = () => {
                       Email<span className="text-red-600">*</span>
                     </FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input {...field} placeholder="Email" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -246,7 +247,7 @@ const RegistrationForm = () => {
                       Password<span className="text-red-600">*</span>
                     </FormLabel>
                     <FormControl>
-                      <PasswordInput {...field} />
+                      <PasswordInput {...field} placeholder="Password" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -262,7 +263,7 @@ const RegistrationForm = () => {
                       Phone<span className="text-red-600">*</span>
                     </FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input {...field} placeholder="e.g. 6312890915" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -276,7 +277,7 @@ const RegistrationForm = () => {
                   <FormItem>
                     <FormLabel>Alt phone</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input {...field} placeholder="e.g. 6312890915" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -292,7 +293,7 @@ const RegistrationForm = () => {
                       Street 1<span className="text-red-600">*</span>
                     </FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input {...field} placeholder="Street 1" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -306,7 +307,7 @@ const RegistrationForm = () => {
                   <FormItem>
                     <FormLabel>Street 2</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input {...field} placeholder="Street 2" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -322,7 +323,7 @@ const RegistrationForm = () => {
                       City<span className="text-red-600">*</span>
                     </FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input {...field} placeholder="City" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -338,7 +339,7 @@ const RegistrationForm = () => {
                       State<span className="text-red-600">*</span>
                     </FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input {...field} placeholder="State" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -354,7 +355,7 @@ const RegistrationForm = () => {
                       Zip code<span className="text-red-600">*</span>
                     </FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input {...field} placeholder="Zip code" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -380,4 +381,4 @@ const RegistrationForm = () => {
   );
 };
 
-export default RegistrationForm;
+export default RegistrationPage;

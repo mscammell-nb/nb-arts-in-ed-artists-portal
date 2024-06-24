@@ -12,7 +12,7 @@ import { useDispatch } from "react-redux";
 import { setUser } from "@/redux/slices/authSlice";
 import { ReloadIcon } from "@radix-ui/react-icons";
 
-const LoginForm = () => {
+const LoginPage = () => {
   const [loginUser, { data, isLoading, isSuccess, isError, error }] =
     useLoginUserMutation();
   const dispatch = useDispatch();
@@ -89,4 +89,4 @@ const LoginForm = () => {
   );
 };
 
-export default LoginForm;
+export default LoginPage;
