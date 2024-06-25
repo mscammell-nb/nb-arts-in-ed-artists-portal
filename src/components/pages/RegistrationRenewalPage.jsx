@@ -56,6 +56,8 @@ const schema = yup.object({
 });
 
 const RegistrationRenewalPage = () => {
+  const userUid = localStorage.getItem("userUid");
+
   const navigate = useNavigate();
   const { toast } = useToast();
   const [
@@ -85,8 +87,7 @@ const RegistrationRenewalPage = () => {
     queryForData({
       from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
       select: [3, 6, 7, 8, 9, 11, 13, 14, 15, 16, 17],
-      // TODO: Get the QB token (userUid) from the local storage.
-      where: "{10.EX.'kU4EmyvW0xYeE1ztfAOTbaTS5tq2'}",
+      where: `{10.EX.${userUid}}`,
     });
   }, [queryForData]);
 
@@ -144,7 +145,7 @@ const RegistrationRenewalPage = () => {
             value: data.phone,
           },
           13: {
-            value: "kU4EmyvW0xYeE1ztfAOTbaTS5tq2",
+            value: userUid,
           },
           15: {
             value: data.street1,
@@ -382,7 +383,7 @@ const RegistrationRenewalPage = () => {
                 {isNewArtistRegistrationLoading && (
                   <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
                 )}
-                {isNewArtistRegistrationLoading ? "Please wait" : "Submit"}
+                {isNewArtistRegistrationLoading ? "Please wait" : "Register"}
               </Button>
             </form>
           </Form>

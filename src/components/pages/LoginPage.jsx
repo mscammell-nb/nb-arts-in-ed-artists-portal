@@ -23,7 +23,11 @@ const LoginPage = () => {
 
   useEffect(() => {
     if (isSuccess && data) {
+      // TODO: figure out whether I still need this dispatch
       dispatch(setUser(data));
+      const { userUid, authToken } = data;
+      localStorage.setItem("userUid", userUid);
+      localStorage.setItem("authToken", authToken);
       toast({
         variant: "success",
         title: "Operation successful!",

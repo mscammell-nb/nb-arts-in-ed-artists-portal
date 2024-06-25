@@ -4,7 +4,9 @@ const DashboardPage = () => {
   return (
     <>
       <h1>Dashboard</h1>
-      <Link to="/evaluation-form" className="underline">Evaluation Form</Link>
+      <Link to="/evaluation" className="underline">Evaluation Form</Link>
+      <br></br>
+      <Link to="/registration-renewal" className="underline">Registration Renewal</Link>
     </>
   );
 };

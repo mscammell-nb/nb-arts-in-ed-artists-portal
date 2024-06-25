@@ -168,7 +168,11 @@ const RegistrationPage = () => {
       isAddArtistSuccess &&
       addArtistData
     ) {
+      // TODO: figure out whether I still need this dispatch.
       dispatch(setUser(registerUserData));
+      const { userUid, authToken } = registerUserData;
+      localStorage.setItem("userUid", userUid);
+      localStorage.setItem("authToken", authToken);
       toast({
         variant: "success",
         title: "Operation successful!",
