@@ -47,6 +47,8 @@ const schema = yup.object({
 });
 
 const RegistrationRenewalPage = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [
     queryForData,
     {
@@ -162,10 +164,33 @@ const RegistrationRenewalPage = () => {
     return body;
   };
 
+  useEffect(() => {
+    if (isNewArtistRegistrationSuccess) {
+      toast({
+        variant: "success",
+        title: "Operation successful!",
+        description: "New registration created.",
+      });
+      navigate("/dashboard");
+    }
+
+    if (isNewArtistRegistrationError) {
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: newArtistRegistrationError.data.code,
+      });
+      navigate("/dashboard");
+    }
+  }, [
+    isNewArtistRegistrationSuccess,
+    isNewArtistRegistrationError,
+    newArtistRegistrationError,
+    toast,
+  ]);
+
   const onSubmit = async (data) => {
-    console.log("formatDataForQuickbase: ", formatDataForQuickbase(data));
     const response = await addOrupdateRecord(formatDataForQuickbase(data));
-    console.log("response: ", response);
   };
 
   if (!userData && isUserDataLoading)
