@@ -27,6 +27,14 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useAddOrUpdateRecordMutation } from "@/redux/api/quickbaseApi";
+import { states } from "@/utils/utils";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const schema = yup.object({
   artistOrg: yup.string().required(),
@@ -47,7 +55,7 @@ const schema = yup.object({
       String(originalValue).trim() === "" ? null : value,
     ),
   city: yup.string().required(),
-  state: yup.string().required(),
+  state: yup.string().oneOf(states, "Invalid state").required(),
   zipCode: yup.number().required(),
 });
 
@@ -339,9 +347,20 @@ const RegistrationPage = () => {
                     <FormLabel>
                       State<span className="text-red-600">*</span>
                     </FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="State" />
-                    </FormControl>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select state" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {states.map((state) => (
+                          <SelectItem key={state} value={state}>
+                            {state}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -372,7 +391,7 @@ const RegistrationPage = () => {
                 {isRequestLoading() && (
                   <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
                 )}
-                {isRequestLoading() ? "Please wait" : "Sign in"}
+                {isRequestLoading() ? "Please wait" : "Sign up"}
               </Button>
             </form>
           </Form>
