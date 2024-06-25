@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useToast } from "@/components/ui/use-toast";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import {
   useQueryForDataMutation,
   useAddOrUpdateRecordMutation,
@@ -22,8 +22,17 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import Spinner from "../ui/Spinner";
+import { states } from "@/utils/utils";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 // TODO: make yup schema validation more complex
+// TODO: update the required fields messages.
 const schema = yup.object({
   artistOrg: yup.string().required(),
   email: yup.string().email().required(),
@@ -42,7 +51,7 @@ const schema = yup.object({
       String(originalValue).trim() === "" ? null : value,
     ),
   city: yup.string().required(),
-  state: yup.string().required(),
+  state: yup.string().oneOf(states, "Invalid state").required(),
   zipCode: yup.number().required(),
 });
 
@@ -54,6 +63,7 @@ const RegistrationRenewalPage = () => {
     {
       data: userData,
       isLoading: isUserDataLoading,
+      // TODO: Remove unused elements
       isSuccess: isQueryForDataSuccess,
       isError: isUserDataError,
       error: userDataError,
@@ -62,6 +72,7 @@ const RegistrationRenewalPage = () => {
   const [
     addOrupdateRecord,
     {
+      // TODO: Remove unused elements
       data: newArtistRegistrationData,
       isLoading: isNewArtistRegistrationLoading,
       isSuccess: isNewArtistRegistrationSuccess,
@@ -94,7 +105,7 @@ const RegistrationRenewalPage = () => {
     },
   });
 
-  const { reset } = form;
+  const { reset, setValue } = form;
 
   useEffect(() => {
     if (userData) {
@@ -111,8 +122,9 @@ const RegistrationRenewalPage = () => {
         zipCode: data[17].value,
       };
       reset(defaultValues);
+      setValue("state", data[16].value);
     }
-  }, [userData, reset]);
+  }, [userData, reset, setValue]);
 
   const formatDataForQuickbase = (data) => {
     const body = {
@@ -189,8 +201,8 @@ const RegistrationRenewalPage = () => {
     toast,
   ]);
 
-  const onSubmit = async (data) => {
-    const response = await addOrupdateRecord(formatDataForQuickbase(data));
+  const onSubmit = (data) => {
+    addOrupdateRecord(formatDataForQuickbase(data));
   };
 
   if (!userData && isUserDataLoading)
@@ -326,9 +338,20 @@ const RegistrationRenewalPage = () => {
                     <FormLabel>
                       State<span className="text-red-600">*</span>
                     </FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="State" />
-                    </FormControl>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select state" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {states.map((state) => (
+                          <SelectItem key={state} value={state}>
+                            {state}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}

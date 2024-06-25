@@ -53,6 +53,7 @@ const schema = yup.object({
 
 // TODO: make yup schema validation more complex
 // TODO: include second password input and add validation logic
+// TODO: update the required fields messages.
 
 const RegistrationPage = () => {
   const [
