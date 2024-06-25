@@ -21,6 +21,7 @@ import {
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import Spinner from "../ui/Spinner";
 
 // TODO: make yup schema validation more complex
 const schema = yup.object({
@@ -161,16 +162,18 @@ const RegistrationRenewalPage = () => {
     return body;
   };
 
-  if (userData) console.log(userData.data[0]); // TODO: delete this later
-
   const onSubmit = async (data) => {
     console.log("formatDataForQuickbase: ", formatDataForQuickbase(data));
     const response = await addOrupdateRecord(formatDataForQuickbase(data));
     console.log("response: ", response);
   };
 
-  // TODO: replace this for an actual loading spinner.
-  if (!userData && isUserDataLoading) return <span>Loading...</span>;
+  if (!userData && isUserDataLoading)
+    return (
+      <div className="flex h-full w-full justify-center pt-24">
+        <Spinner />
+      </div>
+    );
 
   return (
     <div className="flex w-full justify-center py-16">
