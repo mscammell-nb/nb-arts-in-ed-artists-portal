@@ -5,7 +5,11 @@ import { useNavigate } from "react-router-dom";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useToast } from "@/components/ui/use-toast";
 import { useState, useEffect } from "react";
-import { useQueryForDataMutation } from "@/redux/api/quickbaseApi";
+import {
+  useQueryForDataMutation,
+  useAddOrUpdateRecordMutation,
+} from "@/redux/api/quickbaseApi";
+import { parsePhoneNumber } from "@/utils/functionUtils";
 import {
   Form,
   FormControl,
@@ -19,9 +23,9 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
 // TODO: make yup schema validation more complex
-
 const schema = yup.object({
   artistOrg: yup.string().required(),
+  email: yup.string().email().required(),
   phone: yup.number().required(),
   altPhone: yup
     .number()
@@ -42,13 +46,31 @@ const schema = yup.object({
 });
 
 const RegistrationRenewalPage = () => {
-  const [queryForData, { data: userData, isLoading, isError, error }] =
-    useQueryForDataMutation();
+  const [
+    queryForData,
+    {
+      data: userData,
+      isLoading: isUserDataLoading,
+      isSuccess: isQueryForDataSuccess,
+      isError: isUserDataError,
+      error: userDataError,
+    },
+  ] = useQueryForDataMutation();
+  const [
+    addOrupdateRecord,
+    {
+      data: newArtistRegistrationData,
+      isLoading: isNewArtistRegistrationLoading,
+      isSuccess: isNewArtistRegistrationSuccess,
+      isError: isNewArtistRegistrationError,
+      error: newArtistRegistrationError,
+    },
+  ] = useAddOrUpdateRecordMutation();
 
   useEffect(() => {
     queryForData({
       from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
-      select: [6, 9, 11, 13, 14, 15, 16, 17],
+      select: [3, 6, 7, 8, 9, 11, 13, 14, 15, 16, 17],
       // TODO: Get the QB token (userUid) from the local storage.
       where: "{10.EX.'kU4EmyvW0xYeE1ztfAOTbaTS5tq2'}",
     });
@@ -58,6 +80,7 @@ const RegistrationRenewalPage = () => {
     resolver: yupResolver(schema),
     defaultValues: {
       artistOrg: "",
+      email: "",
       phone: "",
       altPhone: "",
       street1: "",
@@ -75,8 +98,9 @@ const RegistrationRenewalPage = () => {
       const data = userData.data[0];
       const defaultValues = {
         artistOrg: data[6].value,
-        phone: data[9].value,
-        altPhone: data[11].value,
+        email: data[7].value,
+        phone: parsePhoneNumber(data[9].value),
+        altPhone: parsePhoneNumber(data[11].value),
         street1: data[13].value,
         street2: data[14].value,
         city: data[15].value,
@@ -87,7 +111,66 @@ const RegistrationRenewalPage = () => {
     }
   }, [userData, reset]);
 
-  const onSubmit = (data) => console.log(data);
+  const formatDataForQuickbase = (data) => {
+    const body = {
+      to: import.meta.env.VITE_QUICKBASE_ARTIST_REGISTRATIONS_TABLE_ID,
+      data: [
+        {
+          7: {
+            value: userData.data[0][3].value,
+          },
+          9: {
+            value: userData.data[0][7].value,
+          },
+          10: {
+            value: userData.data[0][8].value,
+          },
+          11: {
+            value: data.phone,
+          },
+          13: {
+            value: "kU4EmyvW0xYeE1ztfAOTbaTS5tq2",
+          },
+          15: {
+            value: data.street1,
+          },
+          17: {
+            value: data.city,
+          },
+          18: {
+            value: data.state,
+          },
+          19: {
+            value: data.zipCode,
+          },
+          20: {
+            value: "United States",
+          },
+        },
+      ],
+    };
+
+    if (data.altPhone !== null) {
+      body.data[0][12] = { value: data.altPhone };
+    }
+
+    if (data.street2 !== null) {
+      body.data[0][16] = { value: data.street2 };
+    }
+
+    return body;
+  };
+
+  if (userData) console.log(userData.data[0]); // TODO: delete this later
+
+  const onSubmit = async (data) => {
+    console.log("formatDataForQuickbase: ", formatDataForQuickbase(data));
+    const response = await addOrupdateRecord(formatDataForQuickbase(data));
+    console.log("response: ", response);
+  };
+
+  // TODO: replace this for an actual loading spinner.
+  if (!userData && isUserDataLoading) return <span>Loading...</span>;
 
   return (
     <div className="flex w-full justify-center py-16">
@@ -104,12 +187,27 @@ const RegistrationRenewalPage = () => {
                 name="artistOrg"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>
-                      Artist / Organization
-                      <span className="text-red-600">*</span>
-                    </FormLabel>
+                    <FormLabel>Artist / Organization</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="Artist / Organization" />
+                      <Input
+                        {...field}
+                        placeholder="Artist / Organization"
+                        disabled
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Email" disabled />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -228,12 +326,12 @@ const RegistrationRenewalPage = () => {
                 type="submit"
                 variant="bocesPrimary"
                 className="mt-7 w-full"
-                // disabled={isRequestLoading()}
+                disabled={isNewArtistRegistrationLoading}
               >
-                {/* {isRequestLoading() && (
+                {isNewArtistRegistrationLoading && (
                   <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
                 )}
-                {isRequestLoading() ? "Please wait" : "Sign in"} */}
+                {isNewArtistRegistrationLoading ? "Please wait" : "Submit"}
               </Button>
             </form>
           </Form>
