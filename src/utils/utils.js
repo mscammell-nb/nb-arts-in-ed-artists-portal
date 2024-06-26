@@ -50,3 +50,6 @@ export const states = [
   "Wisconsin",
   "Wyoming",
 ];
+
+export const websiteRegex =
+  /^(?:https?:\/\/)?(?:www\.)?([a-zA-Z0-9-]+)(?:\.[a-zA-Z]{2,})+(?:\/[^\s]*)?$/;

@@ -33,6 +33,7 @@ import {
 
 // TODO: make yup schema validation more complex
 // TODO: update the required fields messages.
+// TODO: add website field
 const schema = yup.object({
   artistOrg: yup.string().required(),
   email: yup.string().email().required(),

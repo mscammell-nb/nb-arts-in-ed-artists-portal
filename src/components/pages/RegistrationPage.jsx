@@ -27,7 +27,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useAddOrUpdateRecordMutation } from "@/redux/api/quickbaseApi";
-import { states } from "@/utils/utils";
+import { states, websiteRegex } from "@/utils/utils";
 import {
   Select,
   SelectContent,
@@ -48,7 +48,13 @@ const schema = yup.object({
     .transform((value, originalValue) =>
       String(originalValue).trim() === "" ? null : value,
     ),
-  website: yup.string().url(),
+  website: yup
+    .string()
+    .nullable()
+    .matches(websiteRegex, "Invalid website format")
+    .transform((value, originalValue) =>
+      String(originalValue).trim() === "" ? null : value,
+    ),
   street1: yup.string().required(),
   street2: yup
     .string()
@@ -61,7 +67,6 @@ const schema = yup.object({
   zipCode: yup.number().required(),
 });
 
-// TODO: add new artist registration!!!
 // TODO: make yup schema validation more complex
 // TODO: include second password input and add validation logic
 // TODO: update the required fields messages.
@@ -78,7 +83,7 @@ const RegistrationPage = () => {
     },
   ] = useRegisterUserMutation();
   const [
-    addOrupdateRecord,
+    addArtist,
     {
       data: addArtistData,
       isLoading: isAddArtistLoading,
@@ -87,6 +92,17 @@ const RegistrationPage = () => {
       error: addArtistError,
     },
   ] = useAddOrUpdateRecordMutation();
+  const [
+    addArtistRegistration,
+    {
+      data: addArtistRegistrationData,
+      isLoading: isAddArtistRegistrationLoading,
+      isSuccess: isAddArtistRegistrationSuccess,
+      isError: isAddArtistRegistrationError,
+      error: addArtistRegistrationError,
+    },
+  ] = useAddOrUpdateRecordMutation();
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -108,7 +124,7 @@ const RegistrationPage = () => {
     },
   });
 
-  const formatDataForQuickbase = (data, userUid) => {
+  const formatDataForTheArtistTable = (data, userUid) => {
     const body = {
       to: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
       data: [
@@ -145,6 +161,7 @@ const RegistrationPage = () => {
           },
         },
       ],
+      fieldsToReturn: [3],
     };
 
     if (data.altPhone !== null) {
@@ -155,21 +172,78 @@ const RegistrationPage = () => {
       body.data[0][14] = { value: data.street2 };
     }
 
-    if (data.website) {
+    if (data.website !== null) {
       body.data[0][31] = { value: data.website };
     }
 
     return body;
   };
 
+  const formatDataForTheArtistRegistrationTable = (
+    data,
+    artistRecordId,
+    userUid,
+  ) => {
+    const body = {
+      to: import.meta.env.VITE_QUICKBASE_ARTIST_REGISTRATIONS_TABLE_ID,
+      data: [
+        {
+          7: {
+            value: artistRecordId,
+          },
+          9: {
+            value: data.email,
+          },
+          10: {
+            value: data.password,
+          },
+          11: {
+            value: data.phone,
+          },
+          13: {
+            value: userUid,
+          },
+          15: {
+            value: data.street1,
+          },
+          17: {
+            value: data.city,
+          },
+          18: {
+            value: data.state,
+          },
+          19: {
+            value: data.zipCode,
+          },
+          20: {
+            value: "United States",
+          },
+        },
+      ],
+    };
+
+    if (data.altPhone !== null) {
+      body.data[0][12] = { value: data.altPhone };
+    }
+
+    if (data.street2 !== null) {
+      body.data[0][16] = { value: data.street2 };
+    }
+
+    return body;
+  };
+
   const onSubmit = async (data) => {
-    const registerUserResponse = await registerUser(data);
-    const { userUid } = registerUserResponse.data;
-    console.log(
-      "formaDataForQUickbase: ",
-      formatDataForQuickbase(data, userUid),
-    ); // TODO: delete later
-    await addOrupdateRecord(formatDataForQuickbase(data, userUid));
+    const firebaseResponse = await registerUser(data);
+    const { userUid } = firebaseResponse.data;
+    const response = await addArtist(
+      formatDataForTheArtistTable(data, userUid),
+    );
+    const artistRecordId = response.data.data[0][3].value;
+    addArtistRegistration(
+      formatDataForTheArtistRegistrationTable(data, artistRecordId, userUid),
+      artistRecordId,
+    );
     form.reset();
   };
 
