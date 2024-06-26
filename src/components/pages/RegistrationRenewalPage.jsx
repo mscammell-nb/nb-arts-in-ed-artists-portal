@@ -206,12 +206,23 @@ const RegistrationRenewalPage = () => {
     addOrupdateRecord(formatDataForQuickbase(data));
   };
 
-  if (!userData && isUserDataLoading)
+  if (!userData && !isUserDataError)
     return (
       <div className="flex h-full w-full justify-center pt-24">
         <Spinner />
       </div>
     );
+
+  if (isUserDataError && userDataError) {
+    return (
+      <div className="flex w-full justify-center pt-24">
+        <p className="text-xl font-semibold text-destructive">
+          An error occurred while obtaining the user's data.
+        </p>
+      </div>
+    );
+    console.log("User Data Error: ", userDataError);
+  }
 
   return (
     <div className="flex w-full justify-center py-16">

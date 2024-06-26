@@ -35,6 +35,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Link } from "react-router-dom";
 
 const schema = yup.object({
   artistOrg: yup.string().required(),
@@ -398,6 +399,12 @@ const RegistrationPage = () => {
                 {isRequestLoading() ? "Please wait" : "Sign up"}
               </Button>
             </form>
+            <div className="pt-2 text-center text-sm">
+              Already have an account?{" "}
+              <Link to="/login" className="underline">
+                Login
+              </Link>
+            </div>
           </Form>
         </CardContent>
       </Card>

@@ -15,12 +15,12 @@ function App() {
       <Routes>
         <Route path="/" element={<MainLayout />}>
           <Route path="/registration" element={<RegistrationPage />} />
-          <Route
-            path="/registration-renewal"
-            element={<RegistrationRenewalPage />}
-          />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/" element={<ProtectedRoutesWrapper />}>
+            <Route
+              path="/registration-renewal"
+              element={<RegistrationRenewalPage />}
+            />
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/evaluation" element={<EvaluationPage />} />
           </Route>
