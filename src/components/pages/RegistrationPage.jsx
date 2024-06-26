@@ -48,6 +48,7 @@ const schema = yup.object({
     .transform((value, originalValue) =>
       String(originalValue).trim() === "" ? null : value,
     ),
+  website: yup.string().url(),
   street1: yup.string().required(),
   street2: yup
     .string()
@@ -60,6 +61,7 @@ const schema = yup.object({
   zipCode: yup.number().required(),
 });
 
+// TODO: add new artist registration!!!
 // TODO: make yup schema validation more complex
 // TODO: include second password input and add validation logic
 // TODO: update the required fields messages.
@@ -97,6 +99,7 @@ const RegistrationPage = () => {
       password: "",
       phone: "",
       altPhone: "",
+      website: "",
       street1: "",
       street2: "",
       city: "",
@@ -145,11 +148,15 @@ const RegistrationPage = () => {
     };
 
     if (data.altPhone !== null) {
-      body.data[0][11] = data.altPhone;
+      body.data[0][11] = { value: data.altPhone };
     }
 
     if (data.street2 !== null) {
-      body.data[0][14] = data.street2;
+      body.data[0][14] = { value: data.street2 };
+    }
+
+    if (data.website) {
+      body.data[0][31] = { value: data.website };
     }
 
     return body;
@@ -158,6 +165,10 @@ const RegistrationPage = () => {
   const onSubmit = async (data) => {
     const registerUserResponse = await registerUser(data);
     const { userUid } = registerUserResponse.data;
+    console.log(
+      "formaDataForQUickbase: ",
+      formatDataForQuickbase(data, userUid),
+    ); // TODO: delete later
     await addOrupdateRecord(formatDataForQuickbase(data, userUid));
     form.reset();
   };
@@ -292,6 +303,20 @@ const RegistrationPage = () => {
                     <FormLabel>Alt phone</FormLabel>
                     <FormControl>
                       <Input {...field} placeholder="e.g. 6312890915" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="website"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Website</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Website" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
