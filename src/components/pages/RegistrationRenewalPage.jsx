@@ -30,19 +30,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { websiteRegex } from "@/utils/utils";
 
-// TODO: make yup schema validation more complex
-// TODO: update the required fields messages.
-// TODO: add website field
-// TODO: add more descriptive toast error messages
-// TODO: improve phone's input validation
 const schema = yup.object({
   artistOrg: yup.string().required(),
   email: yup.string().email().required(),
-  phone: yup.number().required(),
+  phone: yup
+    .string()
+    .matches(/^\d{10}$/, "Phone number must be exactly 10 digits")
+    .required(),
   altPhone: yup
-    .number()
+    .string()
     .nullable()
+    .matches(/^\d{10}$/, "Phone number must be exactly 10 digits")
+    .transform((value, originalValue) =>
+      String(originalValue).trim() === "" ? null : value,
+    ),
+  website: yup
+    .string()
+    .nullable()
+    .matches(websiteRegex, "Invalid website format")
     .transform((value, originalValue) =>
       String(originalValue).trim() === "" ? null : value,
     ),
@@ -55,7 +62,13 @@ const schema = yup.object({
     ),
   city: yup.string().required(),
   state: yup.string().oneOf(states, "Invalid state").required(),
-  zipCode: yup.number().required(),
+  zipCode: yup
+    .number()
+    .typeError("Zip code must be a number")
+    .transform((value, originalValue) =>
+      String(originalValue).trim() === "" ? undefined : value,
+    )
+    .required("zip code is a required field"),
 });
 
 const RegistrationRenewalPage = () => {
@@ -67,9 +80,6 @@ const RegistrationRenewalPage = () => {
     queryForData,
     {
       data: userData,
-      isLoading: isUserDataLoading,
-      // TODO: Remove unused elements
-      isSuccess: isQueryForDataSuccess,
       isError: isUserDataError,
       error: userDataError,
     },
@@ -77,7 +87,6 @@ const RegistrationRenewalPage = () => {
   const [
     addOrupdateRecord,
     {
-      // TODO: Remove unused elements
       data: newArtistRegistrationData,
       isLoading: isNewArtistRegistrationLoading,
       isSuccess: isNewArtistRegistrationSuccess,
@@ -101,6 +110,7 @@ const RegistrationRenewalPage = () => {
       email: "",
       phone: "",
       altPhone: "",
+      website: "",
       street1: "",
       street2: "",
       city: "",
@@ -181,7 +191,7 @@ const RegistrationRenewalPage = () => {
   };
 
   useEffect(() => {
-    if (isNewArtistRegistrationSuccess) {
+    if (isNewArtistRegistrationSuccess && newArtistRegistrationData) {
       toast({
         variant: "success",
         title: "Operation successful!",
@@ -190,7 +200,7 @@ const RegistrationRenewalPage = () => {
       navigate("/dashboard");
     }
 
-    if (isNewArtistRegistrationError) {
+    if (isNewArtistRegistrationError && newArtistRegistrationError) {
       toast({
         variant: "destructive",
         title: "Uh oh! Something went wrong.",
@@ -217,6 +227,7 @@ const RegistrationRenewalPage = () => {
     );
 
   if (isUserDataError && userDataError) {
+    console.log("User Data Error: ", userDataError);
     return (
       <div className="flex w-full justify-center pt-24">
         <p className="text-xl font-semibold text-destructive">
@@ -224,7 +235,6 @@ const RegistrationRenewalPage = () => {
         </p>
       </div>
     );
-    console.log("User Data Error: ", userDataError);
   }
 
   return (
@@ -293,6 +303,20 @@ const RegistrationRenewalPage = () => {
                     <FormLabel>Alt phone</FormLabel>
                     <FormControl>
                       <Input {...field} placeholder="e.g. 6312890915" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="website"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Website</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Website" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
