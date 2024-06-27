@@ -41,12 +41,16 @@ const schema = yup.object({
   password: yup.string().required(),
   confirmPassword: yup
     .string()
-    .oneOf([yup.ref("password")], "Passwords musth match")
+    .oneOf([yup.ref("password")], "Passwords must match")
     .required(),
-  phone: yup.number().required(),
+  phone: yup
+    .string()
+    .matches(/^\d{10}$/, "Phone number must be exactly 10 digits")
+    .required(),
   altPhone: yup
-    .number()
+    .string()
     .nullable()
+    .matches(/^\d{10}$/, "Phone number must be exactly 10 digits")
     .transform((value, originalValue) =>
       String(originalValue).trim() === "" ? null : value,
     ),
@@ -66,11 +70,14 @@ const schema = yup.object({
     ),
   city: yup.string().required(),
   state: yup.string().oneOf(states, "Invalid state").required(),
-  zipCode: yup.number().required(),
+  zipCode: yup
+    .number()
+    .typeError("Zip code must be a number")
+    .transform((value, originalValue) =>
+      String(originalValue).trim() === "" ? undefined : value,
+    )
+    .required("zip code is a required field"),
 });
-
-// TODO: make yup schema validation more complex
-// TODO: update the required fields messages.
 
 const RegistrationPage = () => {
   const [
