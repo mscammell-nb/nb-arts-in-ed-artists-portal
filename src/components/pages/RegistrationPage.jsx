@@ -13,8 +13,6 @@ import { useRegisterUserMutation } from "@/redux/api/authApi";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useToast } from "@/components/ui/use-toast";
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { setUser } from "@/redux/slices/authSlice";
 import {
   Form,
   FormControl,
@@ -106,7 +104,6 @@ const RegistrationPage = () => {
     },
   ] = useAddOrUpdateRecordMutation();
 
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -257,8 +254,6 @@ const RegistrationPage = () => {
       isAddArtistSuccess &&
       addArtistData
     ) {
-      // TODO: figure out whether I still need this dispatch.
-      dispatch(setUser(registerUserData));
       const { userUid, authToken } = registerUserData;
       localStorage.setItem("userUid", userUid);
       localStorage.setItem("authToken", authToken);
