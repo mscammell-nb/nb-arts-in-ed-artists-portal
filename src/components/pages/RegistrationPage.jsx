@@ -41,6 +41,10 @@ const schema = yup.object({
   artistOrg: yup.string().required(),
   email: yup.string().email().required(),
   password: yup.string().required(),
+  confirmPassword: yup
+    .string()
+    .oneOf([yup.ref("password")], "Passwords musth match")
+    .required(),
   phone: yup.number().required(),
   altPhone: yup
     .number()
@@ -68,7 +72,6 @@ const schema = yup.object({
 });
 
 // TODO: make yup schema validation more complex
-// TODO: include second password input and add validation logic
 // TODO: update the required fields messages.
 
 const RegistrationPage = () => {
@@ -347,6 +350,25 @@ const RegistrationPage = () => {
                     </FormLabel>
                     <FormControl>
                       <PasswordInput {...field} placeholder="Password" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="confirmPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Confirm password<span className="text-red-600">*</span>
+                    </FormLabel>
+                    <FormControl>
+                      <PasswordInput
+                        {...field}
+                        placeholder="Confirm password"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
