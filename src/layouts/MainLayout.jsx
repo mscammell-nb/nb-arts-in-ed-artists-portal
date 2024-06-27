@@ -39,7 +39,6 @@ const MainLayout = () => {
           </a>
           .
         </p>
-        <p>Produced by SynergyMedia, Inc.</p>
       </footer>
 
       <Toaster />
