@@ -113,6 +113,7 @@ const RegistrationPage = () => {
       artistOrg: "",
       email: "",
       password: "",
+      confirmPassword: "",
       phone: "",
       altPhone: "",
       website: "",
@@ -252,7 +253,9 @@ const RegistrationPage = () => {
       isRegisterUserSuccess &&
       registerUserData &&
       isAddArtistSuccess &&
-      addArtistData
+      addArtistData &&
+      isAddArtistRegistrationSuccess &&
+      addArtistRegistrationData
     ) {
       const { userUid, authToken } = registerUserData;
       localStorage.setItem("userUid", userUid);
@@ -267,27 +270,54 @@ const RegistrationPage = () => {
 
     if (
       (isRegisterUserError && registerUserError) ||
-      (isAddArtistError && addArtistError)
+      (isAddArtistError && addArtistError) ||
+      (isAddArtistRegistrationError && addArtistRegistrationError)
     ) {
+      let errorTitle = "Uh oh! Something went wrong.";
+      let errorMessage;
+
+      if (registerUserError) {
+        errorTitle = "Firebase Authentication error";
+        errorMessage = registerUserError.data.code;
+        console.log("registerUserError: ", registerUserError);
+      } else if (addArtistError) {
+        console.log("addArtistError: ", addArtistError);
+        errorTitle = "Error adding data to the Artists table";
+        const { message, description } = addArtistError.data;
+        errorMessage = `${message}: ${description}`;
+      } else if (addArtistRegistrationError) {
+        console.log("addArtistRegistrationError: ", addArtistRegistrationError);
+        errorTitle = "Error adding data to the ArtistRegistrations table";
+        const { message, description } = addArtistRegistrationError.data;
+        errorMessage = `${message}: ${description}`;
+      }
+
       toast({
         variant: "destructive",
-        title: "Uh oh! Something went wrong.",
-        description: `${isRegisterUserError ? registerUserError.data.code : addArtistError.data.code}`,
+        title: errorTitle,
+        description: errorMessage,
       });
     }
   }, [
     isRegisterUserSuccess,
     isAddArtistSuccess,
+    isAddArtistRegistrationSuccess,
     registerUserData,
     addArtistData,
+    addArtistRegistrationData,
     isRegisterUserError,
     isAddArtistError,
+    isAddArtistRegistrationError,
     registerUserError,
     addArtistError,
+    addArtistRegistrationError,
     toast,
   ]);
 
-  const isRequestLoading = () => isRegisterUserLoading || isAddArtistLoading;
+  const isRequestLoading = () =>
+    isRegisterUserLoading ||
+    isAddArtistLoading ||
+    isAddArtistRegistrationLoading;
 
   return (
     <div className="flex w-full justify-center py-16">
