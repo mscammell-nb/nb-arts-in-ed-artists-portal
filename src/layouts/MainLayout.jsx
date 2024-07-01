@@ -8,7 +8,7 @@ const MainLayout = () => {
         <nav className="border border-slate-200 p-5 shadow-lg">
           <div className="max-w-36">
             <img
-              src="https://www.nassauboces.org/cms/lib/NY01928409/Centricity/Template/GlobalAssets/images///logos/NBlogo-website3.png"
+              src="https://nassauboces.quickbase.com/up/bubrv7r2t/a/r1/e6/v0"
               alt="Nassau BOCES logo"
             />
           </div>

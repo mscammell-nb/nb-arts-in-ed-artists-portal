@@ -1,30 +1,46 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Link } from "react-router-dom";
 import { PasswordInput } from "../ui/password-input";
 import { useLoginUserMutation } from "@/redux/api/authApi";
 import { useEffect } from "react";
 import { useToast } from "../ui/use-toast";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { setUser } from "@/redux/slices/authSlice";
 import { ReloadIcon } from "@radix-ui/react-icons";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 
-// TODO: edit form to use the form component from Shadcn/ui
+const schema = yup.object({
+  email: yup.string().email().required(),
+  password: yup.string().required(),
+});
 
 const LoginPage = () => {
   const [loginUser, { data, isLoading, isSuccess, isError, error }] =
     useLoginUserMutation();
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { toast } = useToast();
 
+  const form = useForm({
+    resolver: yupResolver(schema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
   useEffect(() => {
     if (isSuccess && data) {
-      // TODO: figure out whether I still need this dispatch
-      dispatch(setUser(data));
       const { userUid, authToken } = data;
       localStorage.setItem("userUid", userUid);
       localStorage.setItem("authToken", authToken);
@@ -46,11 +62,8 @@ const LoginPage = () => {
     }
   }, [isSuccess, data, isError, error, toast]);
 
-  const handleFormSubmit = async (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const payload = Object.fromEntries(formData);
-    await loginUser(payload);
+  const onSubmit = (data) => {
+    loginUser(data);
   };
 
   return (
@@ -60,29 +73,47 @@ const LoginPage = () => {
           <CardTitle className="text-2xl">Login</CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleFormSubmit}>
-            <div className="grid gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" name="email" required />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="password">Password</Label>
-                <PasswordInput id="password" name="password" required />
-              </div>
-            </div>
-            <Button
-              type="submit"
-              variant="bocesPrimary"
-              className="mt-7 w-full"
-              disabled={isLoading}
-            >
-              {isLoading && (
-                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-              )}
-              {isLoading ? "Please wait" : "Sign in"}
-            </Button>
-          </form>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Email" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <PasswordInput placeholder="Password" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button
+                type="submit"
+                variant="bocesPrimary"
+                className="mt-7 w-full"
+                disabled={isLoading}
+              >
+                {isLoading && (
+                  <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                {isLoading ? "Please wait" : "Sign in"}
+              </Button>
+            </form>
+          </Form>
           <div className="pt-2 text-center text-sm">
             Don't have an account?{" "}
             <Link to="/registration" className="underline">

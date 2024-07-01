@@ -78,11 +78,7 @@ const RegistrationRenewalPage = () => {
   const { toast } = useToast();
   const [
     queryForData,
-    {
-      data: userData,
-      isError: isUserDataError,
-      error: userDataError,
-    },
+    { data: artistData, isError: isArtistDataError, error: artistDataError },
   ] = useQueryForDataMutation();
   const [
     addOrupdateRecord,
@@ -98,7 +94,7 @@ const RegistrationRenewalPage = () => {
   useEffect(() => {
     queryForData({
       from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
-      select: [3, 6, 7, 8, 9, 11, 13, 14, 15, 16, 17],
+      select: [3, 6, 7, 8, 9, 11, 13, 14, 15, 16, 17, 31],
       where: `{10.EX.${userUid}}`,
     });
   }, [queryForData]);
@@ -122,13 +118,15 @@ const RegistrationRenewalPage = () => {
   const { reset, setValue } = form;
 
   useEffect(() => {
-    if (userData) {
-      const data = userData.data[0];
+    if (artistData) {
+      const data = artistData.data[0];
+      console.log('data: ', data)
       const defaultValues = {
         artistOrg: data[6].value,
         email: data[7].value,
         phone: parsePhoneNumber(data[9].value),
         altPhone: parsePhoneNumber(data[11].value),
+        website: data[31].value,
         street1: data[13].value,
         street2: data[14].value,
         city: data[15].value,
@@ -138,7 +136,7 @@ const RegistrationRenewalPage = () => {
       reset(defaultValues);
       setValue("state", data[16].value);
     }
-  }, [userData, reset, setValue]);
+  }, [artistData, reset, setValue]);
 
   const formatDataForQuickbase = (data) => {
     const body = {
@@ -146,13 +144,13 @@ const RegistrationRenewalPage = () => {
       data: [
         {
           7: {
-            value: userData.data[0][3].value,
+            value: artistData.data[0][3].value,
           },
           9: {
-            value: userData.data[0][7].value,
+            value: artistData.data[0][7].value,
           },
           10: {
-            value: userData.data[0][8].value,
+            value: artistData.data[0][8].value,
           },
           11: {
             value: data.phone,
@@ -187,6 +185,10 @@ const RegistrationRenewalPage = () => {
       body.data[0][16] = { value: data.street2 };
     }
 
+    if (data.website !== null) {
+      body.data[0][23] = { value: data.website };
+    }
+
     return body;
   };
 
@@ -219,15 +221,15 @@ const RegistrationRenewalPage = () => {
     addOrupdateRecord(formatDataForQuickbase(data));
   };
 
-  if (!userData && !isUserDataError)
+  if (!artistData && !isArtistDataError)
     return (
       <div className="flex h-full w-full justify-center pt-24">
         <Spinner />
       </div>
     );
 
-  if (isUserDataError && userDataError) {
-    console.log("User Data Error: ", userDataError);
+  if (isArtistDataError && artistDataError) {
+    console.log("User Data Error: ", artistDataError);
     return (
       <div className="flex w-full justify-center pt-24">
         <p className="text-xl font-semibold text-destructive">
