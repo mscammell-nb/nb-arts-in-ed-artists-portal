@@ -8,14 +8,14 @@ const MainLayout = () => {
         <nav className="border border-slate-200 p-5 shadow-lg">
           <div className="max-w-36">
             <img
-              src="https://nassauboces.quickbase.com/up/bubrv7r2t/a/r1/e6/v0"
+              src="https://nassauboces.quickbase.com/up/bpt5wxg92/a/r1/e7/v0"
               alt="Nassau BOCES logo"
             />
           </div>
         </nav>
       </header>
 
-      <main className="grow  bg-slate-50 p-5">
+      <main className="grow bg-slate-50 p-5">
         <Outlet />
       </main>
 

@@ -47,56 +47,72 @@ const PerformersPage = () => {
   }, [performersData]);
 
   return (
-    <main>
-      <Card>
-        <CardHeader>
-          <CardTitle>Performer List</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>First Name</TableHead>
-                <TableHead>Last Name</TableHead>
-                <TableHead>Printed</TableHead>
-                <TableHead>Cleared</TableHead>
-                <TableHead>Active</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {performersData &&
-                performersData.data.map((performer) => (
-                  <TableRow key={performer[3].value}>
-                    <TableCell>{performer[7].value}</TableCell>
-                    <TableCell>{performer[8].value}</TableCell>
-                    <TableCell>
-                      {performer[9].value ? (
-                        <Check size={20} color="green" strokeWidth={1.5} />
-                      ) : (
-                        <X size={20} color="red" strokeWidth={1.5} />
-                      )}
-                    </TableCell>
-                    <TableCell className="">
-                      {performer[10].value ? (
-                        <Check size={20} color="green" strokeWidth={1.5} />
-                      ) : (
-                        <X size={20} color="red" strokeWidth={1.5} />
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      {performer[11].value ? (
-                        <Badge className="rounded-full bg-green-600">Active</Badge>
-                      ) : (
-                        <Badge className="rounded-full bg-red-600">Inactive</Badge>
-                      )}
-                    </TableCell>
+    <div className="flex flex-col items-center">
+      <div className="min-w-[700px] max-w-3xl">
+        <section>
+          <Card>
+            <CardHeader>
+              <CardTitle>Performer List</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-center">First Name</TableHead>
+                    <TableHead className="text-center">Last Name</TableHead>
+                    <TableHead className="text-center">Printed</TableHead>
+                    <TableHead className="text-center">Cleared</TableHead>
+                    <TableHead className="text-center">Active</TableHead>
                   </TableRow>
-                ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-    </main>
+                </TableHeader>
+                <TableBody>
+                  {performersData &&
+                    performersData.data.map((performer) => (
+                      <TableRow key={performer[3].value}>
+                        <TableCell className="text-center">
+                          {performer[7].value}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {performer[8].value}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex justify-center">
+                            {performer[9].value ? (
+                              <Check size={18} strokeWidth={1.75} />
+                            ) : (
+                              <X size={18} strokeWidth={1.75} />
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell className="flex justify-center">
+                          <div className="flex justify-center">
+                            {performer[10].value ? (
+                              <Check size={18} strokeWidth={1.75} />
+                            ) : (
+                              <X size={18} strokeWidth={1.75} />
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {performer[11].value ? (
+                            <Badge variant="secondary" className="rounded-full">
+                              Active
+                            </Badge>
+                          ) : (
+                            <Badge variant="outline" className="rounded-full">
+                              Inactive
+                            </Badge>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </section>
+      </div>
+    </div>
   );
 };
 
