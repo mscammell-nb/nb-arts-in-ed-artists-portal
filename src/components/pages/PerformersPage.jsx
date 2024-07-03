@@ -131,6 +131,17 @@ const PerformersPage = () => {
     setIsDialogOpen(false);
   };
 
+  if (isPerformersError) {
+    console.log(
+      "Error trying to query the performers table: ",
+      performersError,
+    );
+
+    return (
+      <div>There was an error while trying to get the performers data</div>
+    );
+  }
+
   return (
     <div className="flex flex-col items-center">
       <div className="min-w-[700px] max-w-3xl">
