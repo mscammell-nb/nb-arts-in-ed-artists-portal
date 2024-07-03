@@ -21,6 +21,8 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline",
         bocesPrimary:
           "bg-bocesPrimary text-bocesPrimary-foreground hover:bg-bocesPrimary/90",
+        bocesSecondary:
+          "bg-bocesSecondary text-bocesSecondary-foreground hover:bg-bocesSecondary/90",
       },
       size: {
         default: "h-9 px-4 py-2",

@@ -3,9 +3,19 @@ export const formatAuthErrorMessage = (message) => {
   const removedDashes = removedAuthPrefix.replaceAll("-", " ");
   const capitalized =
     removedDashes.at(0).toUpperCase() + removedDashes.slice(1);
-
   return capitalized;
 };
 
 // Parses a phone number in this format: (123) 456-7890 -> 1234567890
 export const parsePhoneNumber = (phoneNumber) => phoneNumber.replace(/\D/g, "");
+
+// Calculates the key of the current fiscal year
+export const getCurrentFiscalYearKey = () => {
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = d.getMonth() + 1;
+  const START_YEAR = 13;
+  const fiscalYearKey =
+    month > 6 ? year - 2000 - START_YEAR + 1 : year - 2000 - START_YEAR;
+  return fiscalYearKey;
+};
