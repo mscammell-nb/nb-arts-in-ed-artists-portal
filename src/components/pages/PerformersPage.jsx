@@ -1,4 +1,3 @@
-import { useQueryForDataMutation } from "@/redux/api/quickbaseApi";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -41,9 +40,15 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useState, useEffect } from "react";
 import { Check, X, Plus, ListFilter } from "lucide-react";
-import { useAddOrUpdateRecordMutation } from "@/redux/api/quickbaseApi";
+import {
+  useAddOrUpdateRecordMutation,
+  useQueryForDataQuery,
+} from "@/redux/api/quickbaseApi";
 import { useToast } from "@/components/ui/use-toast";
-import { getCurrentFiscalYearKey } from "@/utils/functionUtils";
+import {
+  getCurrentFiscalYearKey,
+  capitalizeString,
+} from "@/utils/functionUtils";
 
 const schema = yup.object({
   firstName: yup.string().required(),
@@ -52,16 +57,15 @@ const schema = yup.object({
 
 const PerformersPage = () => {
   const artistRecordId = localStorage.getItem("artistRecordId");
-  const [
-    queryForData,
-    {
-      data: performersData,
-      isLoading: isPerformersLoading,
-      isSuccess: isPerformersSuccess,
-      isError: isPerformersError,
-      error: performersError,
-    },
-  ] = useQueryForDataMutation();
+  const {
+    data: performersData,
+    isError: isPerformersError,
+    error: performersError,
+  } = useQueryForDataQuery({
+    from: import.meta.env.VITE_QUICKBASE_PERFORMERS_TABLE_ID,
+    select: [3, 7, 8, 9, 10, 11, 14],
+    where: `{14.EX.${artistRecordId}}`,
+  });
   const [
     addOrupdateRecord,
     {
@@ -116,27 +120,19 @@ const PerformersPage = () => {
     toast,
   ]);
 
-  useEffect(() => {
-    queryForData({
-      from: import.meta.env.VITE_QUICKBASE_PERFORMERS_TABLE_ID,
-      select: [3, 7, 8, 9, 10, 11, 14],
-      where: `{14.EX.${artistRecordId}}`,
-    });
-  }, [queryForData]);
-
   const onSubmit = async (data) => {
     await addOrupdateRecord({
       to: import.meta.env.VITE_QUICKBASE_PERFORMERS_TABLE_ID,
       data: [
         {
           7: {
-            value: data.firstName,
+            value: capitalizeString(data.firstName),
           },
           8: {
-            value: data.lastName,
+            value: capitalizeString(data.lastName),
           },
           12: {
-            value: getCurrentFiscalYearKey,
+            value: getCurrentFiscalYearKey(),
           },
           14: {
             value: artistRecordId,

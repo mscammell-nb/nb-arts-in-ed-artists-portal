@@ -19,3 +19,8 @@ export const getCurrentFiscalYearKey = () => {
     month > 6 ? year - 2000 - START_YEAR + 1 : year - 2000 - START_YEAR;
   return fiscalYearKey;
 };
+
+export const capitalizeString = (str) => {
+  if (!str) return "";
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};

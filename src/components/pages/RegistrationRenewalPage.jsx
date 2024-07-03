@@ -6,7 +6,7 @@ import { ReloadIcon } from "@radix-ui/react-icons";
 import { useToast } from "@/components/ui/use-toast";
 import { useEffect } from "react";
 import {
-  useQueryForDataMutation,
+  useQueryForDataQuery,
   useAddOrUpdateRecordMutation,
 } from "@/redux/api/quickbaseApi";
 import { parsePhoneNumber } from "@/utils/functionUtils";
@@ -76,10 +76,15 @@ const RegistrationRenewalPage = () => {
 
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [
-    queryForData,
-    { data: artistData, isError: isArtistDataError, error: artistDataError },
-  ] = useQueryForDataMutation();
+  const {
+    data: artistData,
+    isError: isArtistDataError,
+    error: artistDataError,
+  } = useQueryForDataQuery({
+    from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
+    select: [3, 6, 7, 8, 9, 11, 13, 14, 15, 16, 17, 31],
+    where: `{10.EX.${userUid}}`,
+  });
   const [
     addOrupdateRecord,
     {
@@ -90,14 +95,6 @@ const RegistrationRenewalPage = () => {
       error: newArtistRegistrationError,
     },
   ] = useAddOrUpdateRecordMutation();
-
-  useEffect(() => {
-    queryForData({
-      from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
-      select: [3, 6, 7, 8, 9, 11, 13, 14, 15, 16, 17, 31],
-      where: `{10.EX.${userUid}}`,
-    });
-  }, [queryForData]);
 
   const form = useForm({
     resolver: yupResolver(schema),
@@ -120,7 +117,7 @@ const RegistrationRenewalPage = () => {
   useEffect(() => {
     if (artistData) {
       const data = artistData.data[0];
-      console.log('data: ', data)
+      console.log("data: ", data);
       const defaultValues = {
         artistOrg: data[6].value,
         email: data[7].value,
