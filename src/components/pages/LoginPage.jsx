@@ -7,7 +7,6 @@ import { useLoginUserMutation } from "@/redux/api/authApi";
 import { useEffect } from "react";
 import { useToast } from "../ui/use-toast";
 import { useNavigate } from "react-router-dom";
-import { ReloadIcon } from "@radix-ui/react-icons";
 import {
   Form,
   FormControl,
@@ -102,15 +101,12 @@ const LoginPage = () => {
                 )}
               />
               <Button
-                type="submit"
+                tepe="submit"
                 variant="bocesPrimary"
                 className="mt-7 w-full"
-                disabled={isLoading}
+                isLoading={isLoading}
               >
-                {isLoading && (
-                  <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                )}
-                {isLoading ? "Please wait" : "Sign in"}
+                Sign in
               </Button>
             </form>
           </Form>

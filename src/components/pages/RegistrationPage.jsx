@@ -10,7 +10,6 @@ import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import { PasswordInput } from "../ui/password-input";
 import { useRegisterUserMutation } from "@/redux/api/authApi";
-import { ReloadIcon } from "@radix-ui/react-icons";
 import { useToast } from "@/components/ui/use-toast";
 import { useEffect } from "react";
 import {
@@ -544,12 +543,9 @@ const RegistrationPage = () => {
                 type="submit"
                 variant="bocesPrimary"
                 className="mt-7 w-full"
-                disabled={isRequestLoading()}
+                isLoading={isRequestLoading()}
               >
-                {isRequestLoading() && (
-                  <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                )}
-                {isRequestLoading() ? "Please wait" : "Sign up"}
+                Sign up
               </Button>
             </form>
             <div className="pt-2 text-center text-sm">

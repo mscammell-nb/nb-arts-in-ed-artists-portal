@@ -49,7 +49,6 @@ import {
   getCurrentFiscalYearKey,
   capitalizeString,
 } from "@/utils/functionUtils";
-import { LoadingButton } from "../ui/loading-button";
 
 const schema = yup.object({
   firstName: yup.string().required(),
@@ -318,16 +317,11 @@ const PerformersPage = () => {
                         )}
                       />
                       <DialogFooter>
-                        {/* <Button variant="bocesPrimary" type="submit">
-                          Submit
-                        </Button> */}
-                        <LoadingButton
+                        <Button
                           variant="bocesPrimary"
                           type="submit"
                           isLoading={isNewPerformerLoading}
-                          buttonText="Submit"
-                          loadingText="Please wait"
-                        />
+                        >Submit</Button>
                       </DialogFooter>
                     </form>
                   </Form>
