@@ -479,16 +479,16 @@ const PerformersPage = () => {
                               <DialogContent className="sm:max-w-[425px]">
                                 <DialogHeader>
                                   <DialogTitle>Edit performer</DialogTitle>
-                                  <DialogDescription>
-                                    Entern your changes and click save when
-                                    you're ready.
-                                  </DialogDescription>
+                                  {canEditPerformerData &&
+                                    canEditPerformerData.data[0][18].value && (
+                                      <DialogDescription>
+                                        Entern your changes and click save when
+                                        you're ready.
+                                      </DialogDescription>
+                                    )}
                                 </DialogHeader>
                                 {isCanEditPerformerFetching && <Spinner />}
-                                {isCanEditPerformerFetching ? (
-                                  null
-                                ) : canEditPerformerData &&
-                                  isCanEditPerformerSuccess &&
+                                {isCanEditPerformerFetching ? null : canEditPerformerData &&
                                   canEditPerformerData.data[0][18].value ? (
                                   <Form {...editPerformerForm}>
                                     <form
