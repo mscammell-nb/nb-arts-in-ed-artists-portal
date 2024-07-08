@@ -47,6 +47,13 @@ import {
 } from "@/redux/api/quickbaseApi";
 import { useToast } from "@/components/ui/use-toast";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
+import {
   getCurrentFiscalYearKey,
   capitalizeString,
 } from "@/utils/functionUtils";
@@ -488,26 +495,35 @@ const PerformersPage = () => {
                             >
                               <DialogTrigger asChild>
                                 <div className="flex justify-center">
-                                  <button
-                                    onClick={() => {
-                                      editPerformerForm.reset({
-                                        firstName: performer[7].value,
-                                        lastName: performer[8].value,
-                                      });
-                                      trigger({
-                                        from: import.meta.env
-                                          .VITE_QUICKBASE_PERFORMERS_TABLE_ID,
-                                        select: [18],
-                                        where: `{3.EX.${performer[3].value}}`,
-                                      });
-                                    }}
-                                  >
-                                    <FilePenLine
-                                      className="mr-1 h-4 w-4"
-                                      size={20}
-                                      strokeWidth={2.25}
-                                    />
-                                  </button>
+                                  <TooltipProvider>
+                                    <Tooltip>
+                                      <TooltipTrigger>
+                                        <button
+                                          onClick={() => {
+                                            editPerformerForm.reset({
+                                              firstName: performer[7].value,
+                                              lastName: performer[8].value,
+                                            });
+                                            trigger({
+                                              from: import.meta.env
+                                                .VITE_QUICKBASE_PERFORMERS_TABLE_ID,
+                                              select: [18],
+                                              where: `{3.EX.${performer[3].value}}`,
+                                            });
+                                          }}
+                                        >
+                                          <FilePenLine
+                                            className="mr-1 h-4 w-4"
+                                            size={20}
+                                            strokeWidth={2.25}
+                                          />
+                                        </button>
+                                      </TooltipTrigger>
+                                      <TooltipContent>
+                                        <p>Edit performer</p>
+                                      </TooltipContent>
+                                    </Tooltip>
+                                  </TooltipProvider>
                                 </div>
                               </DialogTrigger>
                               <DialogContent className="sm:max-w-[425px]">
@@ -580,10 +596,10 @@ const PerformersPage = () => {
                                 ) : (
                                   <>
                                     <p>
-                                      The editing time has expired. To edit this
-                                      performer's data, please contact the Arts
-                                      and Ed department at
-                                      artsanded@nasboces.org.
+                                      The editing time for this performer has
+                                      expired. To edit this performer's data,
+                                      please contact the Arts and Ed department
+                                      at artsanded@nasboces.org.
                                     </p>
                                     <DialogFooter>
                                       <Button
@@ -613,3 +629,5 @@ const PerformersPage = () => {
 };
 
 export default PerformersPage;
+
+// TODO: figure out why the background of the edit dialog is black
