@@ -221,8 +221,7 @@ const PerformersPage = () => {
     };
   };
 
-  // TODO: change name to shouldShowPerformer
-  const showPerformer = (performer) =>
+  const shouldShowPerformer = (performer) =>
     (showPrinted && performer[9].value) ||
     (showCleared && performer[10].value) ||
     (showActive && performer[11].value) ||
@@ -440,7 +439,7 @@ const PerformersPage = () => {
                   {performersData &&
                     performersData.data
                       .filter((performer) =>
-                        showAll ? showAll : showPerformer(performer),
+                        showAll ? showAll : shouldShowPerformer(performer),
                       )
                       .map((performer) => (
                         <TableRow key={performer[3].value}>
