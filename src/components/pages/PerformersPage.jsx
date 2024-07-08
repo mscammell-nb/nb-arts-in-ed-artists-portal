@@ -78,13 +78,23 @@ const PerformersPage = () => {
     },
   ] = useLazyQueryForDataQuery();
   const [
-    addOrupdateRecord,
+    addPerformerRecord,
     {
       data: newPerformerData,
       isLoading: isNewPerformerLoading,
       isSuccess: isNewPerformerSuccess,
       isError: isNewPerformerError,
       error: newPerformerError,
+    },
+  ] = useAddOrUpdateRecordMutation();
+  const [
+    editPerformerRecord,
+    {
+      data: editPerformerData,
+      isLoading: isEditPerformerLoading,
+      isSuccess: isEditPerformerSuccess,
+      isError: isEditPerformerError,
+      error: editPerformerError,
     },
   ] = useAddOrUpdateRecordMutation();
 
@@ -142,8 +152,32 @@ const PerformersPage = () => {
     toast,
   ]);
 
+  useEffect(() => {
+    if (editPerformerData && isEditPerformerSuccess) {
+      toast({
+        variant: "success",
+        title: "Operation successful!",
+        description: "Performer edited.",
+      });
+    }
+
+    if (isEditPerformerError) {
+      toast({
+        variant: "destructive",
+        title: editPerformerError.data.message,
+        description: editPerformerError.data.description,
+      });
+    }
+  }, [
+    editPerformerData,
+    isEditPerformerSuccess,
+    isEditPerformerError,
+    editPerformerError,
+    toast,
+  ]);
+
   const addPerformer = async (data) => {
-    await addOrupdateRecord({
+    await addPerformerRecord({
       to: import.meta.env.VITE_QUICKBASE_PERFORMERS_TABLE_ID,
       data: [
         {
@@ -167,7 +201,7 @@ const PerformersPage = () => {
 
   const editPerformer = (performerId) => {
     return async (data) => {
-      await addOrupdateRecord({
+      await editPerformerRecord({
         to: import.meta.env.VITE_QUICKBASE_PERFORMERS_TABLE_ID,
         data: [
           {
@@ -187,6 +221,7 @@ const PerformersPage = () => {
     };
   };
 
+  // TODO: change name to shouldShowPerformer
   const showPerformer = (performer) =>
     (showPrinted && performer[9].value) ||
     (showCleared && performer[10].value) ||
@@ -549,7 +584,7 @@ const PerformersPage = () => {
                                       The editing time has expired. To edit this
                                       performer's data, please contact the Arts
                                       and Ed department at
-                                      artsanded@nasboces.org
+                                      artsanded@nasboces.org.
                                     </p>
                                     <DialogFooter>
                                       <Button
