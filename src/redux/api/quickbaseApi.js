@@ -36,5 +36,8 @@ export const quickbaseApi = createApi({
   }),
 });
 
-export const { useAddOrUpdateRecordMutation, useQueryForDataQuery } =
-  quickbaseApi;
+export const {
+  useAddOrUpdateRecordMutation,
+  useQueryForDataQuery,
+  useLazyQueryForDataQuery,
+} = quickbaseApi;

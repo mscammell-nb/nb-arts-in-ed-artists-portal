@@ -39,16 +39,18 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useState, useEffect } from "react";
-import { Check, X, Plus, ListFilter } from "lucide-react";
+import { Check, X, Plus, ListFilter, FilePenLine } from "lucide-react";
 import {
   useAddOrUpdateRecordMutation,
   useQueryForDataQuery,
+  useLazyQueryForDataQuery,
 } from "@/redux/api/quickbaseApi";
 import { useToast } from "@/components/ui/use-toast";
 import {
   getCurrentFiscalYearKey,
   capitalizeString,
 } from "@/utils/functionUtils";
+import Spinner from "../ui/Spinner";
 
 const schema = yup.object({
   firstName: yup.string().required(),
@@ -63,9 +65,18 @@ const PerformersPage = () => {
     error: performersError,
   } = useQueryForDataQuery({
     from: import.meta.env.VITE_QUICKBASE_PERFORMERS_TABLE_ID,
-    select: [3, 7, 8, 9, 10, 11, 14],
+    select: [3, 7, 8, 9, 10, 11, 14, 18],
     where: `{14.EX.${artistRecordId}}`,
   });
+  const [
+    trigger,
+    {
+      data: canEditPerformerData,
+      isSuccess: isCanEditPerformerSuccess,
+      error: canEditPerformerError,
+      isFetching: isCanEditPerformerFetching,
+    },
+  ] = useLazyQueryForDataQuery();
   const [
     addOrupdateRecord,
     {
@@ -77,7 +88,10 @@ const PerformersPage = () => {
     },
   ] = useAddOrUpdateRecordMutation();
 
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isAddPerformerDialogOpen, setIsAddPerformerDialogOpen] =
+    useState(false);
+  const [isEditPerformerDialogOpen, setIsEditPerformerDialogOpen] =
+    useState(false);
   const [showAll, setShowAll] = useState(true);
   const [showCleared, setShowCleared] = useState(false);
   const [showPrinted, setShowPrinted] = useState(false);
@@ -88,7 +102,15 @@ const PerformersPage = () => {
 
   const { toast } = useToast();
 
-  const form = useForm({
+  const addPerformerForm = useForm({
+    resolver: yupResolver(schema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+    },
+  });
+
+  const editPerformerForm = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
       firstName: "",
@@ -120,16 +142,16 @@ const PerformersPage = () => {
     toast,
   ]);
 
-  const onSubmit = async (data) => {
+  const addPerformer = async (data) => {
     await addOrupdateRecord({
       to: import.meta.env.VITE_QUICKBASE_PERFORMERS_TABLE_ID,
       data: [
         {
           7: {
-            value: capitalizeString(data.firstName),
+            value: capitalizeString(data.firstName.trim()),
           },
           8: {
-            value: capitalizeString(data.lastName),
+            value: capitalizeString(data.lastName.trim()),
           },
           12: {
             value: getCurrentFiscalYearKey(),
@@ -140,7 +162,29 @@ const PerformersPage = () => {
         },
       ],
     });
-    setIsDialogOpen(false);
+    setIsAddPerformerDialogOpen(false);
+  };
+
+  const editPerformer = (performerId) => {
+    return async (data) => {
+      await addOrupdateRecord({
+        to: import.meta.env.VITE_QUICKBASE_PERFORMERS_TABLE_ID,
+        data: [
+          {
+            3: {
+              value: performerId,
+            },
+            7: {
+              value: capitalizeString(data.firstName.trim()),
+            },
+            8: {
+              value: capitalizeString(data.lastName.trim()),
+            },
+          },
+        ],
+      });
+      setIsEditPerformerDialogOpen(false);
+    };
   };
 
   const showPerformer = (performer) =>
@@ -259,13 +303,16 @@ const PerformersPage = () => {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <Dialog
+              open={isAddPerformerDialogOpen}
+              onOpenChange={setIsAddPerformerDialogOpen}
+            >
               <DialogTrigger asChild>
                 <Button
                   size="sm"
                   variant="bocesPrimary"
                   onClick={() => {
-                    form.reset();
+                    addPerformerForm.reset();
                   }}
                 >
                   <Plus
@@ -282,16 +329,23 @@ const PerformersPage = () => {
                   <DialogTitle>Add performer</DialogTitle>
                   <DialogDescription>
                     Enter the performer's first and last name and click submit.
+                    <br />
+                    <br />
+                    <span className="font-bold uppercase text-red-500">
+                      Important:{" "}
+                    </span>
+                    Performers can be edited only within 30 minutes of being
+                    added.
                   </DialogDescription>
                 </DialogHeader>
                 <div>
-                  <Form {...form}>
+                  <Form {...addPerformerForm}>
                     <form
-                      onSubmit={form.handleSubmit(onSubmit)}
+                      onSubmit={addPerformerForm.handleSubmit(addPerformer)}
                       className="space-y-4"
                     >
                       <FormField
-                        control={form.control}
+                        control={addPerformerForm.control}
                         name="firstName"
                         render={({ field }) => (
                           <FormItem>
@@ -304,7 +358,7 @@ const PerformersPage = () => {
                         )}
                       />
                       <FormField
-                        control={form.control}
+                        control={addPerformerForm.control}
                         name="lastName"
                         render={({ field }) => (
                           <FormItem>
@@ -321,7 +375,9 @@ const PerformersPage = () => {
                           variant="bocesPrimary"
                           type="submit"
                           isLoading={isNewPerformerLoading}
-                        >Submit</Button>
+                        >
+                          Submit
+                        </Button>
                       </DialogFooter>
                     </form>
                   </Form>
@@ -342,6 +398,7 @@ const PerformersPage = () => {
                     <TableHead className="text-center">Printed</TableHead>
                     <TableHead className="text-center">Cleared</TableHead>
                     <TableHead className="text-center">Active</TableHead>
+                    <TableHead></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -367,7 +424,7 @@ const PerformersPage = () => {
                               )}
                             </div>
                           </TableCell>
-                          <TableCell className="flex justify-center">
+                          <TableCell>
                             <div className="flex justify-center">
                               {performer[10].value ? (
                                 <Check size={18} strokeWidth={1.75} />
@@ -389,6 +446,125 @@ const PerformersPage = () => {
                                 Inactive
                               </Badge>
                             )}
+                          </TableCell>
+                          <TableCell>
+                            <Dialog
+                              open={isEditPerformerDialogOpen}
+                              onOpenChange={setIsEditPerformerDialogOpen}
+                            >
+                              <DialogTrigger asChild>
+                                <div className="flex justify-center">
+                                  <button
+                                    onClick={() => {
+                                      editPerformerForm.reset({
+                                        firstName: performer[7].value,
+                                        lastName: performer[8].value,
+                                      });
+                                      trigger({
+                                        from: import.meta.env
+                                          .VITE_QUICKBASE_PERFORMERS_TABLE_ID,
+                                        select: [18],
+                                        where: `{3.EX.${performer[3].value}}`,
+                                      });
+                                    }}
+                                  >
+                                    <FilePenLine
+                                      className="mr-1 h-4 w-4"
+                                      size={20}
+                                      strokeWidth={2.25}
+                                    />
+                                  </button>
+                                </div>
+                              </DialogTrigger>
+                              <DialogContent className="sm:max-w-[425px]">
+                                <DialogHeader>
+                                  <DialogTitle>Edit performer</DialogTitle>
+                                  <DialogDescription>
+                                    Entern your changes and click save when
+                                    you're ready.
+                                  </DialogDescription>
+                                </DialogHeader>
+                                {isCanEditPerformerFetching && <Spinner />}
+                                {isCanEditPerformerFetching ? (
+                                  null
+                                ) : canEditPerformerData &&
+                                  isCanEditPerformerSuccess &&
+                                  canEditPerformerData.data[0][18].value ? (
+                                  <Form {...editPerformerForm}>
+                                    <form
+                                      onSubmit={editPerformerForm.handleSubmit(
+                                        editPerformer(performer[3].value),
+                                      )}
+                                      className="space-y-4"
+                                    >
+                                      <FormField
+                                        control={editPerformerForm.control}
+                                        name="firstName"
+                                        render={({ field }) => (
+                                          <FormItem>
+                                            <FormLabel>First name</FormLabel>
+                                            <FormControl>
+                                              <Input {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                          </FormItem>
+                                        )}
+                                      />
+                                      <FormField
+                                        control={editPerformerForm.control}
+                                        name="lastName"
+                                        render={({ field }) => (
+                                          <FormItem>
+                                            <FormLabel>Last name</FormLabel>
+                                            <FormControl>
+                                              <Input {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                          </FormItem>
+                                        )}
+                                      />
+                                      <DialogFooter>
+                                        <Button
+                                          onClick={() =>
+                                            setIsEditPerformerDialogOpen(false)
+                                          }
+                                          variant="outline"
+                                          type="button"
+                                        >
+                                          Cancel
+                                        </Button>
+                                        <Button
+                                          // Note we're using the same loading boolean for adding and editing a performer
+                                          isLoading={isNewPerformerLoading}
+                                          variant="bocesPrimary"
+                                        >
+                                          Save
+                                        </Button>
+                                      </DialogFooter>
+                                    </form>
+                                  </Form>
+                                ) : (
+                                  <>
+                                    <p>
+                                      The editing time has expired. To edit this
+                                      performer's data, please contact the Arts
+                                      and Ed department at
+                                      artsanded@nasboces.org
+                                    </p>
+                                    <DialogFooter>
+                                      <Button
+                                        onClick={() =>
+                                          setIsEditPerformerDialogOpen(false)
+                                        }
+                                        variant="outline"
+                                      >
+                                        Close
+                                      </Button>
+                                    </DialogFooter>
+                                  </>
+                                )}
+                              </DialogContent>
+                            </Dialog>
                           </TableCell>
                         </TableRow>
                       ))}
