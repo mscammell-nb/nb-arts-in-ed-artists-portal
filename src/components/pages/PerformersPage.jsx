@@ -52,7 +52,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-
 import {
   getCurrentFiscalYearKey,
   capitalizeString,
@@ -109,13 +108,34 @@ const PerformersPage = () => {
     useState(false);
   const [isEditPerformerDialogOpen, setIsEditPerformerDialogOpen] =
     useState(false);
-  const [showAll, setShowAll] = useState(true);
-  const [showCleared, setShowCleared] = useState(false);
-  const [showPrinted, setShowPrinted] = useState(false);
-  const [showActive, setShowActive] = useState(false);
-  const [showUnprinted, setShowUnprinted] = useState(false);
-  const [showUncleared, setShowUncleared] = useState(false);
-  const [showInactive, setShowInactive] = useState(false);
+  const [showAllFilters, setShowAllFilters] = useState(true);
+
+  const [filters, setFilters] = useState([
+    {
+      label: "Printed",
+      isSelected: false,
+    },
+    {
+      label: "Cleared",
+      isSelected: false,
+    },
+    {
+      label: "Active",
+      isSelected: false,
+    },
+    {
+      label: "Unprinted",
+      isSelected: false,
+    },
+    {
+      label: "Uncleared",
+      isSelected: false,
+    },
+    {
+      label: "Inactive",
+      isSelected: false,
+    },
+  ]);
 
   const { toast } = useToast();
 
@@ -228,13 +248,51 @@ const PerformersPage = () => {
     };
   };
 
-  const shouldShowPerformer = (performer) =>
-    (showPrinted && performer[9].value) ||
-    (showCleared && performer[10].value) ||
-    (showActive && performer[11].value) ||
-    (showUnprinted && !performer[9].value) ||
-    (showUncleared && !performer[10].value) ||
-    (showInactive && !performer[11].value);
+  const shouldShowPerformer = (performer) => {
+    const isSelected = (label) =>
+      filters.find((filter) => filter.label === label).isSelected;
+
+    return (
+      (isSelected("Printed") && performer[9].value) ||
+      (isSelected("Cleared") && performer[10].value) ||
+      (isSelected("Active") && performer[11].value) ||
+      (isSelected("Unprinted") && !performer[9].value) ||
+      (isSelected("Uncleared") && !performer[10].value) ||
+      (isSelected("Inactive") && !performer[11].value)
+    );
+  };
+
+  const handleFilterSelect = (index) => {
+    const oppositeFilters = {
+      Printed: "Unprinted",
+      Cleared: "Uncleared",
+      Active: "Inactive",
+      Unprinted: "Printed",
+      Uncleared: "Cleared",
+      Inactive: "Active",
+    };
+
+    const updatedFilters = filters.map((filter, i) => {
+      if (i === index) {
+        return {
+          ...filter,
+          isSelected: !filter.isSelected,
+        };
+      }
+
+      const oppositeFilter = oppositeFilters[filter.label];
+      if (oppositeFilter && filters[index].label === oppositeFilter) {
+        return {
+          ...filter,
+          isSelected: false,
+        };
+      }
+
+      return filter;
+    });
+
+    setFilters(updatedFilters);
+  };
 
   if (isPerformersError) {
     console.log(
@@ -268,79 +326,32 @@ const PerformersPage = () => {
                 <DropdownMenuLabel>Filter by</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuCheckboxItem
-                  checked={showAll}
+                  checked={showAllFilters}
                   onCheckedChange={() => {
-                    setShowAll(!showAll);
-                    setShowPrinted(false);
-                    setShowCleared(false);
-                    setShowActive(false);
-                    setShowUnprinted(false);
-                    setShowUncleared(false);
-                    setShowInactive(false);
+                    setShowAllFilters(!showAllFilters);
+                    setFilters(
+                      filters.map((filter) => ({
+                        ...filter,
+                        isSelected: false,
+                      })),
+                    );
                   }}
                 >
                   All
                 </DropdownMenuCheckboxItem>
-                <DropdownMenuCheckboxItem
-                  checked={showPrinted}
-                  onCheckedChange={() => {
-                    setShowPrinted(!showPrinted);
-                    setShowUnprinted(false);
-                    setShowAll(false);
-                  }}
-                >
-                  Printed
-                </DropdownMenuCheckboxItem>
-                <DropdownMenuCheckboxItem
-                  checked={showCleared}
-                  onCheckedChange={() => {
-                    setShowCleared(!showCleared);
-                    setShowUncleared(false);
-                    setShowAll(false);
-                  }}
-                >
-                  Cleared
-                </DropdownMenuCheckboxItem>
-                <DropdownMenuCheckboxItem
-                  checked={showActive}
-                  onCheckedChange={() => {
-                    setShowActive(!showActive);
-                    setShowInactive(false);
-                    setShowAll(false);
-                  }}
-                >
-                  Active
-                </DropdownMenuCheckboxItem>
-                <DropdownMenuCheckboxItem
-                  checked={showUnprinted}
-                  onCheckedChange={() => {
-                    setShowUnprinted(!showUnprinted);
-                    setShowPrinted(false);
-                    setShowAll(false);
-                  }}
-                >
-                  Unprinted
-                </DropdownMenuCheckboxItem>
-                <DropdownMenuCheckboxItem
-                  checked={showUncleared}
-                  onCheckedChange={() => {
-                    setShowUncleared(!showUncleared);
-                    setShowCleared(false);
-                    setShowAll(false);
-                  }}
-                >
-                  Uncleared
-                </DropdownMenuCheckboxItem>
-                <DropdownMenuCheckboxItem
-                  checked={showInactive}
-                  onCheckedChange={() => {
-                    setShowInactive(!showInactive);
-                    setShowActive(false);
-                    setShowAll(false);
-                  }}
-                >
-                  Inactive
-                </DropdownMenuCheckboxItem>
+
+                {filters.map((filter, i) => (
+                  <DropdownMenuCheckboxItem
+                    key={i}
+                    checked={filter.isSelected}
+                    onCheckedChange={() => {
+                      setShowAllFilters(false);
+                      handleFilterSelect(i);
+                    }}
+                  >
+                    {filter.label}
+                  </DropdownMenuCheckboxItem>
+                ))}
               </DropdownMenuContent>
             </DropdownMenu>
 
@@ -446,7 +457,9 @@ const PerformersPage = () => {
                   {performersData &&
                     performersData.data
                       .filter((performer) =>
-                        showAll ? showAll : shouldShowPerformer(performer),
+                        showAllFilters
+                          ? showAllFilters
+                          : shouldShowPerformer(performer),
                       )
                       .map((performer) => (
                         <TableRow key={performer[3].value}>
