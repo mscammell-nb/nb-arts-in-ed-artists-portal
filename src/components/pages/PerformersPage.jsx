@@ -333,18 +333,27 @@ const PerformersPage = () => {
       <div className="min-w-[850px] max-w-3xl">
         <section>
           <div className="mb-2 flex items-center justify-between">
-            <div className="space-x-1.5">
+            <div className="flex gap-1.5">
               {filters
                 .filter((filter) => filter.isSelected)
-                .map((filter, i) => (
-                  <Badge
-                    onClick={() => closeFilter(filter.label)}
-                    variant="bocesPrimary"
-                    asCloseButton
-                    className="cursor-pointer rounded-full"
-                  >
-                    {filter.label}
-                  </Badge>
+                .map((filter) => (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Badge
+                          onClick={() => closeFilter(filter.label)}
+                          variant="bocesPrimary"
+                          asCloseButton
+                          className="cursor-pointer rounded-full"
+                        >
+                          {filter.label}
+                        </Badge>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Clear filter</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 ))}
             </div>
 
