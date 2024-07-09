@@ -355,6 +355,26 @@ const PerformersPage = () => {
                     </Tooltip>
                   </TooltipProvider>
                 ))}
+              {filters.find((filter) => filter.isSelected) && (
+                <Button
+                  onClick={() => {
+                    setFilters(
+                      filters.map((filter) => ({
+                        ...filter,
+                        isSelected: false,
+                      })),
+                    );
+
+                    setShowAllFilters(true);
+                  }}
+                  variant="ghost"
+                  size="sm"
+                  className="text-red-500 hover:text-red-600"
+                >
+                  <X size="18px" />
+                  Clear all
+                </Button>
+              )}
             </div>
 
             <div className="space-x-1.5">
