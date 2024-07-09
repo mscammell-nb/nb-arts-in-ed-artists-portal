@@ -292,10 +292,10 @@ const PerformersPage = () => {
     });
 
     setFilters(updatedFilters);
-    // const isAnyFilterActive =
-    //   updatedFilters.find((filter) => filter.isSelected === true).length > 0;
-    // console.log("is amy filter active: ", isAnyFilterActive);
-    // if (!isAnyFilterActive) setShowAllFilters(true);
+    const isAnyFilterActive = updatedFilters.find(
+      (filter) => filter.isSelected === true,
+    );
+    if (!isAnyFilterActive) setShowAllFilters(true);
   };
 
   const closeFilter = (label) => {
