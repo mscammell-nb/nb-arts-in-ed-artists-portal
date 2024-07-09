@@ -292,6 +292,29 @@ const PerformersPage = () => {
     });
 
     setFilters(updatedFilters);
+    // const isAnyFilterActive =
+    //   updatedFilters.find((filter) => filter.isSelected === true).length > 0;
+    // console.log("is amy filter active: ", isAnyFilterActive);
+    // if (!isAnyFilterActive) setShowAllFilters(true);
+  };
+
+  const closeFilter = (label) => {
+    let isAnyFilterActive = false;
+    const updatedFilters = filters.map((filter) => {
+      if (label === filter.label) {
+        return {
+          ...filter,
+          isSelected: false,
+        };
+      }
+
+      if (filter.isSelected) isAnyFilterActive = true;
+
+      return filter;
+    });
+
+    setFilters(updatedFilters);
+    if (!isAnyFilterActive) setShowAllFilters(true);
   };
 
   if (isPerformersError) {
@@ -307,135 +330,151 @@ const PerformersPage = () => {
 
   return (
     <div className="flex flex-col items-center">
-      <div className="min-w-[700px] max-w-3xl">
+      <div className="min-w-[850px] max-w-3xl">
         <section>
-          <div className="mb-2 flex justify-end space-x-1.5">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="bocesPrimary" size="sm">
-                  <ListFilter
-                    className="mr-1 h-4 w-4"
-                    size={20}
-                    color="white"
-                    strokeWidth={2.5}
-                  />
-                  Filter
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuLabel>Filter by</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuCheckboxItem
-                  checked={showAllFilters}
-                  onCheckedChange={() => {
-                    setShowAllFilters(!showAllFilters);
-                    setFilters(
-                      filters.map((filter) => ({
-                        ...filter,
-                        isSelected: false,
-                      })),
-                    );
-                  }}
-                >
-                  All
-                </DropdownMenuCheckboxItem>
-
-                {filters.map((filter, i) => (
-                  <DropdownMenuCheckboxItem
-                    key={i}
-                    checked={filter.isSelected}
-                    onCheckedChange={() => {
-                      setShowAllFilters(false);
-                      handleFilterSelect(i);
-                    }}
+          <div className="mb-2 flex items-center justify-between">
+            <div className="space-x-1.5">
+              {filters
+                .filter((filter) => filter.isSelected)
+                .map((filter, i) => (
+                  <Badge
+                    onClick={() => closeFilter(filter.label)}
+                    variant="bocesPrimary"
+                    asCloseButton
+                    className="cursor-pointer rounded-full"
                   >
                     {filter.label}
-                  </DropdownMenuCheckboxItem>
+                  </Badge>
                 ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
+            </div>
 
-            <Dialog
-              open={isAddPerformerDialogOpen}
-              onOpenChange={setIsAddPerformerDialogOpen}
-            >
-              <DialogTrigger asChild>
-                <Button
-                  size="sm"
-                  variant="bocesPrimary"
-                  onClick={() => {
-                    addPerformerForm.reset();
-                  }}
-                >
-                  <Plus
-                    className="mr-1 h-4 w-4"
-                    size={20}
-                    color="white"
-                    strokeWidth={2.5}
-                  />
-                  Add performer
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                  <DialogTitle>Add performer</DialogTitle>
-                  <DialogDescription>
-                    Enter the performer's first and last name and click submit.
-                    <br />
-                    <br />
-                    <span className="font-bold uppercase text-red-500">
-                      Important:{" "}
-                    </span>
-                    Performers can be edited only within 30 minutes of being
-                    added.
-                  </DialogDescription>
-                </DialogHeader>
-                <div>
-                  <Form {...addPerformerForm}>
-                    <form
-                      onSubmit={addPerformerForm.handleSubmit(addPerformer)}
-                      className="space-y-4"
+            <div className="space-x-1.5">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="bocesPrimary" size="sm">
+                    <ListFilter
+                      className="mr-1 h-4 w-4"
+                      size={20}
+                      color="white"
+                      strokeWidth={2.5}
+                    />
+                    Filter
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuLabel>Filter by</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuCheckboxItem
+                    checked={showAllFilters}
+                    onCheckedChange={() => {
+                      setShowAllFilters(!showAllFilters);
+                      setFilters(
+                        filters.map((filter) => ({
+                          ...filter,
+                          isSelected: false,
+                        })),
+                      );
+                    }}
+                  >
+                    All
+                  </DropdownMenuCheckboxItem>
+                  {filters.map((filter, i) => (
+                    <DropdownMenuCheckboxItem
+                      key={i}
+                      checked={filter.isSelected}
+                      onCheckedChange={() => {
+                        setShowAllFilters(false);
+                        handleFilterSelect(i);
+                      }}
                     >
-                      <FormField
-                        control={addPerformerForm.control}
-                        name="firstName"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>First name</FormLabel>
-                            <FormControl>
-                              <Input placeholder="John" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={addPerformerForm.control}
-                        name="lastName"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Last name</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Doe" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <DialogFooter>
-                        <Button
-                          variant="bocesPrimary"
-                          type="submit"
-                          isLoading={isNewPerformerLoading}
-                        >
-                          Submit
-                        </Button>
-                      </DialogFooter>
-                    </form>
-                  </Form>
-                </div>
-              </DialogContent>
-            </Dialog>
+                      {filter.label}
+                    </DropdownMenuCheckboxItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <Dialog
+                open={isAddPerformerDialogOpen}
+                onOpenChange={setIsAddPerformerDialogOpen}
+              >
+                <DialogTrigger asChild>
+                  <Button
+                    size="sm"
+                    variant="bocesPrimary"
+                    onClick={() => {
+                      addPerformerForm.reset();
+                    }}
+                  >
+                    <Plus
+                      className="mr-1 h-4 w-4"
+                      size={20}
+                      color="white"
+                      strokeWidth={2.5}
+                    />
+                    Add performer
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle>Add performer</DialogTitle>
+                    <DialogDescription>
+                      Enter the performer's first and last name and click
+                      submit.
+                      <br />
+                      <br />
+                      <span className="font-bold uppercase text-red-500">
+                        Important:{" "}
+                      </span>
+                      Performers can be edited only within 30 minutes of being
+                      added.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div>
+                    <Form {...addPerformerForm}>
+                      <form
+                        onSubmit={addPerformerForm.handleSubmit(addPerformer)}
+                        className="space-y-4"
+                      >
+                        <FormField
+                          control={addPerformerForm.control}
+                          name="firstName"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>First name</FormLabel>
+                              <FormControl>
+                                <Input placeholder="John" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={addPerformerForm.control}
+                          name="lastName"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Last name</FormLabel>
+                              <FormControl>
+                                <Input placeholder="Doe" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <DialogFooter>
+                          <Button
+                            variant="bocesPrimary"
+                            type="submit"
+                            isLoading={isNewPerformerLoading}
+                          >
+                            Submit
+                          </Button>
+                        </DialogFooter>
+                      </form>
+                    </Form>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
           </div>
           <Card>
             <CardHeader>
