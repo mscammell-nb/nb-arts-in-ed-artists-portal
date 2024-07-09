@@ -35,12 +35,12 @@ function Badge({
 }) {
   if (asCloseButton) {
     return (
-      <button className={cn(badgeVariants({ variant }), className)} {...props}>
+      <div className={cn(badgeVariants({ variant }), className)} {...props}>
         <div className="flex items-center justify-center gap-1">
           {children}
           {asCloseButton && <CircleX size="14px" />}
         </div>
-      </button>
+      </div>
     );
   }
 

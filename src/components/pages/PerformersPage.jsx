@@ -579,7 +579,7 @@ const PerformersPage = () => {
                                   <TooltipProvider>
                                     <Tooltip>
                                       <TooltipTrigger>
-                                        <button
+                                        <div
                                           onClick={() => {
                                             editPerformerForm.reset({
                                               firstName: performer[7].value,
@@ -598,7 +598,7 @@ const PerformersPage = () => {
                                             size={20}
                                             strokeWidth={2.25}
                                           />
-                                        </button>
+                                        </div>
                                       </TooltipTrigger>
                                       <TooltipContent>
                                         <p>Edit performer</p>
