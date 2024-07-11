@@ -328,6 +328,19 @@ const PerformersPage = () => {
     );
   }
 
+  const renderStatusIcon = (value) => {
+    switch (value) {
+      case "Yes":
+        return <Check size={18} strokeWidth={1.75} />;
+      case "No":
+        return <X size={18} strokeWidth={1.75} />;
+      case "N/A":
+        return "N/A";
+      case "":
+        return "";
+    }
+  };
+
   return (
     <div className="flex flex-col items-center">
       <div className="min-w-[850px] max-w-3xl">
@@ -539,20 +552,12 @@ const PerformersPage = () => {
                           </TableCell>
                           <TableCell>
                             <div className="flex justify-center">
-                              {performer[9].value ? (
-                                <Check size={18} strokeWidth={1.75} />
-                              ) : (
-                                <X size={18} strokeWidth={1.75} />
-                              )}
+                              {renderStatusIcon(performer[9].value)}
                             </div>
                           </TableCell>
                           <TableCell>
                             <div className="flex justify-center">
-                              {performer[10].value ? (
-                                <Check size={18} strokeWidth={1.75} />
-                              ) : (
-                                <X size={18} strokeWidth={1.75} />
-                              )}
+                              {renderStatusIcon(performer[10].value)}
                             </div>
                           </TableCell>
                           <TableCell className="text-center">
@@ -712,3 +717,5 @@ const PerformersPage = () => {
 export default PerformersPage;
 
 // TODO: figure out why the background of the edit dialog is black
+// TODO: add spacebar listener to the edit buttons so that they follow the same logic of when they are clicked.
+// TODO: WHen the user doesn't have any performers (there's no data in the table) and I try to select a filter, I get a warning saying each item in a list should have a unique key. Probably fixable by stopping the filtering process if the data returned by the API has a length of 0 (early return).
