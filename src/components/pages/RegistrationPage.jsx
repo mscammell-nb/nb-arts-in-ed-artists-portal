@@ -20,7 +20,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useForm } from "react-hook-form";
+// TODO: might need to include the Controller
+import { useForm, useFieldArray } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useAddOrUpdateRecordMutation } from "@/redux/api/quickbaseApi";
@@ -33,6 +34,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Link } from "react-router-dom";
+
+const performerSchema = yup.object().shape({
+  firstName: yup.string().required("Performer first name is required"),
+  middleInitial: yup.string().notRequired(),
+  lastName: yup.string().required("Performer last name is required"),
+  stageName: yup.string().notRequired(),
+});
 
 const schema = yup.object({
   artistOrg: yup.string().required(),
@@ -76,6 +84,10 @@ const schema = yup.object({
       String(originalValue).trim() === "" ? undefined : value,
     )
     .required("zip code is a required field"),
+  performers: yup
+    .array()
+    .of(performerSchema)
+    .min(1, "At least one performer is required"),
 });
 
 const RegistrationPage = () => {
@@ -128,7 +140,17 @@ const RegistrationPage = () => {
       city: "",
       state: "",
       zipCode: "",
+      performers: [
+        { firstName: "", middleInitial: "", lastName: "", stageName: "" },
+      ],
     },
+  });
+
+  const { control } = form;
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "performers",
   });
 
   const formatDataForTheArtistTable = (data, userUid) => {
@@ -241,17 +263,18 @@ const RegistrationPage = () => {
   };
 
   const onSubmit = async (data) => {
-    const firebaseResponse = await registerUser(data);
-    const { userUid } = firebaseResponse.data;
-    const response = await addArtist(
-      formatDataForTheArtistTable(data, userUid),
-    );
-    const artistRecordId = response.data.data[0][3].value;
-    addArtistRegistration(
-      formatDataForTheArtistRegistrationTable(data, artistRecordId, userUid),
-      artistRecordId,
-    );
-    form.reset();
+    console.log(data);
+    // const firebaseResponse = await registerUser(data);
+    // const { userUid } = firebaseResponse.data;
+    // const response = await addArtist(
+    //   formatDataForTheArtistTable(data, userUid),
+    // );
+    // const artistRecordId = response.data.data[0][3].value;
+    // addArtistRegistration(
+    //   formatDataForTheArtistRegistrationTable(data, artistRecordId, userUid),
+    //   artistRecordId,
+    // );
+    // form.reset();
   };
 
   useEffect(() => {
@@ -327,7 +350,8 @@ const RegistrationPage = () => {
 
   return (
     <div className="flex w-full justify-center py-16">
-      <Card className="w-full max-w-md">
+      {/* TODO: Adjust the max width */}
+      <Card className="max-w- w-full">
         <CardHeader>
           <CardTitle className="text-2xl">Register</CardTitle>
           <CardDescription>
@@ -538,6 +562,104 @@ const RegistrationPage = () => {
                   </FormItem>
                 )}
               />
+
+              {/* Performers Section */}
+
+              {fields.map((item, index) => (
+                <div key={item.id}>
+                  <FormField
+                    control={form.control}
+                    name={`performers.${index}.firstName`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Performer first name
+                          <span className="text-red-600">*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            placeholder="Performer first name"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name={`performers.${index}.middleInitial`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Performer middle initial</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            placeholder="Performer's middle initial"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name={`performers.${index}.lastName`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Performer last name
+                          <span className="text-red-600">*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="Performer last name" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name={`performers.${index}.stageName`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Performer stage name</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            placeholder="Performer's stage name"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <Button
+                    onClick={() => remove(index)}
+                    variant="destructive"
+                    type="button"
+                  >
+                    Remove
+                  </Button>
+                </div>
+              ))}
+              <Button
+                type="button"
+                onClick={() =>
+                  append({
+                    firstName: "",
+                    middleInitial: "",
+                    lastName: "",
+                    stageName: "",
+                  })
+                }
+              >
+                Add Performer
+              </Button>
 
               <Button
                 type="submit"
