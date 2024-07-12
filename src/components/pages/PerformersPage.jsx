@@ -72,7 +72,7 @@ const PerformersPage = () => {
     error: performersError,
   } = useQueryForDataQuery({
     from: import.meta.env.VITE_QUICKBASE_PERFORMERS_TABLE_ID,
-    select: [3, 7, 8, 9, 10, 11, 14, 18, 20],
+    select: [3, 7, 8, 9, 10, 11, 14, 18, 20, 22],
     where: `{14.EX.${artistRecordId}}`,
   });
   const [
@@ -543,6 +543,7 @@ const PerformersPage = () => {
                     <TableRow>
                       <TableHead className="text-center">First Name</TableHead>
                       <TableHead className="text-center">Last Name</TableHead>
+                      <TableHead className="text-center">Stage Name</TableHead>
                       <TableHead className="text-center">Printed</TableHead>
                       <TableHead className="text-center">Cleared</TableHead>
                       <TableHead className="text-center">Active</TableHead>
@@ -564,6 +565,9 @@ const PerformersPage = () => {
                             </TableCell>
                             <TableCell className="text-center">
                               {performer[8].value}
+                            </TableCell>
+                            <TableCell className="text-center">
+                              {performer[22].value || "N/A"}
                             </TableCell>
                             <TableCell>
                               <div className="flex justify-center">
