@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { PasswordInput } from "../ui/password-input";
 import { useRegisterUserMutation } from "@/redux/api/authApi";
 import { useToast } from "@/components/ui/use-toast";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Form,
   FormControl,
@@ -34,6 +34,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Link } from "react-router-dom";
+
+const STEP_TITLES = [
+  "Personal Information",
+  "Address Information",
+  "Add Performers",
+];
+
+const STEP_DESCRIPTIONS = [
+  "Enter your personal information and click finish to move to the next step.",
+  "Enter your address information and click finish to move to the next step.",
+  "Enter the information of all your performers and click finish to register.",
+];
 
 const performerSchema = yup.object().shape({
   firstName: yup.string().required("Performer first name is required"),
@@ -91,6 +103,8 @@ const schema = yup.object({
 });
 
 const RegistrationPage = () => {
+  const [formStep, setFormStep] = useState(0);
+
   const [
     registerUser,
     {
@@ -146,7 +160,7 @@ const RegistrationPage = () => {
     },
   });
 
-  const { control } = form;
+  const { control, handleSubmit } = form;
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -262,6 +276,24 @@ const RegistrationPage = () => {
     return body;
   };
 
+  const renderFormButton = () => {
+    if (formStep < 0) {
+      return;
+    } else if (formStep < 2) {
+      return (
+        <Button
+          onClick={() => setFormStep((prev) => prev + 1)}
+          type="button"
+          variant="bocesPrimary"
+        >
+          Next
+        </Button>
+      );
+    } else if (formStep === 2) {
+      return <Button variant="bocesPrimary">Finish</Button>;
+    }
+  };
+
   const onSubmit = async (data) => {
     console.log(data);
     // const firebaseResponse = await registerUser(data);
@@ -353,322 +385,332 @@ const RegistrationPage = () => {
       {/* TODO: Adjust the max width */}
       <Card className="max-w- w-full">
         <CardHeader>
-          <CardTitle className="text-2xl">Register</CardTitle>
-          <CardDescription>
-            Enter your credentials below to create an account.
-          </CardDescription>
+          <CardTitle className="text-2xl">{STEP_TITLES[formStep]}</CardTitle>
+          <CardDescription>{STEP_DESCRIPTIONS[formStep]}</CardDescription>
         </CardHeader>
 
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              <FormField
-                control={form.control}
-                name="artistOrg"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      Artist / Organization
-                      <span className="text-red-600">*</span>
-                    </FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="Artist / Organization" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+              {formStep === 0 && (
+                <section>
+                  <FormField
+                    control={control}
+                    name="artistOrg"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Artist / Organization
+                          <span className="text-red-600">*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            placeholder="Artist / Organization"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Email<span className="text-red-600">*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="Email" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Password<span className="text-red-600">*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <PasswordInput {...field} placeholder="Password" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={control}
+                    name="confirmPassword"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Confirm password
+                          <span className="text-red-600">*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <PasswordInput
+                            {...field}
+                            placeholder="Confirm password"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Phone<span className="text-red-600">*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="e.g. 6312890915" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={control}
+                    name="altPhone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Alt phone</FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="e.g. 6312890915" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={control}
+                    name="website"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Website</FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="Website" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </section>
+              )}
 
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      Email<span className="text-red-600">*</span>
-                    </FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="Email" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {formStep === 1 && (
+                <section>
+                  <FormField
+                    control={control}
+                    name="street1"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Street 1<span className="text-red-600">*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="Street 1" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={control}
+                    name="street2"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Street 2</FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="Street 2" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={control}
+                    name="city"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          City<span className="text-red-600">*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="City" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={control}
+                    name="state"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          State<span className="text-red-600">*</span>
+                        </FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select state" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {states.map((state) => (
+                              <SelectItem key={state} value={state}>
+                                {state}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={control}
+                    name="zipCode"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Zip code<span className="text-red-600">*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="Zip code" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </section>
+              )}
 
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      Password<span className="text-red-600">*</span>
-                    </FormLabel>
-                    <FormControl>
-                      <PasswordInput {...field} placeholder="Password" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="confirmPassword"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      Confirm password<span className="text-red-600">*</span>
-                    </FormLabel>
-                    <FormControl>
-                      <PasswordInput
-                        {...field}
-                        placeholder="Confirm password"
+              {formStep === 2 && (
+                <section>
+                  {fields.map((item, index) => (
+                    <div key={item.id}>
+                      <FormField
+                        control={control}
+                        name={`performers.${index}.firstName`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>
+                              Performer first name
+                              <span className="text-red-600">*</span>
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                {...field}
+                                placeholder="Performer first name"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
                       />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
 
-              <FormField
-                control={form.control}
-                name="phone"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      Phone<span className="text-red-600">*</span>
-                    </FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="e.g. 6312890915" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                      <FormField
+                        control={control}
+                        name={`performers.${index}.middleInitial`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Performer middle initial</FormLabel>
+                            <FormControl>
+                              <Input
+                                {...field}
+                                placeholder="Performer's middle initial"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
-              <FormField
-                control={form.control}
-                name="altPhone"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Alt phone</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="e.g. 6312890915" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                      <FormField
+                        control={control}
+                        name={`performers.${index}.lastName`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>
+                              Performer last name
+                              <span className="text-red-600">*</span>
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                {...field}
+                                placeholder="Performer last name"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
-              <FormField
-                control={form.control}
-                name="website"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Website</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="Website" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                      <FormField
+                        control={control}
+                        name={`performers.${index}.stageName`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Performer stage name</FormLabel>
+                            <FormControl>
+                              <Input
+                                {...field}
+                                placeholder="Performer's stage name"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
-              <FormField
-                control={form.control}
-                name="street1"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      Street 1<span className="text-red-600">*</span>
-                    </FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="Street 1" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="street2"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Street 2</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="Street 2" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="city"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      City<span className="text-red-600">*</span>
-                    </FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="City" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="state"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      State<span className="text-red-600">*</span>
-                    </FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select state" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {states.map((state) => (
-                          <SelectItem key={state} value={state}>
-                            {state}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="zipCode"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      Zip code<span className="text-red-600">*</span>
-                    </FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="Zip code" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Performers Section */}
-
-              {fields.map((item, index) => (
-                <div key={item.id}>
-                  <FormField
-                    control={form.control}
-                    name={`performers.${index}.firstName`}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Performer first name
-                          <span className="text-red-600">*</span>
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            {...field}
-                            placeholder="Performer first name"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name={`performers.${index}.middleInitial`}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Performer middle initial</FormLabel>
-                        <FormControl>
-                          <Input
-                            {...field}
-                            placeholder="Performer's middle initial"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name={`performers.${index}.lastName`}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Performer last name
-                          <span className="text-red-600">*</span>
-                        </FormLabel>
-                        <FormControl>
-                          <Input {...field} placeholder="Performer last name" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name={`performers.${index}.stageName`}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Performer stage name</FormLabel>
-                        <FormControl>
-                          <Input
-                            {...field}
-                            placeholder="Performer's stage name"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
+                      <Button
+                        onClick={() => remove(index)}
+                        variant="destructive"
+                        type="button"
+                      >
+                        Remove
+                      </Button>
+                    </div>
+                  ))}
                   <Button
-                    onClick={() => remove(index)}
-                    variant="destructive"
                     type="button"
+                    onClick={() =>
+                      append({
+                        firstName: "",
+                        middleInitial: "",
+                        lastName: "",
+                        stageName: "",
+                      })
+                    }
                   >
-                    Remove
+                    Add Performer
                   </Button>
-                </div>
-              ))}
-              <Button
-                type="button"
-                onClick={() =>
-                  append({
-                    firstName: "",
-                    middleInitial: "",
-                    lastName: "",
-                    stageName: "",
-                  })
-                }
-              >
-                Add Performer
-              </Button>
+                </section>
+              )}
 
-              <Button
-                type="submit"
-                variant="bocesPrimary"
-                className="mt-7 w-full"
-                isLoading={isRequestLoading()}
-              >
-                Sign up
-              </Button>
+              <div>
+                <Button
+                  onClick={() => setFormStep((prev) => prev - 1)}
+                  variant="secondary"
+                  disabled={formStep < 1}
+                >
+                  Prev
+                </Button>
+                {renderFormButton()}
+              </div>
             </form>
             <div className="pt-2 text-center text-sm">
               Already have an account?{" "}
