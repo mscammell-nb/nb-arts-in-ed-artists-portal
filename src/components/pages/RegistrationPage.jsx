@@ -104,6 +104,8 @@ const schema = yup.object({
 
 const RegistrationPage = () => {
   const [formStep, setFormStep] = useState(0);
+  const [isNextButtonDisabled, setIsNextButtonDisabled] = useState(true);
+  const [isStepValid, setIsStepValid] = useState([false, false, false]);
 
   const [
     registerUser,
@@ -139,8 +141,61 @@ const RegistrationPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
+  const getCurrentStepSchema = () => {
+    switch (formStep) {
+      case 0:
+        return yup.object({
+          artistOrg: yup.string().required(),
+          email: yup.string().email().required(),
+          password: yup.string().required(),
+          confirmPassword: yup
+            .string()
+            .oneOf([yup.ref("password")], "Passwords must match")
+            .required(),
+          phone: yup
+            .string()
+            .matches(/^\d{10}$/, "Phone number must be exactly 10 digits")
+            .required(),
+          altPhone: yup
+            .string()
+            .nullable()
+            .matches(/^\d{10}$/, "Phone number must be exactly 10 digits")
+            .transform((value, originalValue) =>
+              String(originalValue).trim() === "" ? null : value,
+            ),
+          website: yup
+            .string()
+            .nullable()
+            .matches(websiteRegex, "Invalid website format")
+            .transform((value, originalValue) =>
+              String(originalValue).trim() === "" ? null : value,
+            ),
+        });
+      case 1:
+        return yup.object({
+          street1: yup.string().required(),
+          city: yup.string().required(),
+          state: yup.string().oneOf(states, "Invalid state").required(),
+          zipCode: yup
+            .number()
+            .typeError("Zip code must be a number")
+            .required("zip code is a required field"),
+        });
+      case 2:
+        return yup.object({
+          performers: yup
+            .array()
+            .of(performerSchema)
+            .min(1, "At least one performer is required"),
+        });
+      default:
+        return yup.object();
+    }
+  };
+
   const form = useForm({
-    resolver: yupResolver(schema),
+    resolver: yupResolver(getCurrentStepSchema()),
+    mode: "all",
     defaultValues: {
       artistOrg: "",
       email: "",
@@ -160,7 +215,12 @@ const RegistrationPage = () => {
     },
   });
 
-  const { control, handleSubmit } = form;
+  const {
+    control,
+    handleSubmit,
+    trigger,
+    formState: { isValid, errors, isDirty },
+  } = form;
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -282,7 +342,11 @@ const RegistrationPage = () => {
     } else if (formStep < 2) {
       return (
         <Button
-          onClick={() => setFormStep((prev) => prev + 1)}
+          onClick={() => {
+            setFormStep((prev) => prev + 1);
+            setShouldTriggerValidation(false);
+          }}
+          disabled={!isValid}
           type="button"
           variant="bocesPrimary"
         >
@@ -290,9 +354,18 @@ const RegistrationPage = () => {
         </Button>
       );
     } else if (formStep === 2) {
-      return <Button variant="bocesPrimary">Finish</Button>;
+      return (
+        <Button variant="bocesPrimary" disabled={!isValid} type="submit">
+          Finish
+        </Button>
+      );
     }
   };
+
+  const isRequestLoading = () =>
+    isRegisterUserLoading ||
+    isAddArtistLoading ||
+    isAddArtistRegistrationLoading;
 
   const onSubmit = async (data) => {
     console.log(data);
@@ -375,10 +448,22 @@ const RegistrationPage = () => {
     toast,
   ]);
 
-  const isRequestLoading = () =>
-    isRegisterUserLoading ||
-    isAddArtistLoading ||
-    isAddArtistRegistrationLoading;
+  const [shouldTriggerValidation, setShouldTriggerValidation] = useState(false);
+
+  useEffect(() => {
+    if (isDirty) {
+      setShouldTriggerValidation(true);
+    }
+  }, [isDirty]);
+
+  useEffect(() => {
+    // if (shouldTriggerValidation) {
+    //   console.log("isDirty is true");
+    //   trigger();
+    // }
+    trigger();
+    console.log("form step changed");
+  }, [formStep]);
 
   return (
     <div className="flex w-full justify-center py-16">
@@ -392,8 +477,8 @@ const RegistrationPage = () => {
         <CardContent>
           <Form {...form}>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-              {formStep === 0 && (
-                <section>
+              {formStep >= 0 && (
+                <section hidden={formStep !== 0}>
                   <FormField
                     control={control}
                     name="artistOrg"
@@ -506,8 +591,8 @@ const RegistrationPage = () => {
                 </section>
               )}
 
-              {formStep === 1 && (
-                <section>
+              {formStep >= 1 && (
+                <section hidden={formStep !== 1}>
                   <FormField
                     control={control}
                     name="street1"
@@ -598,8 +683,8 @@ const RegistrationPage = () => {
                 </section>
               )}
 
-              {formStep === 2 && (
-                <section>
+              {formStep >= 2 && (
+                <section hidden={formStep !== 2}>
                   {fields.map((item, index) => (
                     <div key={item.id}>
                       <FormField
@@ -703,9 +788,13 @@ const RegistrationPage = () => {
 
               <div>
                 <Button
-                  onClick={() => setFormStep((prev) => prev - 1)}
+                  onClick={() => {
+                    setFormStep((prev) => prev - 1);
+                    setShouldTriggerValidation(true);
+                  }}
                   variant="secondary"
                   disabled={formStep < 1}
+                  type="button"
                 >
                   Prev
                 </Button>
