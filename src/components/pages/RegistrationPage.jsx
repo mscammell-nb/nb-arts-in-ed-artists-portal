@@ -759,7 +759,7 @@ const RegistrationPage = () => {
                         variant="destructive"
                         type="button"
                         size="sm"
-                        className="flex gap-1 self-center"
+                        className="flex gap-1 self-end"
                       >
                         <Trash2 size="16px" />
                         Remove
