@@ -390,7 +390,8 @@ const RegistrationPage = () => {
     } else if (formStep < 2) {
       return (
         <Button
-          onClick={() => {
+          onClick={(event) => {
+            event.preventDefault();
             setFormStep((prev) => prev + 1);
           }}
           disabled={!isValid}
@@ -402,7 +403,12 @@ const RegistrationPage = () => {
       );
     } else if (formStep === 2) {
       return (
-        <Button variant="bocesPrimary" disabled={!isValid} type="submit">
+        <Button
+          variant="bocesPrimary"
+          disabled={!isValid || isRequestLoading()}
+          isLoading={isRequestLoading()}
+          type="submit"
+        >
           Finish
         </Button>
       );
