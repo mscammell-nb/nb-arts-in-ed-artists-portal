@@ -6,7 +6,7 @@ const Steps = ({ stepTitles, formStep }) => {
       <div>
         <h2 className="sr-only">Steps</h2>
 
-        <ol className="relative z-10 flex justify-between text-sm font-medium">
+        <ol className="relative z-10 flex justify-between text-sm font-medium w-[965px]">
           {stepTitles.map((stepTitle, index) => (
             <li
               key={index}

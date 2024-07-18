@@ -450,10 +450,10 @@ const RegistrationPage = () => {
   }, [formStep]);
 
   return (
-    <div className="flex w-full flex-col justify-center py-16">
+    <div className="flex w-full flex-col items-center justify-center py-16 gap-5">
       <Steps stepTitles={STEP_TITLES} formStep={formStep} />
       {/* TODO: Adjust the max width */}
-      <Card className="max-w- w-full">
+      <Card className="max-w-[950px] w-full">
         <CardHeader>
           <CardTitle className="text-2xl">{STEP_TITLES[formStep]}</CardTitle>
           <CardDescription>{STEP_DESCRIPTIONS[formStep]}</CardDescription>
