@@ -34,6 +34,7 @@ import {
 } from "@/components/ui/select";
 import { Link } from "react-router-dom";
 import Steps from "../Steps";
+import { Plus, Trash2 } from "lucide-react";
 
 const STEP_TITLES = [
   "Personal Information",
@@ -450,10 +451,9 @@ const RegistrationPage = () => {
   }, [formStep]);
 
   return (
-    <div className="flex w-full flex-col items-center justify-center py-16 gap-5">
+    <div className="flex w-full flex-col items-center justify-center gap-5 py-8">
       <Steps stepTitles={STEP_TITLES} formStep={formStep} />
-      {/* TODO: Adjust the max width */}
-      <Card className="max-w-[950px] w-full">
+      <Card className="w-full max-w-[950px]">
         <CardHeader>
           <CardTitle className="text-2xl">{STEP_TITLES[formStep]}</CardTitle>
           <CardDescription>{STEP_DESCRIPTIONS[formStep]}</CardDescription>
@@ -463,7 +463,11 @@ const RegistrationPage = () => {
           <Form {...form}>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
               {formStep >= 0 && (
-                <section hidden={formStep !== 0}>
+                <section
+                  className={
+                    formStep === 0 ? "grid grid-cols-2 gap-5" : "hidden"
+                  }
+                >
                   <FormField
                     control={control}
                     name="artistOrg"
@@ -577,7 +581,11 @@ const RegistrationPage = () => {
               )}
 
               {formStep >= 1 && (
-                <section hidden={formStep !== 1}>
+                <section
+                  className={
+                    formStep === 1 ? "grid grid-cols-2 gap-5" : "hidden"
+                  }
+                >
                   <FormField
                     control={control}
                     name="street1"
@@ -671,7 +679,7 @@ const RegistrationPage = () => {
               {formStep >= 2 && (
                 <section hidden={formStep !== 2}>
                   {fields.map((item, index) => (
-                    <div key={item.id}>
+                    <div key={item.id} className="my-6 flex items-start gap-4">
                       <FormField
                         control={control}
                         name={`performers.${index}.firstName`}
@@ -750,13 +758,19 @@ const RegistrationPage = () => {
                         onClick={() => remove(index)}
                         variant="destructive"
                         type="button"
+                        size="sm"
+                        className="flex gap-1 self-center"
                       >
+                        <Trash2 size="16px" />
                         Remove
                       </Button>
                     </div>
                   ))}
                   <Button
                     type="button"
+                    size="sm"
+                    variant="bocesSecondary"
+                    disabled={!isValid}
                     onClick={() =>
                       append({
                         firstName: "",
@@ -765,13 +779,15 @@ const RegistrationPage = () => {
                         stageName: "",
                       })
                     }
+                    className="flex gap-1"
                   >
+                    <Plus size="16px" strokeWidth="3px" />
                     Add Performer
                   </Button>
                 </section>
               )}
 
-              <div>
+              <div className="flex justify-end gap-3">
                 <Button
                   onClick={() => {
                     setFormStep((prev) => prev - 1);
