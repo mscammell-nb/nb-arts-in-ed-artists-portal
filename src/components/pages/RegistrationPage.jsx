@@ -13,6 +13,10 @@ import { useRegisterUserMutation } from "@/redux/api/authApi";
 import { useToast } from "@/components/ui/use-toast";
 import { useState, useEffect } from "react";
 import {
+  getCurrentFiscalYearKey,
+  capitalizeString,
+} from "@/utils/functionUtils";
+import {
   Form,
   FormControl,
   FormField,
@@ -55,53 +59,54 @@ const performerSchema = yup.object().shape({
   stageName: yup.string().notRequired(),
 });
 
-const schema = yup.object({
-  artistOrg: yup.string().required(),
-  email: yup.string().email().required(),
-  password: yup.string().required(),
-  confirmPassword: yup
-    .string()
-    .oneOf([yup.ref("password")], "Passwords must match")
-    .required(),
-  phone: yup
-    .string()
-    .matches(/^\d{10}$/, "Phone number must be exactly 10 digits")
-    .required(),
-  altPhone: yup
-    .string()
-    .nullable()
-    .matches(/^\d{10}$/, "Phone number must be exactly 10 digits")
-    .transform((value, originalValue) =>
-      String(originalValue).trim() === "" ? null : value,
-    ),
-  website: yup
-    .string()
-    .nullable()
-    .matches(websiteRegex, "Invalid website format")
-    .transform((value, originalValue) =>
-      String(originalValue).trim() === "" ? null : value,
-    ),
-  street1: yup.string().required(),
-  street2: yup
-    .string()
-    .nullable()
-    .transform((value, originalValue) =>
-      String(originalValue).trim() === "" ? null : value,
-    ),
-  city: yup.string().required(),
-  state: yup.string().oneOf(states, "Invalid state").required(),
-  zipCode: yup
-    .number()
-    .typeError("Zip code must be a number")
-    .transform((value, originalValue) =>
-      String(originalValue).trim() === "" ? undefined : value,
-    )
-    .required("zip code is a required field"),
-  performers: yup
-    .array()
-    .of(performerSchema)
-    .min(1, "At least one performer is required"),
-});
+// TODO: may want to delete this
+// const schema = yup.object({
+//   artistOrg: yup.string().required(),
+//   email: yup.string().email().required(),
+//   password: yup.string().required(),
+//   confirmPassword: yup
+//     .string()
+//     .oneOf([yup.ref("password")], "Passwords must match")
+//     .required(),
+//   phone: yup
+//     .string()
+//     .matches(/^\d{10}$/, "Phone number must be exactly 10 digits")
+//     .required(),
+//   altPhone: yup
+//     .string()
+//     .nullable()
+//     .matches(/^\d{10}$/, "Phone number must be exactly 10 digits")
+//     .transform((value, originalValue) =>
+//       String(originalValue).trim() === "" ? null : value,
+//     ),
+//   website: yup
+//     .string()
+//     .nullable()
+//     .matches(websiteRegex, "Invalid website format")
+//     .transform((value, originalValue) =>
+//       String(originalValue).trim() === "" ? null : value,
+//     ),
+//   street1: yup.string().required(),
+//   street2: yup
+//     .string()
+//     .nullable()
+//     .transform((value, originalValue) =>
+//       String(originalValue).trim() === "" ? null : value,
+//     ),
+//   city: yup.string().required(),
+//   state: yup.string().oneOf(states, "Invalid state").required(),
+//   zipCode: yup
+//     .number()
+//     .typeError("Zip code must be a number")
+//     .transform((value, originalValue) =>
+//       String(originalValue).trim() === "" ? undefined : value,
+//     )
+//     .required("zip code is a required field"),
+//   performers: yup
+//     .array()
+//     .of(performerSchema)
+//     .min(1, "At least one performer is required"),
+// });
 
 const RegistrationPage = () => {
   const [formStep, setFormStep] = useState(0);
@@ -134,6 +139,16 @@ const RegistrationPage = () => {
       isSuccess: isAddArtistRegistrationSuccess,
       isError: isAddArtistRegistrationError,
       error: addArtistRegistrationError,
+    },
+  ] = useAddOrUpdateRecordMutation();
+  const [
+    addPerformers,
+    {
+      data: addPerformersData,
+      isLoading: isAddPerformersLoading,
+      isSuccess: isAddPerformersSuccess,
+      isError: isAddPerformersError,
+      error: addPerformersError,
     },
   ] = useAddOrUpdateRecordMutation();
 
@@ -335,6 +350,40 @@ const RegistrationPage = () => {
     return body;
   };
 
+  const formatDataForThePerformersTable = (data, artistRecordId) => {
+    const body = {
+      to: import.meta.env.VITE_QUICKBASE_PERFORMERS_TABLE_ID,
+      data: data.performers.map((performer) => {
+        const performerData = {
+          7: {
+            value: capitalizeString(performer.firstName.trim()),
+          },
+          8: {
+            value: capitalizeString(performer.lastName.trim()),
+          },
+          12: {
+            value: getCurrentFiscalYearKey(),
+          },
+          14: {
+            value: artistRecordId,
+          },
+        };
+
+        if (performer.stageName !== null) {
+          performerData[22] = { value: performer.stageName };
+        }
+
+        if (performer.middleInitial !== null) {
+          performerData[23] = { value: performer.middleInitial };
+        }
+
+        return performerData;
+      }),
+    };
+
+    return body;
+  };
+
   const renderFormButton = () => {
     if (formStep < 0) {
       return;
@@ -363,23 +412,26 @@ const RegistrationPage = () => {
   const isRequestLoading = () =>
     isRegisterUserLoading ||
     isAddArtistLoading ||
-    isAddArtistRegistrationLoading;
+    isAddArtistRegistrationLoading ||
+    isAddPerformersLoading;
 
   const onSubmit = async (data) => {
-    console.log(data);
-    // const firebaseResponse = await registerUser(data);
-    // const { userUid } = firebaseResponse.data;
-    // const response = await addArtist(
-    //   formatDataForTheArtistTable(data, userUid),
-    // );
-    // const artistRecordId = response.data.data[0][3].value;
-    // addArtistRegistration(
-    //   formatDataForTheArtistRegistrationTable(data, artistRecordId, userUid),
-    //   artistRecordId,
-    // );
-    // form.reset();
-  };
+    const firebaseResponse = await registerUser(data);
 
+    const { userUid } = firebaseResponse.data;
+    const response = await addArtist(
+      formatDataForTheArtistTable(data, userUid),
+    );
+
+    const artistRecordId = response.data.data[0][3].value;
+    addArtistRegistration(
+      formatDataForTheArtistRegistrationTable(data, artistRecordId, userUid),
+      artistRecordId,
+    );
+
+    addPerformers(formatDataForThePerformersTable(data, artistRecordId));
+  };
+  // TODO: make form responsive.
   useEffect(() => {
     if (
       isRegisterUserSuccess &&
@@ -815,3 +867,6 @@ const RegistrationPage = () => {
 };
 
 export default RegistrationPage;
+
+// TODO: Try to fix the remove performer button bug. When I try to delete an empty performer, I see the validation error message and I gotta click again to delete it.
+// TODO: Try to fix the validation on-load problem.
