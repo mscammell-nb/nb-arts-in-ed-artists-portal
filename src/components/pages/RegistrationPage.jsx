@@ -20,7 +20,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-// TODO: might need to include the Controller
 import { useForm, useFieldArray } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -34,6 +33,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Link } from "react-router-dom";
+import Steps from "../Steps";
 
 const STEP_TITLES = [
   "Personal Information",
@@ -104,8 +104,6 @@ const schema = yup.object({
 
 const RegistrationPage = () => {
   const [formStep, setFormStep] = useState(0);
-  const [isNextButtonDisabled, setIsNextButtonDisabled] = useState(true);
-  const [isStepValid, setIsStepValid] = useState([false, false, false]);
 
   const [
     registerUser,
@@ -344,7 +342,6 @@ const RegistrationPage = () => {
         <Button
           onClick={() => {
             setFormStep((prev) => prev + 1);
-            setShouldTriggerValidation(false);
           }}
           disabled={!isValid}
           type="button"
@@ -448,25 +445,13 @@ const RegistrationPage = () => {
     toast,
   ]);
 
-  const [shouldTriggerValidation, setShouldTriggerValidation] = useState(false);
-
   useEffect(() => {
-    if (isDirty) {
-      setShouldTriggerValidation(true);
-    }
-  }, [isDirty]);
-
-  useEffect(() => {
-    // if (shouldTriggerValidation) {
-    //   console.log("isDirty is true");
-    //   trigger();
-    // }
     trigger();
-    console.log("form step changed");
   }, [formStep]);
 
   return (
-    <div className="flex w-full justify-center py-16">
+    <div className="flex w-full flex-col justify-center py-16">
+      <Steps stepTitles={STEP_TITLES} formStep={formStep} />
       {/* TODO: Adjust the max width */}
       <Card className="max-w- w-full">
         <CardHeader>
@@ -790,7 +775,6 @@ const RegistrationPage = () => {
                 <Button
                   onClick={() => {
                     setFormStep((prev) => prev - 1);
-                    setShouldTriggerValidation(true);
                   }}
                   variant="secondary"
                   disabled={formStep < 1}
