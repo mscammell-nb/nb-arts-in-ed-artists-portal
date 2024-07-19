@@ -59,55 +59,6 @@ const performerSchema = yup.object().shape({
   stageName: yup.string().notRequired(),
 });
 
-// TODO: may want to delete this
-// const schema = yup.object({
-//   artistOrg: yup.string().required(),
-//   email: yup.string().email().required(),
-//   password: yup.string().required(),
-//   confirmPassword: yup
-//     .string()
-//     .oneOf([yup.ref("password")], "Passwords must match")
-//     .required(),
-//   phone: yup
-//     .string()
-//     .matches(/^\d{10}$/, "Phone number must be exactly 10 digits")
-//     .required(),
-//   altPhone: yup
-//     .string()
-//     .nullable()
-//     .matches(/^\d{10}$/, "Phone number must be exactly 10 digits")
-//     .transform((value, originalValue) =>
-//       String(originalValue).trim() === "" ? null : value,
-//     ),
-//   website: yup
-//     .string()
-//     .nullable()
-//     .matches(websiteRegex, "Invalid website format")
-//     .transform((value, originalValue) =>
-//       String(originalValue).trim() === "" ? null : value,
-//     ),
-//   street1: yup.string().required(),
-//   street2: yup
-//     .string()
-//     .nullable()
-//     .transform((value, originalValue) =>
-//       String(originalValue).trim() === "" ? null : value,
-//     ),
-//   city: yup.string().required(),
-//   state: yup.string().oneOf(states, "Invalid state").required(),
-//   zipCode: yup
-//     .number()
-//     .typeError("Zip code must be a number")
-//     .transform((value, originalValue) =>
-//       String(originalValue).trim() === "" ? undefined : value,
-//     )
-//     .required("zip code is a required field"),
-//   performers: yup
-//     .array()
-//     .of(performerSchema)
-//     .min(1, "At least one performer is required"),
-// });
-
 const RegistrationPage = () => {
   const [formStep, setFormStep] = useState(0);
 
@@ -523,7 +474,7 @@ const RegistrationPage = () => {
               {formStep >= 0 && (
                 <section
                   className={
-                    formStep === 0 ? "grid grid-cols-2 gap-5" : "hidden"
+                    formStep === 0 ? "grid gap-5 sm:grid-cols-2" : "hidden"
                   }
                 >
                   <FormField
@@ -641,7 +592,7 @@ const RegistrationPage = () => {
               {formStep >= 1 && (
                 <section
                   className={
-                    formStep === 1 ? "grid grid-cols-2 gap-5" : "hidden"
+                    formStep === 1 ? "grid gap-5 sm:grid-cols-2" : "hidden"
                   }
                 >
                   <FormField
@@ -737,7 +688,10 @@ const RegistrationPage = () => {
               {formStep >= 2 && (
                 <section hidden={formStep !== 2}>
                   {fields.map((item, index) => (
-                    <div key={item.id} className="my-6 flex items-start gap-4">
+                    <div
+                      key={item.id}
+                      className="my-6 items-start gap-4 lg:flex"
+                    >
                       <FormField
                         control={control}
                         name={`performers.${index}.firstName`}
@@ -813,11 +767,14 @@ const RegistrationPage = () => {
                       />
 
                       <Button
-                        onClick={() => remove(index)}
+                        onClick={(event) => {
+                          event.preventDefault();
+                          remove(index);
+                        }}
                         variant="destructive"
                         type="button"
                         size="sm"
-                        className="flex gap-1 self-end"
+                        className="mt-3 flex gap-1 self-end lg:mt-0"
                       >
                         <Trash2 size="16px" />
                         Remove
