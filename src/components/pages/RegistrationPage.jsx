@@ -388,7 +388,7 @@ const RegistrationPage = () => {
 
     addPerformers(formatDataForThePerformersTable(data, artistRecordId));
   };
-  // TODO: make form responsive.
+
   useEffect(() => {
     if (
       isRegisterUserSuccess &&
@@ -396,7 +396,9 @@ const RegistrationPage = () => {
       isAddArtistSuccess &&
       addArtistData &&
       isAddArtistRegistrationSuccess &&
-      addArtistRegistrationData
+      addArtistRegistrationData &&
+      isAddPerformersSuccess &&
+      addPerformersData
     ) {
       const { userUid, authToken } = registerUserData;
       localStorage.setItem("userUid", userUid);
@@ -412,7 +414,8 @@ const RegistrationPage = () => {
     if (
       (isRegisterUserError && registerUserError) ||
       (isAddArtistError && addArtistError) ||
-      (isAddArtistRegistrationError && addArtistRegistrationError)
+      (isAddArtistRegistrationError && addArtistRegistrationError) ||
+      (isAddPerformersError && addPerformersError)
     ) {
       let errorTitle = "Uh oh! Something went wrong.";
       let errorMessage;
@@ -452,6 +455,9 @@ const RegistrationPage = () => {
     registerUserError,
     addArtistError,
     addArtistRegistrationError,
+    isAddPerformersSuccess,
+    addPerformersData,
+    addPerformersError,
     toast,
   ]);
 
