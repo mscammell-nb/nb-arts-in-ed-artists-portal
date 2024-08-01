@@ -1,8 +1,8 @@
-import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
-import { Separator } from "../ui/separator";
-import { Textarea } from "../ui/textarea";
+import { RadioGroup, RadioGroupItem } from "../components/ui/radio-group";
+import { Input } from "../components/ui/input";
+import { Button } from "../components/ui/button";
+import { Separator } from "../components/ui/separator";
+import { Textarea } from "../components/ui/textarea";
 import {
   Form,
   FormControl,

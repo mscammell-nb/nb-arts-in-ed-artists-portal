@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
 import { useState, useEffect } from "react";
-import Spinner from "../ui/Spinner";
+import Spinner from "../components/ui/Spinner";
 import PerformersPage from "./PerformersPage";
 
 const DashboardPage = () => {

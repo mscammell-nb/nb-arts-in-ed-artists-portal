@@ -1,4 +1,4 @@
-export const states = [
+export const STATES = [
   "Alabama",
   "Alaska",
   "Arizona",
@@ -51,5 +51,5 @@ export const states = [
   "Wyoming",
 ];
 
-export const websiteRegex =
+export const VALID_WEBSITE_URL_REGEX =
   /^(?:https?:\/\/)?(?:www\.)?([a-zA-Z0-9-]+)(?:\.[a-zA-Z]{2,})+(?:\/[^\s]*)?$/;

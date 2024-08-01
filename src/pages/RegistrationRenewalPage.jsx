@@ -9,7 +9,7 @@ import {
   useQueryForDataQuery,
   useAddOrUpdateRecordMutation,
 } from "@/redux/api/quickbaseApi";
-import { parsePhoneNumber } from "@/utils/functionUtils";
+import { parsePhoneNumber } from "@/utils/parsePhoneNumber";
 import {
   Form,
   FormControl,
@@ -21,8 +21,8 @@ import {
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import Spinner from "../ui/Spinner";
-import { states } from "@/utils/utils";
+import Spinner from "../components/ui/Spinner";
+import { STATES } from "@/constants/constants";
 import {
   Select,
   SelectContent,
@@ -30,7 +30,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { websiteRegex } from "@/utils/utils";
+import { VALID_WEBSITE_URL_REGEX } from "@/constants/constants";
 
 const schema = yup.object({
   artistOrg: yup.string().required(),
@@ -49,7 +49,7 @@ const schema = yup.object({
   website: yup
     .string()
     .nullable()
-    .matches(websiteRegex, "Invalid website format")
+    .matches(VALID_WEBSITE_URL_REGEX, "Invalid website format")
     .transform((value, originalValue) =>
       String(originalValue).trim() === "" ? null : value,
     ),
@@ -61,7 +61,7 @@ const schema = yup.object({
       String(originalValue).trim() === "" ? null : value,
     ),
   city: yup.string().required(),
-  state: yup.string().oneOf(states, "Invalid state").required(),
+  state: yup.string().oneOf(STATES, "Invalid state").required(),
   zipCode: yup
     .number()
     .typeError("Zip code must be a number")
@@ -383,7 +383,7 @@ const RegistrationRenewalPage = () => {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {states.map((state) => (
+                        {STATES.map((state) => (
                           <SelectItem key={state} value={state}>
                             {state}
                           </SelectItem>

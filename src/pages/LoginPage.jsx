@@ -2,10 +2,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
-import { PasswordInput } from "../ui/password-input";
+import { PasswordInput } from "../components/ui/password-input";
 import { useLoginUserMutation } from "@/redux/api/authApi";
 import { useEffect } from "react";
-import { useToast } from "../ui/use-toast";
+import { useToast } from "../components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
 import {
   Form,

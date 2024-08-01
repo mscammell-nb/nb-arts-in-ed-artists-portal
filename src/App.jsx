@@ -1,11 +1,11 @@
 import { Routes, Route } from "react-router-dom";
 import MainLayout from "./layouts/MainLayout";
-import RegistrationPage from "./components/pages/RegistrationPage";
-import LoginPage from "./components/pages/LoginPage";
-import ProtectedRoutesWrapper from "./components/auth/ProtectedRoutesWrapper";
-import RegistrationRenewalPage from "./components/pages/RegistrationRenewalPage";
-import DashboardPage from "./components/pages/DashboardPage";
-import EvaluationPage from "./components/pages/EvaluationPage";
+import RegistrationPage from "./pages/RegistrationPage";
+import LoginPage from "./pages/LoginPage";
+import ProtectedRoutesWrapper from "./auth/ProtectedRoutesWrapper";
+import RegistrationRenewalPage from "./pages/RegistrationRenewalPage";
+import DashboardPage from "./pages/DashboardPage";
+import EvaluationPage from "./pages/EvaluationPage";
 import store from "./redux/store";
 import { Provider } from "react-redux";
 

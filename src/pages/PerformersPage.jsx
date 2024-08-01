@@ -52,11 +52,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import {
-  getCurrentFiscalYearKey,
-  capitalizeString,
-} from "@/utils/functionUtils";
-import Spinner from "../ui/Spinner";
+import { getCurrentFiscalYearKey } from "@/utils/getCurrentFiscalYearKey";
+import { capitalizeString } from "@/utils/capitalizeString";
+import Spinner from "../components/ui/Spinner";
 
 const schema = yup.object({
   firstName: yup.string().required(),

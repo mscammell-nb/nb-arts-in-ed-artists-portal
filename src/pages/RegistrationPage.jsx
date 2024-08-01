@@ -8,14 +8,13 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
-import { PasswordInput } from "../ui/password-input";
+import { PasswordInput } from "../components/ui/password-input";
 import { useRegisterUserMutation } from "@/redux/api/authApi";
 import { useToast } from "@/components/ui/use-toast";
 import { useState, useEffect } from "react";
-import {
-  getCurrentFiscalYearKey,
-  capitalizeString,
-} from "@/utils/functionUtils";
+
+import { getCurrentFiscalYearKey } from "@/utils/getCurrentFiscalYearKey";
+import { capitalizeString } from "@/utils/capitalizeString";
 import {
   Form,
   FormControl,
@@ -28,7 +27,7 @@ import { useForm, useFieldArray } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useAddOrUpdateRecordMutation } from "@/redux/api/quickbaseApi";
-import { states, websiteRegex } from "@/utils/utils";
+import { STATES, VALID_WEBSITE_URL_REGEX } from "@/constants/constants";
 import {
   Select,
   SelectContent,
@@ -37,7 +36,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Link } from "react-router-dom";
-import Steps from "../Steps";
+import Steps from "../components/Steps";
 import { Plus, Trash2 } from "lucide-react";
 
 const STEP_TITLES = [
@@ -131,7 +130,7 @@ const RegistrationPage = () => {
           website: yup
             .string()
             .nullable()
-            .matches(websiteRegex, "Invalid website format")
+            .matches(VALID_WEBSITE_URL_REGEX, "Invalid website format")
             .transform((value, originalValue) =>
               String(originalValue).trim() === "" ? null : value,
             ),
@@ -140,7 +139,7 @@ const RegistrationPage = () => {
         return yup.object({
           street1: yup.string().required(),
           city: yup.string().required(),
-          state: yup.string().oneOf(states, "Invalid state").required(),
+          state: yup.string().oneOf(STATES, "Invalid state").required(),
           zipCode: yup
             .number()
             .typeError("Zip code must be a number")
@@ -662,7 +661,7 @@ const RegistrationPage = () => {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {states.map((state) => (
+                            {STATES.map((state) => (
                               <SelectItem key={state} value={state}>
                                 {state}
                               </SelectItem>
