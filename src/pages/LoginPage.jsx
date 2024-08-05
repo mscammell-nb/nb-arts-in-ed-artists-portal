@@ -69,7 +69,7 @@ const LoginPage = () => {
     <div className="flex w-full justify-center py-16">
       <Card className="w-full max-w-sm">
         <CardHeader>
-          <CardTitle className="text-2xl">District Login</CardTitle>
+          <CardTitle className="text-2xl">Artist Login</CardTitle>
         </CardHeader>
         <CardContent>
           <Form {...form}>
