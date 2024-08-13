@@ -17,16 +17,13 @@ const DashboardPage = () => {
     where: `{10.EX.${userUid}}`,
   });
 
-  // States
   const [isApproved, setIsApproved] = useState(false);
   const [isRegistrationExpired, setIsRegistrationExpired] = useState(false);
-  const [artistName, setArtistName] = useState(null); // TODO: delete this if not needed
 
   useEffect(() => {
     if (artistData) {
       setIsApproved(artistData.data[0][29].value);
       setIsRegistrationExpired(artistData.data[0][30].value);
-      setArtistName(artistData.data[0][6].value);
       localStorage.setItem("artistRecordId", artistData.data[0][3].value);
     }
   }, [artistData]);
