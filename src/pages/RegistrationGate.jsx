@@ -2,11 +2,10 @@ import { Link } from "react-router-dom";
 import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
 import { useState, useEffect } from "react";
 import Spinner from "../components/ui/Spinner";
-import PerformersPage from "./PerformersPage";
 import { Navigate } from "react-router-dom";
 
 const RegistrationGate = () => {
-  const userUid = localStorage.getItem("userUid");
+  const uid = localStorage.getItem("uid");
   const {
     data: artistData,
     isSuccess: isArtistDataSuccess,
@@ -15,7 +14,7 @@ const RegistrationGate = () => {
   } = useQueryForDataQuery({
     from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
     select: [3, 6, 29, 30],
-    where: `{10.EX.${userUid}}`,
+    where: `{10.EX.${uid}}`,
   });
 
   const [isApproved, setIsApproved] = useState(false);

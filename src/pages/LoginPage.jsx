@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
 import { PasswordInput } from "../components/ui/password-input";
-import { useLoginUserMutation } from "@/redux/api/authApi";
+import useSignInUser from "@/hooks/useSignInUser";
 import { useEffect } from "react";
 import { useToast } from "../components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
@@ -25,8 +25,8 @@ const schema = yup.object({
 });
 
 const LoginPage = () => {
-  const [loginUser, { data, isLoading, isSuccess, isError, error }] =
-    useLoginUserMutation();
+  const { signInUser, accessToken, uid, isLoading, isSuccess, isError, error } =
+    useSignInUser();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -39,10 +39,9 @@ const LoginPage = () => {
   });
 
   useEffect(() => {
-    if (isSuccess && data) {
-      const { userUid, authToken } = data;
-      localStorage.setItem("userUid", userUid);
-      localStorage.setItem("authToken", authToken);
+    if (isSuccess) {
+      localStorage.setItem("uid", uid);
+      localStorage.setItem("accessToken", accessToken);
       toast({
         variant: "success",
         title: "Operation successful!",
@@ -56,13 +55,13 @@ const LoginPage = () => {
       toast({
         variant: "destructive",
         title: "Uh oh! Something went wrong.",
-        description: `${error.data.code}`,
+        description: `${error}`,
       });
     }
-  }, [isSuccess, data, isError, error, toast]);
+  }, [isSuccess, accessToken, uid, isError, error, toast]);
 
-  const onSubmit = (data) => {
-    loginUser(data);
+  const onSubmit = async (data) => {
+    signInUser(data.email, data.password);
   };
 
   return (
