@@ -9,7 +9,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import { PasswordInput } from "../components/ui/password-input";
-import { useRegisterUserMutation } from "@/redux/api/authApi";
 import { useToast } from "@/components/ui/use-toast";
 import { useState, useEffect } from "react";
 
@@ -38,6 +37,8 @@ import {
 import { Link } from "react-router-dom";
 import Steps from "../components/Steps";
 import { Plus, Trash2 } from "lucide-react";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/firebaseConfig";
 
 const STEP_TITLES = [
   "Personal Information",
@@ -61,16 +62,6 @@ const performerSchema = yup.object().shape({
 const RegistrationPage = () => {
   const [formStep, setFormStep] = useState(0);
 
-  const [
-    registerUser,
-    {
-      data: registerUserData,
-      isLoading: isRegisterUserLoading,
-      isSuccess: isRegisterUserSuccess,
-      isError: isRegisterUserError,
-      error: registerUserError,
-    },
-  ] = useRegisterUserMutation();
   const [
     addArtist,
     {
@@ -191,7 +182,7 @@ const RegistrationPage = () => {
     name: "performers",
   });
 
-  const formatDataForTheArtistTable = (data, userUid) => {
+  const formatDataForTheArtistTable = (data, uid) => {
     const body = {
       to: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
       data: [
@@ -209,7 +200,7 @@ const RegistrationPage = () => {
             value: data.phone,
           },
           10: {
-            value: userUid,
+            value: uid,
           },
           13: {
             value: data.street1,
@@ -249,7 +240,7 @@ const RegistrationPage = () => {
   const formatDataForTheArtistRegistrationTable = (
     data,
     artistRecordId,
-    userUid,
+    uid,
   ) => {
     const body = {
       to: import.meta.env.VITE_QUICKBASE_ARTIST_REGISTRATIONS_TABLE_ID,
@@ -268,7 +259,7 @@ const RegistrationPage = () => {
             value: data.phone,
           },
           13: {
-            value: userUid,
+            value: uid,
           },
           15: {
             value: data.street1,
@@ -366,22 +357,28 @@ const RegistrationPage = () => {
   };
 
   const isRequestLoading = () =>
-    isRegisterUserLoading ||
     isAddArtistLoading ||
     isAddArtistRegistrationLoading ||
     isAddPerformersLoading;
 
   const onSubmit = async (data) => {
-    const firebaseResponse = await registerUser(data);
-
-    const { userUid } = firebaseResponse.data;
-    const response = await addArtist(
-      formatDataForTheArtistTable(data, userUid),
+    const firebaseResponse = await createUserWithEmailAndPassword(
+      auth,
+      data.email,
+      data.password,
     );
 
+    const { uid, accessToken } = firebaseResponse.user;
+    localStorage.setItem("uid", uid);
+    localStorage.setItem("accessToken", accessToken);
+
+    const response = await addArtist(formatDataForTheArtistTable(data, uid));
+
     const artistRecordId = response.data.data[0][3].value;
+    localStorage.setItem("artistRecordId", artistRecordId);
+
     addArtistRegistration(
-      formatDataForTheArtistRegistrationTable(data, artistRecordId, userUid),
+      formatDataForTheArtistRegistrationTable(data, artistRecordId, uid),
       artistRecordId,
     );
 
@@ -390,8 +387,6 @@ const RegistrationPage = () => {
 
   useEffect(() => {
     if (
-      isRegisterUserSuccess &&
-      registerUserData &&
       isAddArtistSuccess &&
       addArtistData &&
       isAddArtistRegistrationSuccess &&
@@ -399,19 +394,15 @@ const RegistrationPage = () => {
       isAddPerformersSuccess &&
       addPerformersData
     ) {
-      const { userUid, authToken } = registerUserData;
-      localStorage.setItem("userUid", userUid);
-      localStorage.setItem("authToken", authToken);
       toast({
         variant: "success",
         title: "Operation successful!",
         description: "Your account has been created.",
       });
-      navigate("/dashboard");
+      navigate("/registration-gate");
     }
 
     if (
-      (isRegisterUserError && registerUserError) ||
       (isAddArtistError && addArtistError) ||
       (isAddArtistRegistrationError && addArtistRegistrationError) ||
       (isAddPerformersError && addPerformersError)
@@ -419,11 +410,7 @@ const RegistrationPage = () => {
       let errorTitle = "Uh oh! Something went wrong.";
       let errorMessage;
 
-      if (registerUserError) {
-        errorTitle = "Firebase Authentication error";
-        errorMessage = registerUserError.data.code;
-        console.log("registerUserError: ", registerUserError);
-      } else if (addArtistError) {
+      if (addArtistError) {
         console.log("addArtistError: ", addArtistError);
         errorTitle = "Error adding data to the Artists table";
         const { message, description } = addArtistError.data;
@@ -442,16 +429,12 @@ const RegistrationPage = () => {
       });
     }
   }, [
-    isRegisterUserSuccess,
     isAddArtistSuccess,
     isAddArtistRegistrationSuccess,
-    registerUserData,
     addArtistData,
     addArtistRegistrationData,
-    isRegisterUserError,
     isAddArtistError,
     isAddArtistRegistrationError,
-    registerUserError,
     addArtistError,
     addArtistRegistrationError,
     isAddPerformersSuccess,
