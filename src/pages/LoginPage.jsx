@@ -48,7 +48,7 @@ const LoginPage = () => {
         title: "Operation successful!",
         description: "You have logged in successfully!",
       });
-      navigate("/dashboard");
+      navigate("/registration-gate");
     }
 
     if (isError && error) {

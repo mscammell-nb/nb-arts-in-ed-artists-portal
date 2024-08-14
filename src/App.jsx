@@ -4,8 +4,9 @@ import RegistrationPage from "./pages/RegistrationPage";
 import LoginPage from "./pages/LoginPage";
 import ProtectedRoutesWrapper from "./auth/ProtectedRoutesWrapper";
 import RegistrationRenewalPage from "./pages/RegistrationRenewalPage";
-import DashboardPage from "./pages/DashboardPage";
+import RegistrationGate from "./pages/RegistrationGate";
 import EvaluationPage from "./pages/EvaluationPage";
+import PerformersPage from "./pages/PerformersPage";
 import store from "./redux/store";
 import { Provider } from "react-redux";
 
@@ -21,7 +22,8 @@ function App() {
               path="/registration-renewal"
               element={<RegistrationRenewalPage />}
             />
-            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/registration-gate" element={<RegistrationGate />} />
+            <Route path="/performers" element={<PerformersPage />} />
             <Route path="/evaluation" element={<EvaluationPage />} />
           </Route>
         </Route>

@@ -3,8 +3,9 @@ import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
 import { useState, useEffect } from "react";
 import Spinner from "../components/ui/Spinner";
 import PerformersPage from "./PerformersPage";
+import { Navigate } from "react-router-dom";
 
-const DashboardPage = () => {
+const RegistrationGate = () => {
   const userUid = localStorage.getItem("userUid");
   const {
     data: artistData,
@@ -28,7 +29,7 @@ const DashboardPage = () => {
     }
   }, [artistData]);
 
-  if (!artistData && !isArtistDataError) {
+  if (isArtisDataLoading) {
     return (
       <div className="flex h-full w-full justify-center pt-24">
         <Spinner />
@@ -53,9 +54,8 @@ const DashboardPage = () => {
   }
 
   if (isArtistDataSuccess) {
-    // TODO: change this to something that navigates you to the performers page
-    return <PerformersPage />;
+    return <Navigate to="/performers" />;
   }
 };
 
-export default DashboardPage;
+export default RegistrationGate;
