@@ -49,7 +49,7 @@ const STEP_TITLES = [
 const STEP_DESCRIPTIONS = [
   "Enter your personal information and click finish to move to the next step.",
   "Enter your address information and click finish to move to the next step.",
-  "Enter the information of all your performers and click finish to register.",
+  "Enter the information of all your performers and click finish to register. You can add more performers later.",
 ];
 
 const performerSchema = yup.object().shape({

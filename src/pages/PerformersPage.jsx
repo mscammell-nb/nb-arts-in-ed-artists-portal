@@ -340,6 +340,10 @@ const PerformersPage = () => {
     );
   }
 
+  if (performersData == undefined) {
+    return <p>No performers</p>
+  }
+
   return (
     !isPerformersLoading && (
       <div className="flex flex-col items-center">
