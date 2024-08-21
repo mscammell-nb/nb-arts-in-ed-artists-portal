@@ -33,7 +33,7 @@ const otherColor = {
   fillColor: "fill-gray-400",
 };
 
-const FileUpload = ({ scrollAreaHeight }) => {
+const FileUpload = () => {
   const [files, setFiles] = useState([]);
 
   const getFileIconAndColor = (file) => {
@@ -94,7 +94,7 @@ const FileUpload = ({ scrollAreaHeight }) => {
               </p>
               <p className="text-xs text-gray-500">
                 {/* TODO: may need to change this */}
-                Click to upload files &#40;files should be under 10 MB &#41;
+                Click to upload files &#40;files should be under 10 MB&#41;
               </p>
             </div>
           </label>
@@ -110,7 +110,7 @@ const FileUpload = ({ scrollAreaHeight }) => {
         {files.length > 0 && (
           <div>
             {/* TODO: research how to do this with tailwind merge */}
-            <ScrollArea className={`h-${scrollAreaHeight}`}>
+            <ScrollArea className="h-80">
               <p className="my-2 mt-6 text-sm font-medium text-muted-foreground">
                 Files to upload
               </p>
