@@ -1,85 +1,66 @@
 import { useDropzone } from "react-dropzone";
 import {
-  AudioWaveform,
-  File,
   FileImage,
-  FolderArchive,
   UploadCloud,
-  Video,
   X,
+  FileText,
+  FileVideo2,
+  FolderArchive,
 } from "lucide-react";
 import { useCallback, useState } from "react";
 import { Input } from "./ui/input";
-import { ScrollArea } from "@radix-ui/react-scroll-area";
+import { ScrollArea } from "./ui/scroll-area";
+import { getFileType } from "@/utils/getFileType";
 
 const FileTypes = Object.freeze({
+  TEXT: "text",
   IMAGE: "image",
-  PDF: "pdf",
-  AUDIO: "audio",
-  VIDEO: "",
-  OTHER: "",
+  VIDEO: "video",
 });
 
-const ImageColor = {
+const imageColor = {
   bgColor: "bg-purple-600",
   fillColor: "fill-purple-600",
 };
 
-const PdfColor = {
-  bgColor: "bg-blue-400",
-  fillColor: "fill-blue-400",
-};
-
-const AudioColor = {
-  bgColor: "bg-yellow-400",
-  fillColor: "fill-yellow-400",
-};
-
-const VideoColor = {
+const videoColor = {
   bgColor: "bg-green-400",
   fillColor: "fill-green-400",
 };
 
-const OtherColor = {
+const otherColor = {
   bgColor: "bg-gray-400",
   fillColor: "fill-gray-400",
 };
 
-const FileUpload = () => {
+const FileUpload = ({ scrollAreaHeight }) => {
   const [files, setFiles] = useState([]);
 
   const getFileIconAndColor = (file) => {
-    if (file.type.includes(FileTypes.IMAGE)) {
+    if (getFileType(file.type) === FileTypes.TEXT) {
       return {
-        icon: <FileImage size={40} className={ImageColor.fillColor} />,
-        color: ImageColor.bgColor,
+        icon: <FileText size={40} className={textColor.fillColor} />,
+        color: textColor.bgColor,
       };
     }
 
-    if (file.type.includes(FileTypes.PDF)) {
+    if (getFileType(file.type) === FileTypes.IMAGE) {
       return {
-        icon: <File size={40} className={PdfColor.fillColor} />,
-        color: PdfColor.bgColor,
+        icon: <FileImage size={40} className={imageColor.fillColor} />,
+        color: imageColor.bgColor,
       };
     }
 
-    if (file.type.includes(FileTypes.AUDIO)) {
+    if (getFileType(file.type) === FileTypes.VIDEO) {
       return {
-        icon: <AudioWaveform size={40} className={AudioColor.fillColor} />,
-        color: AudioColor.bgColor,
-      };
-    }
-
-    if (file.type.includes(FileTypes.VIDEO)) {
-      return {
-        icon: <Video size={40} className={VideoColor.fillColor} />,
-        color: VideoColor.bgColor,
+        icon: <FileVideo2 size={40} className={videoColor.fillColor} />,
+        color: videoColor.bgColor,
       };
     }
 
     return {
-      icon: <FolderArchive size={40} className={OtherColor.fillColor} />,
-      color: OtherColor.bgColor,
+      icon: <FolderArchive size={40} className={otherColor.fillColor} />,
+      color: otherColor.bgColor,
     };
   };
 
@@ -90,7 +71,7 @@ const FileUpload = () => {
   const onDrop = useCallback((acceptedFiles) => {
     // TODO: finish this function
     console.log(acceptedFiles);
-    setFiles(Array.from(acceptedFiles));
+    setFiles((prevFiles) => [...prevFiles, ...acceptedFiles]);
   }, []);
 
   const { getRootProps, getInputProps } = useDropzone({ onDrop });
@@ -101,7 +82,7 @@ const FileUpload = () => {
         <div>
           <label
             {...getRootProps()}
-            className="relative flex w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 py-6 hover:bg-gray-100 "
+            className="relative flex w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 py-6 hover:bg-gray-100"
           >
             <div className="text-center">
               <div className=" mx-auto max-w-min rounded-md border p-2">
@@ -128,7 +109,8 @@ const FileUpload = () => {
 
         {files.length > 0 && (
           <div>
-            <ScrollArea className="h-40">
+            {/* TODO: research how to do this with tailwind merge */}
+            <ScrollArea className={`h-${scrollAreaHeight}`}>
               <p className="my-2 mt-6 text-sm font-medium text-muted-foreground">
                 Files to upload
               </p>
@@ -147,7 +129,7 @@ const FileUpload = () => {
                         <div className="ml-2 w-full space-y-1">
                           <div className="flex justify-between text-sm">
                             <p className="text-muted-foreground ">
-                              {/* {fileUploadProgress.File.name.slice(0, 25)} */}
+                              {file.path}
                             </p>
                           </div>
                         </div>
