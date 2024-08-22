@@ -11,6 +11,7 @@ import { useCallback } from "react";
 import { Input } from "./ui/input";
 import { ScrollArea } from "./ui/scroll-area";
 import { getFileType } from "@/utils/getFileType";
+import { Button } from "./ui/button";
 
 const FileTypes = Object.freeze({
   TEXT: "text",
@@ -38,7 +39,13 @@ const otherColor = {
   fillColor: "fill-gray-400",
 };
 
-const FileUpload = ({ files, addFiles, removeFiles, documentType }) => {
+const FileUpload = ({
+  files,
+  addFiles,
+  removeFiles,
+  documentType,
+  resetFiles,
+}) => {
   const getFileIconAndColor = (file) => {
     if (getFileType(file.type) === FileTypes.TEXT) {
       return {
@@ -112,9 +119,19 @@ const FileUpload = ({ files, addFiles, removeFiles, documentType }) => {
         {files && files.length > 0 && (
           <div>
             <ScrollArea className="h-48">
-              <p className="my-2 mt-6 text-sm font-medium text-muted-foreground">
-                Files to upload
-              </p>
+              <div className="flex items-center justify-between">
+                <p className="my-2 mt-6 text-sm font-medium text-muted-foreground">
+                  Files to upload
+                </p>
+                <Button
+                  onClick={resetFiles}
+                  type="button"
+                  variant="destructive"
+                  size="sm"
+                >
+                  Clear files
+                </Button>
+              </div>
               <div className="space-y-2 pr-3">
                 {files.map((file) => {
                   return (
@@ -155,4 +172,3 @@ const FileUpload = ({ files, addFiles, removeFiles, documentType }) => {
 };
 
 export default FileUpload;
-// TODO: implement remove all files button

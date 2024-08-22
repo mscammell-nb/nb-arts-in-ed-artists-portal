@@ -26,7 +26,12 @@ const FileUploadPage = () => {
   });
   const [
     addArtistDocumentRecord,
-    { data, isLoading, isSuccess, isError, error },
+    {
+      isLoading: isAddArtistDocumentRecordLoading,
+      isSuccess: isAddArtistDocumentRecordSuccess,
+      isError: isAddArtistDocumentRecordError,
+      error: addArtistDocumentRecordError,
+    },
   ] = useAddOrUpdateRecordMutation();
 
   if (isDocumentTypesLoading) {
@@ -60,6 +65,9 @@ const FileUploadPage = () => {
       [documentType]: [...prev[documentType], ...updatedFiles],
     }));
   };
+
+  const resetFiles = (documentType) =>
+    setFileInputState((prev) => ({ ...prev, [documentType]: [] }));
 
   const removeFiles = (updatedFiles, documentType) => {
     setFileInputState((prev) => ({
@@ -128,6 +136,7 @@ const FileUploadPage = () => {
                   addFiles={addFiles}
                   removeFiles={removeFiles}
                   documentType={documentType}
+                  resetFiles={() => resetFiles(documentType)}
                 />
               </div>
             ))}
