@@ -4,7 +4,8 @@ import { useGetFieldQuery } from "@/redux/api/quickbaseApi";
 import Spinner from "@/components/ui/Spinner";
 
 const FileUploadPage = () => {
-  const [documentTypes, setdocumentTypes] = useState(null);
+  const [documentTypes, setDocumentTypes] = useState(null);
+  const [fileInputState, setFileInputState] = useState(null);
 
   const {
     data: documentTypesData,
@@ -32,23 +33,45 @@ const FileUploadPage = () => {
 
   if (isDocumentTypesSuccess && documentTypes === null) {
     console.log("DATA: ", documentTypesData); // TODO: delete this log later
-    setdocumentTypes(documentTypesData.properties.choices);
+
+    const documentTypes = documentTypesData.properties.choices;
+    setDocumentTypes(documentTypes);
+
+    const initialFileInputState = documentTypes.reduce((acc, documentType) => {
+      acc[documentType] = [];
+      return acc;
+    }, {});
+
+    setFileInputState(initialFileInputState);
   }
+
+  const setFiles = (files, documentType) => {
+    setFileInputState((prev) => ({ ...prev, [documentType]: files }));
+  };
 
   return (
     <div className="flex flex-col justify-center">
       <header>
         <h1 className="text-3xl font-semibold capitalize">file upload page</h1>
-        <p>
-          Click the dropzone below to upload your files. You can also drag and
-          drop your files into the dropzone.
-        </p>
+        <p>TODO: write description</p>
       </header>
-      <div>
-        <div className="w-3/4">
-          <FileUpload />
-        </div>
-      </div>
+      <section>
+        <form className="w-3/4">
+          {documentTypes &&
+            documentTypes.map((documentType) => (
+              <div key={documentType}>
+                <h2 className="text-lg font-semibold capitalize">
+                  {documentType}
+                </h2>
+                <FileUpload
+                  files={fileInputState[documentType]}
+                  setFiles={setFiles}
+                  documentType={documentType}
+                />
+              </div>
+            ))}
+        </form>
+      </section>
     </div>
   );
 };

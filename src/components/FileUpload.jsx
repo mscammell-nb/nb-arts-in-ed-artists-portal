@@ -33,8 +33,8 @@ const otherColor = {
   fillColor: "fill-gray-400",
 };
 
-const FileUpload = () => {
-  const [files, setFiles] = useState([]);
+const FileUpload = ({ files, setFiles, documentType }) => {
+  // const [files, setFiles] = useState([]);
 
   const getFileIconAndColor = (file) => {
     if (getFileType(file.type) === FileTypes.TEXT) {
@@ -65,13 +65,14 @@ const FileUpload = () => {
   };
 
   const removeFile = (file) => {
-    setFiles((prevFiles) => prevFiles.filter((item) => item !== file));
+    const filteredFiles = files.filter((item) => item !== file);
+    setFiles(filteredFiles);
   };
 
   const onDrop = useCallback((acceptedFiles) => {
     // TODO: finish this function
     console.log(acceptedFiles);
-    setFiles((prevFiles) => [...prevFiles, ...acceptedFiles]);
+    setFiles([...files, ...acceptedFiles], documentType);
   }, []);
 
   const { getRootProps, getInputProps } = useDropzone({ onDrop });
@@ -107,10 +108,9 @@ const FileUpload = () => {
           />
         </div>
 
-        {files.length > 0 && (
+        {files && files.length > 0 && (
           <div>
-            {/* TODO: research how to do this with tailwind merge */}
-            <ScrollArea className="h-80">
+            <ScrollArea className="h-48">
               <p className="my-2 mt-6 text-sm font-medium text-muted-foreground">
                 Files to upload
               </p>
@@ -153,3 +153,4 @@ const FileUpload = () => {
 };
 
 export default FileUpload;
+// TODO: implement remove all files button
