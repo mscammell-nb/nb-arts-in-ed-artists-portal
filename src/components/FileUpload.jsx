@@ -7,7 +7,7 @@ import {
   FileVideo2,
   FolderArchive,
 } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { Input } from "./ui/input";
 import { ScrollArea } from "./ui/scroll-area";
 import { getFileType } from "@/utils/getFileType";
@@ -23,6 +23,11 @@ const imageColor = {
   fillColor: "fill-purple-600",
 };
 
+const textColor = {
+  bgColor: "bg-blue-400",
+  fillColor: "fill-blue-400",
+};
+
 const videoColor = {
   bgColor: "bg-green-400",
   fillColor: "fill-green-400",
@@ -33,9 +38,7 @@ const otherColor = {
   fillColor: "fill-gray-400",
 };
 
-const FileUpload = ({ files, setFiles, documentType }) => {
-  // const [files, setFiles] = useState([]);
-
+const FileUpload = ({ files, addFiles, removeFiles, documentType }) => {
   const getFileIconAndColor = (file) => {
     if (getFileType(file.type) === FileTypes.TEXT) {
       return {
@@ -66,11 +69,11 @@ const FileUpload = ({ files, setFiles, documentType }) => {
 
   const removeFile = (file) => {
     const filteredFiles = files.filter((item) => item !== file);
-    setFiles(filteredFiles, documentType);
+    removeFiles(filteredFiles, documentType);
   };
 
   const onDrop = useCallback((acceptedFiles) => {
-    setFiles([...files, ...acceptedFiles], documentType);
+    addFiles([...files, ...acceptedFiles], documentType);
   }, []);
 
   const { getRootProps, getInputProps } = useDropzone({ onDrop });
@@ -133,6 +136,7 @@ const FileUpload = ({ files, setFiles, documentType }) => {
                         </div>
                       </div>
                       <button
+                        type="button"
                         onClick={() => removeFile(file)}
                         className="hidden cursor-pointer items-center justify-center bg-red-500 px-2 text-white transition-all group-hover:flex"
                       >

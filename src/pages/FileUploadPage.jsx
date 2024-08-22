@@ -45,8 +45,18 @@ const FileUploadPage = () => {
     setFileInputState(initialFileInputState);
   }
 
-  const setFiles = (files, documentType) => {
-    setFileInputState((prev) => ({ ...prev, [documentType]: files }));
+  const addFiles = (updatedFiles, documentType) => {
+    setFileInputState((prev) => ({
+      ...prev,
+      [documentType]: [...prev[documentType], ...updatedFiles],
+    }));
+  };
+
+  const removeFiles = (updatedFiles, documentType) => {
+    setFileInputState((prev) => ({
+      ...prev,
+      [documentType]: updatedFiles,
+    }));
   };
 
   return (
@@ -65,7 +75,8 @@ const FileUploadPage = () => {
                 </h2>
                 <FileUpload
                   files={fileInputState[documentType]}
-                  setFiles={setFiles}
+                  addFiles={addFiles}
+                  removeFiles={removeFiles}
                   documentType={documentType}
                 />
               </div>
