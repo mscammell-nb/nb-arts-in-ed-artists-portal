@@ -66,12 +66,10 @@ const FileUpload = ({ files, setFiles, documentType }) => {
 
   const removeFile = (file) => {
     const filteredFiles = files.filter((item) => item !== file);
-    setFiles(filteredFiles);
+    setFiles(filteredFiles, documentType);
   };
 
   const onDrop = useCallback((acceptedFiles) => {
-    // TODO: finish this function
-    console.log(acceptedFiles);
     setFiles([...files, ...acceptedFiles], documentType);
   }, []);
 
