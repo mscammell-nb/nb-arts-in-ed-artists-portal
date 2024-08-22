@@ -124,7 +124,7 @@ const FileUploadPage = () => {
         <p>TODO: write description</p>
       </header>
       <section>
-        <form onSubmit={handleSubmit} className="w-3/4">
+        <form id="documentUploadForm" onSubmit={handleSubmit} className="w-3/4">
           {documentTypes &&
             documentTypes.map((documentType) => (
               <div key={documentType}>
@@ -140,8 +140,10 @@ const FileUploadPage = () => {
                 />
               </div>
             ))}
-          <Button type="submit">Submit</Button>
         </form>
+        <Button form="documentUploadForm" type="submit">
+          Submit
+        </Button>
       </section>
     </div>
   );
