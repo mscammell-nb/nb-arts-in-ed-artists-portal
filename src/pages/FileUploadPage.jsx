@@ -7,6 +7,14 @@ import { Button } from "@/components/ui/button";
 import { getCurrentFiscalYearKey } from "@/utils/getCurrentFiscalYearKey";
 import { toBase64 } from "@/utils/toBase64";
 
+const INSTRUCTIONS = [
+  "To upload a file, click or drop the file into the dropzone.",
+  "You can attach multiple files to each dropzone if needed.",
+  "Hover over an attached file to reveal the remove file button. Click this button to remove a file.",
+  'Click the "Clear Files" button to remove all files attached to a dropzone.',
+  'When you are done, click the "Submit Files" button at the bottom of the page.',
+];
+
 const FileUploadPage = () => {
   const [documentTypes, setDocumentTypes] = useState(null);
   const [fileInputState, setFileInputState] = useState(null);
@@ -119,31 +127,54 @@ const FileUploadPage = () => {
 
   return (
     <div className="flex flex-col justify-center">
-      <header>
+      <header className="pb-10">
         <h1 className="text-3xl font-semibold capitalize">file upload page</h1>
-        <p>TODO: write description</p>
+        <p>You can attach your required documents here.</p>
       </header>
+      <section className="pb-10">
+        <h2 className="text-lg font-semibold">Instructions</h2>
+        <ul className="list-disc pl-5">
+          {INSTRUCTIONS.map((instruction) => (
+            <li key={instruction} className="my-1">
+              {instruction}
+            </li>
+          ))}
+        </ul>
+      </section>
+      {/* TODO: add success and failure toasts */}
+      {/* TODO: consider moving the form to its own component. This component would include the toasts */}
       <section>
-        <form id="documentUploadForm" onSubmit={handleSubmit} className="w-3/4">
-          {documentTypes &&
-            documentTypes.map((documentType) => (
-              <div key={documentType}>
-                <h2 className="text-lg font-semibold capitalize">
-                  {documentType}
-                </h2>
-                <FileUpload
-                  files={fileInputState[documentType]}
-                  addFiles={addFiles}
-                  removeFiles={removeFiles}
-                  documentType={documentType}
-                  resetFiles={() => resetFiles(documentType)}
-                />
-              </div>
-            ))}
+        <form id="documentUploadForm" onSubmit={handleSubmit} className="">
+          <div className="grid grid-cols-2 gap-10">
+            {documentTypes &&
+              documentTypes.map((documentType) => (
+                <div key={documentType}>
+                  <h3 className="mb-2 text-xl font-semibold capitalize">
+                    {documentType}
+                  </h3>
+                  <FileUpload
+                    files={fileInputState[documentType]}
+                    addFiles={addFiles}
+                    removeFiles={removeFiles}
+                    documentType={documentType}
+                    resetFiles={() => resetFiles(documentType)}
+                  />
+                </div>
+              ))}
+          </div>
         </form>
-        <Button form="documentUploadForm" type="submit">
-          Submit
-        </Button>
+        <div className="flex justify-center">
+          <Button
+            variant="bocesSecondary"
+            form="documentUploadForm"
+            type="submit"
+            size="lg"
+            isLoading={isAddArtistDocumentRecordLoading}
+            className="mt-10 w-60 uppercase"
+          >
+            Submit files
+          </Button>
+        </div>
       </section>
     </div>
   );
