@@ -110,7 +110,7 @@ const FileUploadForm = ({
   return (
     <>
       <form id="documentUploadForm" onSubmit={handleSubmit}>
-        <div className="grid grid-cols-2 gap-10">
+        <div className="grid grid-cols-3 gap-10">
           {documentTypes &&
             documentTypes.map((documentType) => (
               <div key={documentType}>
