@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import FileUpload from "@/components/FileUpload";
 import { useGetFieldQuery } from "@/redux/api/quickbaseApi";
 import { useAddOrUpdateRecordMutation } from "@/redux/api/quickbaseApi";
@@ -6,6 +6,7 @@ import Spinner from "@/components/ui/Spinner";
 import { Button } from "@/components/ui/button";
 import { getCurrentFiscalYearKey } from "@/utils/getCurrentFiscalYearKey";
 import { toBase64 } from "@/utils/toBase64";
+import { useToast } from "@/components/ui/use-toast";
 
 const INSTRUCTIONS = [
   "To upload a file, click or drop the file into the dropzone.",
@@ -21,6 +22,8 @@ const FileUploadPage = () => {
 
   // TODO: change this to use global state from Redux once the protected routes method has been improved
   const artistRecordId = localStorage.getItem("artistRecordId");
+
+  const { toast } = useToast();
 
   const {
     data: documentTypesData,
@@ -41,6 +44,29 @@ const FileUploadPage = () => {
       error: addArtistDocumentRecordError,
     },
   ] = useAddOrUpdateRecordMutation();
+
+  useEffect(() => {
+    if (isAddArtistDocumentRecordSuccess) {
+      toast({
+        variant: "success",
+        title: "Operation successful!",
+        description: "Your documents have been submitted.",
+      });
+    }
+
+    if (isAddArtistDocumentRecordError) {
+      console.error(addArtistDocumentRecordError);
+      toast({
+        variant: "destructive",
+        title: "Error submitting documents",
+        description: addArtistDocumentRecordError.data.message,
+      });
+    }
+  }, [
+    isAddArtistDocumentRecordSuccess,
+    isAddArtistDocumentRecordError,
+    addArtistDocumentRecordError,
+  ]);
 
   if (isDocumentTypesLoading) {
     return (
@@ -141,7 +167,6 @@ const FileUploadPage = () => {
           ))}
         </ul>
       </section>
-      {/* TODO: add success and failure toasts */}
       {/* TODO: consider moving the form to its own component. This component would include the toasts */}
       <section>
         <form id="documentUploadForm" onSubmit={handleSubmit} className="">
