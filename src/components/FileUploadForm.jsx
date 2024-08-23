@@ -5,6 +5,7 @@ import { toBase64 } from "@/utils/toBase64";
 import { useToast } from "@/components/ui/use-toast";
 import { useAddOrUpdateRecordMutation } from "@/redux/api/quickbaseApi";
 import FileUpload from "@/components/FileUpload";
+import { useNavigate } from "react-router-dom";
 
 const FileUploadForm = ({
   documentTypes,
@@ -15,6 +16,8 @@ const FileUploadForm = ({
 
   // TODO: change this to use global state from Redux once the protected routes method has been improved
   const artistRecordId = localStorage.getItem("artistRecordId");
+
+  const navigate = useNavigate();
 
   const [
     addArtistDocumentRecord,
@@ -33,6 +36,7 @@ const FileUploadForm = ({
         title: "Operation successful!",
         description: "Your documents have been submitted.",
       });
+      navigate("/registration-gate");
     }
 
     if (isAddArtistDocumentRecordError) {
