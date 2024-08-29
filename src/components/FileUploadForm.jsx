@@ -67,7 +67,10 @@ const FileUploadForm = ({
   const addFiles = (updatedFiles, documentType) => {
     setFileInputState((prev) => ({
       ...prev,
-      [documentType.documentName]: [...prev[documentType.documentName], ...updatedFiles],
+      [documentType.documentName]: [
+        ...prev[documentType.documentName],
+        ...updatedFiles,
+      ],
     }));
   };
 
@@ -77,7 +80,7 @@ const FileUploadForm = ({
   const removeFiles = (updatedFiles, documentType) => {
     setFileInputState((prev) => ({
       ...prev,
-      [documentType]: updatedFiles,
+      [documentType.documentName]: updatedFiles,
     }));
   };
 
