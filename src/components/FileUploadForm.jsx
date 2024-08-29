@@ -57,14 +57,17 @@ const FileUploadForm = ({
     e.preventDefault();
 
     documentTypes.forEach((documentType) => {
-      handleUploadFiles(fileInputState[documentType], documentType);
+      handleUploadFiles(
+        fileInputState[documentType.documentName],
+        documentType,
+      );
     });
   };
 
   const addFiles = (updatedFiles, documentType) => {
     setFileInputState((prev) => ({
       ...prev,
-      [documentType]: [...prev[documentType], ...updatedFiles],
+      [documentType.documentName]: [...prev[documentType.documentName], ...updatedFiles],
     }));
   };
 
@@ -117,16 +120,16 @@ const FileUploadForm = ({
         <div className="grid grid-cols-3 gap-10">
           {documentTypes &&
             documentTypes.map((documentType) => (
-              <div key={documentType}>
+              <div key={documentType.recordId}>
                 <h3 className="mb-2 text-xl font-semibold capitalize">
-                  {documentType}
+                  {documentType.documentName}
                 </h3>
                 <FileUpload
-                  files={fileInputState[documentType]}
+                  files={fileInputState[documentType.documentName]}
                   addFiles={addFiles}
                   removeFiles={removeFiles}
                   documentType={documentType}
-                  resetFiles={() => resetFiles(documentType)}
+                  resetFiles={() => resetFiles(documentType.documentName)}
                 />
               </div>
             ))}

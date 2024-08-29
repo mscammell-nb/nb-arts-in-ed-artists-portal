@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useGetFieldQuery } from "@/redux/api/quickbaseApi";
+import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
 import Spinner from "@/components/ui/Spinner";
 import FileUploadForm from "@/components/FileUploadForm";
 
@@ -21,9 +22,10 @@ const FileUploadPage = () => {
     isSuccess: isDocumentTypesSuccess,
     isError: isDocumentTypesError,
     error: documentTypesError,
-  } = useGetFieldQuery({
-    fieldId: 6,
-    tableId: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
+  } = useQueryForDataQuery({
+    from: import.meta.env.VITE_QUICKBASE_DOCUMENT_TYPES_TABLE_ID,
+    select: [3, 6, 12],
+    where: "{'13'.EX.'true'}",
   });
 
   if (isDocumentTypesLoading) {
@@ -40,11 +42,17 @@ const FileUploadPage = () => {
   }
 
   if (isDocumentTypesSuccess && documentTypes === null) {
-    const documentTypes = documentTypesData.properties.choices;
-    setDocumentTypes(documentTypes);
+    const data = documentTypesData.data;
+    setDocumentTypes(
+      data.map((record) => ({
+        recordId: record[3].value,
+        documentName: record[6].value,
+        docoumentDescription: record[12].value,
+      })),
+    );
 
-    const initialFileInputState = documentTypes.reduce((acc, documentType) => {
-      acc[documentType] = [];
+    const initialFileInputState = data.reduce((acc, documentType) => {
+      acc[documentType[6].value] = [];
       return acc;
     }, {});
 
