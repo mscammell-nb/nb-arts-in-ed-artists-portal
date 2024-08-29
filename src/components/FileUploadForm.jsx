@@ -99,14 +99,14 @@ const FileUploadForm = ({
               8: {
                 value: artistRecordId,
               },
-              6: {
-                value: documentType,
-              },
               7: {
                 value: {
                   fileName: file.name,
                   data: await toBase64(file),
                 },
+              },
+              15: {
+                value: documentType.recordId,
               },
             },
           ],
