@@ -399,7 +399,7 @@ const RegistrationPage = () => {
         title: "Operation successful!",
         description: "Your account has been created.",
       });
-      navigate("/registration-gate");
+      navigate("/file-upload");
     }
 
     if (
