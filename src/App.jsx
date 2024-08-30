@@ -7,6 +7,7 @@ import RegistrationRenewalPage from "./pages/RegistrationRenewalPage";
 import RegistrationGate from "./pages/RegistrationGate";
 import EvaluationPage from "./pages/EvaluationPage";
 import PerformersPage from "./pages/PerformersPage";
+import ProgramsPage from "./pages/ProgramsPage";
 import store from "./redux/store";
 import { Provider } from "react-redux";
 
@@ -24,6 +25,7 @@ function App() {
             />
             <Route path="/registration-gate" element={<RegistrationGate />} />
             <Route path="/performers" element={<PerformersPage />} />
+            <Route path="/programs" element={<ProgramsPage />} />
             <Route path="/evaluation" element={<EvaluationPage />} />
           </Route>
         </Route>
