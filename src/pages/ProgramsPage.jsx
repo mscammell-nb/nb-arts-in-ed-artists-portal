@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Select,
   SelectContent,
@@ -20,6 +21,8 @@ const BUTTON_LINKS = [
 ];
 
 const ProgramsPage = () => {
+  const [fiscalYear, setFiscalYear] = useState();
+
   const {
     data: fiscalYearsData,
     isError: isFiscalYearsDataError,
@@ -42,20 +45,28 @@ const ProgramsPage = () => {
     );
   }
 
+  const getCurrentFiscalYear = () => {
+    const currentYear = new Date().getFullYear();
+    const nextYear = currentYear + 1;
+    const nextYearLastTwoDigits = nextYear.toString().substring(2, 4);
+
+    return currentYear + "/" + nextYearLastTwoDigits;
+  };
+
   return (
     <>
       <div>
-        <Select>
+        <Select onValueChange={setFiscalYear} value={fiscalYear}>
           <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="2024-25" />
+            <SelectValue placeholder={getCurrentFiscalYear()} />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
               <SelectLabel>Fiscal years</SelectLabel>
               {fiscalYearsData &&
                 fiscalYearsData.data.map((item) => (
-                  <SelectItem key={item[3].value} value={item[6].value}>
-                    {item[6].value}
+                  <SelectItem key={item[3].value} value={"20" + item[6].value}>
+                    20{item[6].value}
                   </SelectItem>
                 ))}
             </SelectGroup>
