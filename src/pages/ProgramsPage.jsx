@@ -12,12 +12,23 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { buttonVariants } from "@/components/ui/button";
 import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
+import Table from "@/components/Table";
 
 const BUTTON_LINKS = [
   { label: "New Program", url: "/create-program", isTargetBlank: false },
   { label: "View-Pay Invoice", url: "/program-invoice", isTargetBlank: false },
-  { label: "View Conctracts", url: "/program-contracts", isTargetBlank: false },
+  { label: "View Contracts", url: "/program-contracts", isTargetBlank: false },
   { label: "Step-by-Step Help", url: "#", isTargetBlank: true },
+];
+
+const TABLE_HEADINGS = ["Program Group Legend"];
+const TABLE_ROWS = [
+  [
+    "1. Requires Printed Employees",
+    "4. Pending BOCES Administrator / Board Approval",
+  ],
+  ["2. Insurance Required", "5. Accepted"],
+  ["3. Unpaid", "6. Not Accepted"],
 ];
 
 const ProgramsPage = () => {
@@ -86,6 +97,8 @@ const ProgramsPage = () => {
           </Link>
         ))}
       </div>
+
+      <Table headings={TABLE_HEADINGS} rows={TABLE_ROWS} />
     </>
   );
 };
