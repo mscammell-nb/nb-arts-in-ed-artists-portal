@@ -8,11 +8,37 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { buttonVariants } from "@/components/ui/button";
 import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
 import Table from "@/components/Table";
+import DataTable from "@/components/DataTable";
+import { programTableColumns } from "@/utils/ProgramTableColumns";
+
+// delete later
+const columnData = [
+  {
+    dateCreated: "06/26/2024",
+    program: "Test Program",
+    paid: "Yes",
+    status: "Waiting",
+    programGroupLegend: "1. Requires Printed Employees",
+  },
+  {
+    dateCreated: "06/21/2024",
+    program: "Test Program 2",
+    paid: "No",
+    status: "Waiting",
+    programGroupLegend: "3. Unpaid",
+  },
+  {
+    dateCreated: "06/26/2024",
+    program: "Test Program 3",
+    paid: "Yes",
+    status: "Waiting",
+    programGroupLegend: "5. Accepted",
+  },
+];
 
 const BUTTON_LINKS = [
   { label: "New Program", url: "/create-program", isTargetBlank: false },
@@ -99,6 +125,8 @@ const ProgramsPage = () => {
       </div>
 
       <Table headings={TABLE_HEADINGS} rows={TABLE_ROWS} />
+
+      <DataTable columns={programTableColumns} data={columnData} />
     </>
   );
 };
