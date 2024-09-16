@@ -1,5 +1,21 @@
 import { ArrowUpDown } from "lucide-react";
+import {
+  CaretSortIcon,
+  CaretUpIcon,
+  CaretDownIcon,
+} from "@radix-ui/react-icons";
 import { Button } from "@/components/ui/button";
+
+const getSortIcon = (column) => {
+  switch (column.getIsSorted()) {
+    case "asc":
+      return <CaretUpIcon className="ml-2 h-4 w-4" />;
+    case "desc":
+      return <CaretDownIcon className="ml-2 h-4 w-4" />;
+    default:
+      return <CaretSortIcon className="ml-2 h-4 w-4" />;
+  }
+};
 
 export const programTableColumns = [
   {
@@ -10,7 +26,7 @@ export const programTableColumns = [
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
         Date Created
-        <ArrowUpDown className="ml-2 h-4 w-4" />
+        {getSortIcon(column)}
       </Button>
     ),
   },
@@ -21,8 +37,8 @@ export const programTableColumns = [
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        Program
-        <ArrowUpDown className="ml-2 h-4 w-4" />
+        Date Created
+        {getSortIcon(column)}
       </Button>
     ),
   },
@@ -33,8 +49,8 @@ export const programTableColumns = [
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        Paid
-        <ArrowUpDown className="ml-2 h-4 w-4" />
+        Date Created
+        {getSortIcon(column)}
       </Button>
     ),
   },
@@ -45,8 +61,8 @@ export const programTableColumns = [
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        Status
-        <ArrowUpDown className="ml-2 h-4 w-4" />
+        Date Created
+        {getSortIcon(column)}
       </Button>
     ),
   },
@@ -57,8 +73,8 @@ export const programTableColumns = [
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        Program Group Legend
-        <ArrowUpDown className="ml-2 h-4 w-4" />
+        Date Created
+        {getSortIcon(column)}
       </Button>
     ),
   },
