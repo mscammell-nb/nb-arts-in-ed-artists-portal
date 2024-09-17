@@ -18,19 +18,17 @@ import { Input } from "@/components/ui/input";
 
 const DataTable = ({ columns, data }) => {
   const [sorting, setSorting] = useState([]);
-  const [columnFilters, setColumnFilters] = useState([]);
 
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
-    onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
+    onSortingChange: setSorting,
+    globalFilterFn: "includesString",
     state: {
       sorting,
-      columnFilters,
     },
   });
 
@@ -38,10 +36,10 @@ const DataTable = ({ columns, data }) => {
     <>
       <div className="flex items-center py-4">
         <Input
-          placeholder="Filter programs..."
-          value={table.getColumn("program")?.getFilterValue() ?? ""}
+          placeholder="Search..."
+          value={table.getState().globalFilter ?? ""}
           onChange={(event) =>
-            table.getColumn("program")?.setFilterValue(event.target.value)
+            table.setGlobalFilter(String(event.target.value))
           }
           className="max-w-sm"
         />
