@@ -9,7 +9,7 @@ import {
   useQueryForDataQuery,
   useAddOrUpdateRecordMutation,
 } from "@/redux/api/quickbaseApi";
-import { parsePhoneNumber } from "@/utils/parsePhoneNumber";
+import { parsePhoneNumber } from "@/utils/utils";
 import {
   Form,
   FormControl,

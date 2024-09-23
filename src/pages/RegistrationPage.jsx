@@ -11,9 +11,8 @@ import { useNavigate } from "react-router-dom";
 import { PasswordInput } from "../components/ui/password-input";
 import { useToast } from "@/components/ui/use-toast";
 import { useState, useEffect } from "react";
-
-import { getCurrentFiscalYearKey } from "@/utils/getCurrentFiscalYearKey";
-import { capitalizeString } from "@/utils/capitalizeString";
+import { getCurrentFiscalYearKey } from "@/utils/utils";
+import { capitalizeString } from "@/utils/utils";
 import {
   Form,
   FormControl,

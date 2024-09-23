@@ -14,6 +14,8 @@ import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
 import Table from "@/components/Table";
 import DataTable from "@/components/DataTable";
 import { programTableColumns } from "@/utils/ProgramTableColumns";
+import { Label } from "@/components/ui/label";
+import { getCurrentFiscalYear } from "@/utils/utils";
 
 // delete later
 const columnData = [
@@ -58,7 +60,7 @@ const TABLE_ROWS = [
 ];
 
 const ProgramsPage = () => {
-  const [fiscalYear, setFiscalYear] = useState();
+  const [fiscalYear, setFiscalYear] = useState(getCurrentFiscalYear());
 
   const {
     data: fiscalYearsData,
@@ -82,52 +84,59 @@ const ProgramsPage = () => {
     );
   }
 
-  const getCurrentFiscalYear = () => {
-    const currentYear = new Date().getFullYear();
-    const nextYear = currentYear + 1;
-    const nextYearLastTwoDigits = nextYear.toString().substring(2, 4);
-
-    return currentYear + "/" + nextYearLastTwoDigits;
-  };
-
   return (
-    <>
-      <div>
-        <Select onValueChange={setFiscalYear} value={fiscalYear}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder={getCurrentFiscalYear()} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Fiscal years</SelectLabel>
-              {fiscalYearsData &&
-                fiscalYearsData.data.map((item) => (
-                  <SelectItem key={item[3].value} value={"20" + item[6].value}>
-                    20{item[6].value}
-                  </SelectItem>
-                ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div className="flex gap-4">
-        {BUTTON_LINKS.map((link, index) => (
-          <Link
-            key={index}
-            to={link.url}
-            target={link.isTargetBlank ? "_blank" : null}
-            className={buttonVariants({ variant: "bocesSecondary" })}
+    <div className="flex justify-center">
+      <div className="max-w-4xl">
+        <div>
+          <Label htmlFor="fiscalYearDropdown" className="text-lg font-semibold">
+            Fiscal Year
+          </Label>
+          <Select
+            id="fiscalYearDropdown"
+            onValueChange={setFiscalYear}
+            value={fiscalYear}
           >
-            {link.label}
-          </Link>
-        ))}
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder={getCurrentFiscalYear()} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Fiscal years</SelectLabel>
+                {fiscalYearsData &&
+                  fiscalYearsData.data.map((item) => (
+                    <SelectItem
+                      key={item[3].value}
+                      value={"20" + item[6].value}
+                    >
+                      20{item[6].value}
+                    </SelectItem>
+                  ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          <p className="mt-1">
+            Listed below are all programs for the school year of {fiscalYear}
+          </p>
+        </div>
+
+        <div className="mt-4 flex gap-4">
+          {BUTTON_LINKS.map((link, index) => (
+            <Link
+              key={index}
+              to={link.url}
+              target={link.isTargetBlank ? "_blank" : null}
+              className={buttonVariants({ variant: "bocesSecondary" })}
+            >
+              {link.label}
+            </Link>
+          ))}
+        </div>
+
+        <Table headings={TABLE_HEADINGS} rows={TABLE_ROWS} />
+
+        <DataTable columns={programTableColumns} data={columnData} />
       </div>
-
-      <Table headings={TABLE_HEADINGS} rows={TABLE_ROWS} />
-
-      <DataTable columns={programTableColumns} data={columnData} />
-    </>
+    </div>
   );
 };
 

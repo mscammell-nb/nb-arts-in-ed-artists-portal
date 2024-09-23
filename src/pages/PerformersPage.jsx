@@ -52,8 +52,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { getCurrentFiscalYearKey } from "@/utils/getCurrentFiscalYearKey";
-import { capitalizeString } from "@/utils/capitalizeString";
+import { getCurrentFiscalYearKey } from "@/utils/utils";
+import { capitalizeString } from "@/utils/utils";
 import Spinner from "../components/ui/Spinner";
 
 const schema = yup.object({
