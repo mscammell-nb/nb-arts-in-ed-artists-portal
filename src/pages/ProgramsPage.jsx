@@ -52,6 +52,7 @@ const formatProgramsData = (programsData) => {
   const { data } = programsData;
 
   return data.map((record) => ({
+    id: record[3].value,
     dateCreated: formatDate(new Date(record[1].value)),
     program: record[11].value,
     paid: record[31].value,
@@ -85,7 +86,7 @@ const ProgramsPage = () => {
   useEffect(() => {
     trigger({
       from: import.meta.env.VITE_QUICKBASE_PROGRAMS_TABLE_ID,
-      select: [1, 3, 8, 11, 14, 16, 31, 32, 33],
+      select: [1, 3, 8, 11, 16, 31, 32, 33],
       where: `{8.EX.${localStorage.getItem("artistRecordId")}}AND{16.EX.${fiscalYear}}`,
     });
   }, [fiscalYear, trigger]);
