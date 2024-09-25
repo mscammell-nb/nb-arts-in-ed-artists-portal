@@ -30,5 +30,5 @@ export const getCurrentFiscalYear = () => {
   const nextYear = currentYear + 1;
   const nextYearLastTwoDigits = nextYear.toString().substring(2, 4);
 
-  return currentYear + "/" + nextYearLastTwoDigits;
+  return String(currentYear).slice(2) + "/" + nextYearLastTwoDigits;
 };

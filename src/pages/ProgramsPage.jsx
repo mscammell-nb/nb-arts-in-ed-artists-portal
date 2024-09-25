@@ -38,8 +38,6 @@ const TABLE_ROWS = [
   ["3. Unpaid", "6. Not Accepted"],
 ];
 
-const formatFiscalYear = (fiscalYear) => `20${fiscalYear}`;
-
 const formatDate = (timestamp) => {
   const date = new Date(timestamp);
 
@@ -79,7 +77,6 @@ const ProgramsPage = () => {
     {
       data: programsData,
       isLoading: isProgramsDataLoading,
-      isSuccess: isProgramsDataSuccess,
       isError: isProgramsDataError,
       error: programsDataError,
     },
@@ -88,8 +85,8 @@ const ProgramsPage = () => {
   useEffect(() => {
     trigger({
       from: import.meta.env.VITE_QUICKBASE_PROGRAMS_TABLE_ID,
-      select: [3, 8, 14, 16, 1, 11, 31, 32, 33],
-      where: `{8.EX.${localStorage.getItem("artistRecordId")}}AND{16.EX.${fiscalYear.slice(2)}}`,
+      select: [1, 3, 8, 11, 14, 16, 31, 32, 33],
+      where: `{8.EX.${localStorage.getItem("artistRecordId")}}AND{16.EX.${fiscalYear}}`,
     });
   }, [fiscalYear, trigger]);
 
@@ -120,11 +117,6 @@ const ProgramsPage = () => {
     );
   }
 
-  // TODO: delete this later
-  if (isProgramsDataSuccess) {
-    console.log(programsData);
-  }
-
   return (
     <div className="flex justify-center pb-10">
       <div className="w-2/3 md:w-[920px]">
@@ -145,11 +137,8 @@ const ProgramsPage = () => {
                 <SelectLabel>Fiscal years</SelectLabel>
                 {fiscalYearsData &&
                   fiscalYearsData.data.map((item) => (
-                    <SelectItem
-                      key={item[3].value}
-                      value={formatFiscalYear(item[6].value)}
-                    >
-                      {formatFiscalYear(item[6].value)}
+                    <SelectItem key={item[3].value} value={item[6].value}>
+                      {item[6].value}
                     </SelectItem>
                   ))}
               </SelectGroup>
