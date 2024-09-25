@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Select,
   SelectContent,
@@ -10,7 +10,10 @@ import {
 } from "@/components/ui/select";
 import { Link } from "react-router-dom";
 import { buttonVariants } from "@/components/ui/button";
-import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
+import {
+  useQueryForDataQuery,
+  useLazyQueryForDataQuery,
+} from "@/redux/api/quickbaseApi";
 import Table from "@/components/Table";
 import DataTable from "@/components/DataTable";
 import { programTableColumns } from "@/utils/ProgramTableColumns";
@@ -34,6 +37,8 @@ const TABLE_ROWS = [
   ["2. Insurance Required", "5. Accepted"],
   ["3. Unpaid", "6. Not Accepted"],
 ];
+
+const formatFiscalYear = (fiscalYear) => `20${fiscalYear}`;
 
 const formatDate = (timestamp) => {
   const date = new Date(timestamp);
@@ -69,16 +74,24 @@ const ProgramsPage = () => {
     from: import.meta.env.VITE_QUICKBASE_FISCAL_YEARS_TABLE_ID,
     select: [3, 6],
   });
-  const {
-    data: programsData,
-    isLoading: isProgramsDataLoading,
-    isError: isProgramsDataError,
-    error: programsDataError,
-  } = useQueryForDataQuery({
-    from: import.meta.env.VITE_QUICKBASE_PROGRAMS_TABLE_ID,
-    select: [3, 8, 14, 1, 11, 31, 32, 33],
-    where: `{8.EX.${localStorage.getItem("artistRecordId")}}`,
-  });
+  const [
+    trigger,
+    {
+      data: programsData,
+      isLoading: isProgramsDataLoading,
+      isSuccess: isProgramsDataSuccess,
+      isError: isProgramsDataError,
+      error: programsDataError,
+    },
+  ] = useLazyQueryForDataQuery();
+
+  useEffect(() => {
+    trigger({
+      from: import.meta.env.VITE_QUICKBASE_PROGRAMS_TABLE_ID,
+      select: [3, 8, 14, 16, 1, 11, 31, 32, 33],
+      where: `{8.EX.${localStorage.getItem("artistRecordId")}}AND{16.EX.${fiscalYear.slice(2)}}`,
+    });
+  }, [fiscalYear, trigger]);
 
   if (isFiscalYearsDataLoading || isProgramsDataLoading) return <Spinner />;
 
@@ -107,9 +120,14 @@ const ProgramsPage = () => {
     );
   }
 
+  // TODO: delete this later
+  if (isProgramsDataSuccess) {
+    console.log(programsData);
+  }
+
   return (
     <div className="flex justify-center pb-10">
-      <div className="w-1/2">
+      <div className="w-2/3 md:w-[920px]">
         <div>
           <Label htmlFor="fiscalYearDropdown" className="text-lg font-semibold">
             Fiscal Year
@@ -129,9 +147,9 @@ const ProgramsPage = () => {
                   fiscalYearsData.data.map((item) => (
                     <SelectItem
                       key={item[3].value}
-                      value={"20" + item[6].value}
+                      value={formatFiscalYear(item[6].value)}
                     >
-                      20{item[6].value}
+                      {formatFiscalYear(item[6].value)}
                     </SelectItem>
                   ))}
               </SelectGroup>
