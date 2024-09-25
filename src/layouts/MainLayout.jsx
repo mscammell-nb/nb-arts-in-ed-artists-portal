@@ -21,7 +21,7 @@ const MainLayout = () => {
 
       <footer className="flex flex-col items-center bg-bocesPrimary p-5 text-sm text-white">
         <p>
-          &copy; 2024 Nassau BOCES. All Rights Reserved.{" "}
+          &copy; {new Date().getUTCFullYear()} Nassau BOCES. All Rights Reserved.{" "}
           <a
             className="underline"
             href="https://nbws.nasboces.org/artsined/main/company/terms.asp"

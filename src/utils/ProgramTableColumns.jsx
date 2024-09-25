@@ -36,7 +36,7 @@ export const programTableColumns = [
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        Date Created
+        Program
         {getSortIcon(column)}
       </Button>
     ),
@@ -48,7 +48,7 @@ export const programTableColumns = [
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        Date Created
+        Paid
         {getSortIcon(column)}
       </Button>
     ),
@@ -60,7 +60,7 @@ export const programTableColumns = [
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        Date Created
+        Status
         {getSortIcon(column)}
       </Button>
     ),
@@ -72,7 +72,7 @@ export const programTableColumns = [
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        Date Created
+        Program Group Legend
         {getSortIcon(column)}
       </Button>
     ),

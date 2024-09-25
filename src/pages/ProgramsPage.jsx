@@ -16,31 +16,7 @@ import DataTable from "@/components/DataTable";
 import { programTableColumns } from "@/utils/ProgramTableColumns";
 import { Label } from "@/components/ui/label";
 import { getCurrentFiscalYear } from "@/utils/utils";
-
-// delete later
-const columnData = [
-  {
-    dateCreated: "06/26/2024",
-    program: "Test Program",
-    paid: "Yes",
-    status: "Waiting",
-    programGroupLegend: "1. Requires Printed Employees",
-  },
-  {
-    dateCreated: "06/21/2024",
-    program: "Test Program 2",
-    paid: "No",
-    status: "Waiting",
-    programGroupLegend: "3. Unpaid",
-  },
-  {
-    dateCreated: "06/26/2024",
-    program: "Test Program 3",
-    paid: "Yes",
-    status: "Waiting",
-    programGroupLegend: "5. Accepted",
-  },
-];
+import Spinner from "@/components/ui/Spinner";
 
 const BUTTON_LINKS = [
   { label: "New Program", url: "/create-program", isTargetBlank: false },
@@ -59,23 +35,58 @@ const TABLE_ROWS = [
   ["3. Unpaid", "6. Not Accepted"],
 ];
 
+const formatDate = (timestamp) => {
+  const date = new Date(timestamp);
+
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(date.getUTCDate()).padStart(2, "0");
+  const year = date.getUTCFullYear();
+
+  return `${month}/${day}/${year}`;
+};
+
+const formatProgramsData = (programsData) => {
+  const { data } = programsData;
+
+  return data.map((record) => ({
+    dateCreated: formatDate(new Date(record[1].value)),
+    program: record[11].value,
+    paid: record[31].value,
+    status: record[32].value,
+    programGroupLegend: record[33].value,
+  }));
+};
+
 const ProgramsPage = () => {
   const [fiscalYear, setFiscalYear] = useState(getCurrentFiscalYear());
 
   const {
     data: fiscalYearsData,
+    isLoading: isFiscalYearsDataLoading,
     isError: isFiscalYearsDataError,
     error: fiscalYearsDataError,
   } = useQueryForDataQuery({
     from: import.meta.env.VITE_QUICKBASE_FISCAL_YEARS_TABLE_ID,
     select: [3, 6],
   });
+  const {
+    data: programsData,
+    isLoading: isProgramsDataLoading,
+    isError: isProgramsDataError,
+    error: programsDataError,
+  } = useQueryForDataQuery({
+    from: import.meta.env.VITE_QUICKBASE_PROGRAMS_TABLE_ID,
+    select: [3, 8, 14, 1, 11, 31, 32, 33],
+    where: `{8.EX.${localStorage.getItem("artistRecordId")}}`,
+  });
+
+  if (isFiscalYearsDataLoading || isProgramsDataLoading) return <Spinner />;
 
   if (isFiscalYearsDataError) {
     console.error(fiscalYearsDataError);
     return (
       <>
-        <p>There was an error getting the fiscal years data.</p>
+        <p>There was an error while fetching the fiscal years data.</p>
         <p>
           Status: {fiscalYearsDataError.status} -{" "}
           {fiscalYearsDataError.data.message}
@@ -84,9 +95,21 @@ const ProgramsPage = () => {
     );
   }
 
+  if (isProgramsDataError) {
+    console.error(programsDataError);
+    return (
+      <>
+        <p>There was an error while fetching the programs data.</p>
+        <p>
+          Status: {programsDataError.status} - {programsDataError.data.message}
+        </p>
+      </>
+    );
+  }
+
   return (
-    <div className="flex justify-center">
-      <div className="max-w-4xl">
+    <div className="flex justify-center pb-10">
+      <div className="w-1/2">
         <div>
           <Label htmlFor="fiscalYearDropdown" className="text-lg font-semibold">
             Fiscal Year
@@ -134,7 +157,10 @@ const ProgramsPage = () => {
 
         <Table headings={TABLE_HEADINGS} rows={TABLE_ROWS} />
 
-        <DataTable columns={programTableColumns} data={columnData} />
+        <DataTable
+          columns={programTableColumns}
+          data={formatProgramsData(programsData)}
+        />
       </div>
     </div>
   );
