@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Select,
   SelectContent,
@@ -10,10 +10,7 @@ import {
 } from "@/components/ui/select";
 import { Link } from "react-router-dom";
 import { buttonVariants } from "@/components/ui/button";
-import {
-  useQueryForDataQuery,
-  useLazyQueryForDataQuery,
-} from "@/redux/api/quickbaseApi";
+import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
 import Table from "@/components/Table";
 import DataTable from "@/components/DataTable";
 import { programTableColumns } from "@/utils/ProgramTableColumns";
@@ -73,23 +70,19 @@ const ProgramsPage = () => {
     from: import.meta.env.VITE_QUICKBASE_FISCAL_YEARS_TABLE_ID,
     select: [3, 6],
   });
-  const [
-    trigger,
+  const {
+    data: programsData,
+    isLoading: isProgramsDataLoading,
+    isError: isProgramsDataError,
+    error: programsDataError,
+  } = useQueryForDataQuery(
     {
-      data: programsData,
-      isLoading: isProgramsDataLoading,
-      isError: isProgramsDataError,
-      error: programsDataError,
-    },
-  ] = useLazyQueryForDataQuery();
-
-  useEffect(() => {
-    trigger({
       from: import.meta.env.VITE_QUICKBASE_PROGRAMS_TABLE_ID,
       select: [1, 3, 8, 11, 16, 31, 32, 33],
       where: `{8.EX.${localStorage.getItem("artistRecordId")}}AND{16.EX.${fiscalYear}}`,
-    });
-  }, [fiscalYear, trigger]);
+    },
+    { skip: !fiscalYear },
+  );
 
   if (isFiscalYearsDataLoading || isProgramsDataLoading) return <Spinner />;
 
