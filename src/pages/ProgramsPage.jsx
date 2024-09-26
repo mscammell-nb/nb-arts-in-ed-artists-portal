@@ -144,16 +144,20 @@ const ProgramsPage = () => {
         </div>
 
         <div className="mt-4 flex gap-4">
-          {BUTTON_LINKS.map((link, index) => (
-            <Link
-              key={index}
-              to={link.url}
-              target={link.isTargetBlank ? "_blank" : null}
-              className={buttonVariants({ variant: "bocesSecondary" })}
-            >
-              {link.label}
-            </Link>
-          ))}
+          {BUTTON_LINKS.map(
+            (link, index) =>
+              (link.label !== "New Program" ||
+                fiscalYear === getCurrentFiscalYear()) && (
+                <Link
+                  key={index}
+                  to={link.url}
+                  target={link.isTargetBlank ? "_blank" : null}
+                  className={buttonVariants({ variant: "bocesSecondary" })}
+                >
+                  {link.label}
+                </Link>
+              ),
+          )}
         </div>
 
         <Table headings={TABLE_HEADINGS} rows={TABLE_ROWS} />
