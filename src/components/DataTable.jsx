@@ -4,6 +4,7 @@ import {
   useReactTable,
   getSortedRowModel,
   getFilteredRowModel,
+  getPaginationRowModel,
 } from "@tanstack/react-table";
 import {
   Table,
@@ -15,8 +16,9 @@ import {
 } from "@/components/ui/table";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
+import { Button } from "./ui/button";
 
-const DataTable = ({ columns, data }) => {
+const DataTable = ({ columns, data, usePagination = false }) => {
   const [sorting, setSorting] = useState([]);
 
   const table = useReactTable({
@@ -25,6 +27,7 @@ const DataTable = ({ columns, data }) => {
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: usePagination ? getPaginationRowModel() : null,
     onSortingChange: setSorting,
     globalFilterFn: "includesString",
     state: {
@@ -94,6 +97,26 @@ const DataTable = ({ columns, data }) => {
           </TableBody>
         </Table>
       </div>
+      {usePagination && (
+        <div className="flex items-center justify-end space-x-2 py-4">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            Next
+          </Button>
+        </div>
+      )}
     </>
   );
 };

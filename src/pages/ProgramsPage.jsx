@@ -52,7 +52,7 @@ const formatProgramsData = (programsData) => {
     id: record[3].value,
     dateCreated: formatDate(new Date(record[1].value)),
     program: record[11].value,
-    paid: record[31].value,
+    paid: record[31].value ? "Yes" : "No",
     status: record[32].value,
     programGroupLegend: record[33].value,
   }));
@@ -161,6 +161,7 @@ const ProgramsPage = () => {
         <DataTable
           columns={programTableColumns}
           data={formatProgramsData(programsData)}
+          usePagination
         />
       </div>
     </div>
