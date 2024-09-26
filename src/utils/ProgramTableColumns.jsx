@@ -42,18 +42,6 @@ export const programTableColumns = [
     ),
   },
   {
-    accessorKey: "paid",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Paid
-        {getSortIcon(column)}
-      </Button>
-    ),
-  },
-  {
     accessorKey: "status",
     header: ({ column }) => (
       <Button
@@ -61,18 +49,6 @@ export const programTableColumns = [
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
         Status
-        {getSortIcon(column)}
-      </Button>
-    ),
-  },
-  {
-    accessorKey: "programGroupLegend",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Program Group Legend
         {getSortIcon(column)}
       </Button>
     ),
