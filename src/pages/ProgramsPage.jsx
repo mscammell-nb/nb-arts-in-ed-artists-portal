@@ -141,7 +141,7 @@ const ProgramsPage = () => {
                   key={index}
                   to={link.url}
                   target={link.isTargetBlank ? "_blank" : null}
-                  className={buttonVariants({ variant: "" })}
+                  className={buttonVariants({ variant: "lighter" })}
                 >
                   {link.label}
                 </Link>

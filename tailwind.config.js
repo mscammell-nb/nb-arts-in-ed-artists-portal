@@ -33,7 +33,7 @@ module.exports = {
         },
         lighter: {
           DEFAULT: "hsl(var(--lighter))",
-          foreground: "lighter-foreground",
+          foreground: "hsl(var(--lighter-foreground))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
