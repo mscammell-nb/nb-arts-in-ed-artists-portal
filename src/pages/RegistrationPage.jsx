@@ -336,7 +336,6 @@ const RegistrationPage = () => {
           }}
           disabled={!isValid}
           type="button"
-          variant="bocesPrimary"
         >
           Next
         </Button>
@@ -344,7 +343,6 @@ const RegistrationPage = () => {
     } else if (formStep === 2) {
       return (
         <Button
-          variant="bocesPrimary"
           disabled={!isValid || isRequestLoading()}
           isLoading={isRequestLoading()}
           type="submit"
@@ -771,7 +769,6 @@ const RegistrationPage = () => {
                   <Button
                     type="button"
                     size="sm"
-                    variant="bocesSecondary"
                     disabled={!isValid}
                     onClick={() =>
                       append({

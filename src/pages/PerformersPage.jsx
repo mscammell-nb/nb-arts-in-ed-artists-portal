@@ -359,7 +359,6 @@ const PerformersPage = () => {
                         <TooltipTrigger>
                           <Badge
                             onClick={() => closeFilter(filter.label)}
-                            variant="bocesPrimary"
                             asCloseButton
                             className="cursor-pointer rounded-full"
                           >
@@ -397,7 +396,7 @@ const PerformersPage = () => {
               <div className="flex gap-x-1.5">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="bocesPrimary" size="sm">
+                    <Button size="sm">
                       <ListFilter
                         className="mr-1 h-4 w-4"
                         size={20}
@@ -445,7 +444,6 @@ const PerformersPage = () => {
                   <DialogTrigger asChild>
                     <Button
                       size="sm"
-                      variant="bocesPrimary"
                       onClick={() => {
                         addPerformerForm.reset();
                       }}
@@ -508,7 +506,6 @@ const PerformersPage = () => {
                           />
                           <DialogFooter>
                             <Button
-                              variant="bocesPrimary"
                               type="submit"
                               isLoading={isNewPerformerLoading}
                             >
@@ -699,7 +696,6 @@ const PerformersPage = () => {
                                           <Button
                                             // Note we're using the same loading boolean for adding and editing a performer
                                             isLoading={isNewPerformerLoading}
-                                            variant="bocesPrimary"
                                           >
                                             Save
                                           </Button>

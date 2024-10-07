@@ -413,7 +413,6 @@ const RegistrationRenewalPage = () => {
 
               <Button
                 type="submit"
-                variant="bocesPrimary"
                 className="mt-7 w-full"
                 disabled={isNewArtistRegistrationLoading}
               >

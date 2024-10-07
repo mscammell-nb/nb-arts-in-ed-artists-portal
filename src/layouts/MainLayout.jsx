@@ -19,7 +19,7 @@ const MainLayout = () => {
         <Outlet />
       </main>
 
-      <footer className="flex flex-col items-center bg-bocesPrimary p-5 text-sm text-white">
+      <footer className="flex flex-col items-center bg-darker p-5 text-sm text-white">
         <p>
           &copy; {new Date().getUTCFullYear()} Nassau BOCES. All Rights
           Reserved.

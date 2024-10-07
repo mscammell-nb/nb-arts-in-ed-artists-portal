@@ -12,16 +12,16 @@ const Steps = ({ stepTitles, formStep }) => {
               key={index}
               className={`relative flex items-center gap-2 bg-gray-50 p-2 ${
                 index < stepTitles.length - 1 &&
-                `after:absolute after:left-full after:top-1/2 after:h-0.5 after:w-full after:-translate-y-1/2 ${index < formStep ? "after:bg-bocesPrimary" : "after:bg-gray-300"} after:content-[""]`
+                `after:absolute after:left-full after:top-1/2 after:h-0.5 after:w-full after:-translate-y-1/2 ${index < formStep ? "after:bg-primary" : "after:bg-gray-300"} after:content-[""]`
               }`}
             >
               <span
-                className={`flex size-11 items-center justify-center rounded-full font-bold ${index === formStep && "border-2 border-bocesPrimary"} ${index < formStep ? "bg-bocesPrimary text-white" : "bg-gray-300"}`}
+                className={`flex size-11 items-center justify-center rounded-full font-bold ${index === formStep && "border-2 border-primary"} ${index < formStep ? "bg-primary text-white" : "bg-gray-300"}`}
               >
                 {index < formStep ? <Check size="18px" /> : index + 1}
               </span>
               <span
-                className={`hidden sm:block ${index <= formStep && "text-bocesPrimary"}`}
+                className={`hidden sm:block ${index <= formStep && "text-primary"}`}
               >
                 {stepTitle}
               </span>
