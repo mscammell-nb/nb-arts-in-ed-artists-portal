@@ -100,11 +100,19 @@ const DataTable = ({ columns, data, usePagination = false }) => {
       {usePagination && (
         <div className="flex items-center justify-between">
           <div className="text-muted-foreground">
-            Page {table.getState().pagination.pageIndex + 1} of{" "}
+            Showing page {table.getState().pagination.pageIndex + 1} of{" "}
             {table.getPageCount()}.
           </div>
 
           <div className="flex items-center justify-end space-x-2 py-4">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.firstPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              First
+            </Button>
             <Button
               variant="outline"
               size="sm"
@@ -120,6 +128,14 @@ const DataTable = ({ columns, data, usePagination = false }) => {
               disabled={!table.getCanNextPage()}
             >
               Next
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.lastPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              Last
             </Button>
           </div>
         </div>
