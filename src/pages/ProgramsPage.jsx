@@ -18,7 +18,7 @@ import { getCurrentFiscalYear } from "@/utils/utils";
 import Spinner from "@/components/ui/Spinner";
 
 const BUTTON_LINKS = [
-  { label: "New Program", url: "/create-program", isTargetBlank: false },
+  { label: "New Program", url: "/new-program", isTargetBlank: false },
   { label: "View-Pay Invoice", url: "/program-invoice", isTargetBlank: false },
   { label: "View Contracts", url: "/program-contracts", isTargetBlank: false },
   { label: "Step-by-Step Help", url: "#", isTargetBlank: true },
