@@ -22,6 +22,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 
 const GRADES = ["PK", "K", 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 const CATEGORIES = [
@@ -195,25 +198,68 @@ const KEYWORD_GROUPS = [
   },
 ];
 
+const schema = yup.object({
+  title: yup.string().required(),
+  description: yup.string().required(),
+  location: yup.string().oneOf(["in-school", "out-of-school"]).required(),
+  grades: yup
+    .array()
+    .of(yup.string())
+    .min(1, "At least one option must be selected"),
+  category: yup.array().min(1, "At least one option must be selected"),
+  keywords: yup.array().min(1, "At least one option must be selected"),
+  cost: yup.number().required().positive("Value must be positive"),
+  serviceType: yup
+    .string()
+    .oneOf(["workshop", "performance", "residency", "workshop-&-performance"]),
+  length: yup
+    .string()
+    .oneOf(["30-44-min", "45-59-min", "60-89-min", "90-199-min", "120+min"]),
+  performers: yup.number().required().positive("Value must be positive"),
+  costDetails: yup.string().required(),
+});
+
 const NewProgramPage = () => {
   const [selectedKeywords, setSelectedKeywords] = useState([]);
 
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema),
+    defaultValues: {
+      grades: [],
+    },
+  });
+
+  const onSubmit = (data) => {
+    console.log(data);
+  };
+
+  console.log("ERRORS: ", errors);
+  console.log("Grades:", watch("grades"));
   return (
-    <>
-      <Card>
+    <div className="py-5">
+      <Card className="mx-auto max-w-[600px]">
         <CardHeader>
           <CardTitle>Add New Program</CardTitle>
           <CardDescription>
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Harum rem
-            ad, similique enim quia debitis provident optio magnam consequuntur
-            laborum?
+            Fill out this form to add a new program.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <div>
               <Label htmlFor="title">Title</Label>
-              <Input id="title" type="text" placeholder="Type here..." />
+              <Input
+                id="title"
+                type="text"
+                placeholder="Type here..."
+                {...register("title")}
+              />
             </div>
 
             <div>
@@ -222,17 +268,31 @@ const NewProgramPage = () => {
                 id="description"
                 type="text"
                 placeholder="Type here..."
+                className="min-h-40"
+                {...register("description")}
               />
             </div>
 
             <RadioGroup>
               <h2>Location</h2>
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="in-school" id="in-school" />
+                <RadioGroupItem
+                  value="in-school"
+                  id="in-school"
+                  {...register("location", {
+                    required: "Please select a location",
+                  })}
+                />
                 <Label htmlFor="in-school">In school</Label>
               </div>
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="out-of-school" id="out-of-school" />
+                <RadioGroupItem
+                  value="out-of-school"
+                  id="out-of-school"
+                  {...register("location", {
+                    required: "Please select a location",
+                  })}
+                />
                 <Label htmlFor="out-of-school">Out of school</Label>
               </div>
             </RadioGroup>
@@ -241,7 +301,12 @@ const NewProgramPage = () => {
               <h2>Grades</h2>
               {GRADES.map((grade) => (
                 <div key={grade}>
-                  <Checkbox id={grade} />
+                  <Checkbox
+                    id={grade}
+                    className="my-1 mr-1"
+                    value={grade}
+                    {...register("grades")}
+                  />
                   <Label
                     htmlFor={grade}
                     className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -256,7 +321,11 @@ const NewProgramPage = () => {
               <h2>Category</h2>
               {CATEGORIES.map((category) => (
                 <div key={category}>
-                  <Checkbox id={category} />
+                  <Checkbox
+                    id={category}
+                    className="my-1 mr-1"
+                    {...register("category")}
+                  />
                   <Label
                     htmlFor={category}
                     className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -277,6 +346,7 @@ const NewProgramPage = () => {
                 variant="inverted"
                 animation={2}
                 maxCount={72}
+                {...register("keywords")}
               />
             </div>
 
@@ -287,12 +357,13 @@ const NewProgramPage = () => {
                 type="number"
                 placeholder="Type here..."
                 min="0"
+                {...register("cost")}
               />
             </div>
 
             <div>
               <Label htmlFor="service-type">Service Type</Label>
-              <Select id="service-type">
+              <Select id="service-type" {...register("serviceType")}>
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Select a service type" />
                 </SelectTrigger>
@@ -312,7 +383,7 @@ const NewProgramPage = () => {
 
             <div>
               <Label htmlFor="length">Length</Label>
-              <Select id="length">
+              <Select id="length" {...register("length")}>
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Select length" />
                 </SelectTrigger>
@@ -336,21 +407,27 @@ const NewProgramPage = () => {
                 type="number"
                 placeholder="Type here..."
                 min="0"
+                {...register("performers")}
               />
             </div>
 
             <div>
               <Label htmlFor="cost-details">Cost Details</Label>
-              <Textarea id="cost-details" placeholder="Type here..." />
+              <Textarea
+                id="cost-details"
+                placeholder="Type here..."
+                className="min-h-40"
+                {...register("costDetails")}
+              />
             </div>
 
-            <Button className="w-full" size="lg">
+            <Button className="w-full" size="lg" type="submit">
               Submit
             </Button>
           </form>
         </CardContent>
       </Card>
-    </>
+    </div>
   );
 };
 
