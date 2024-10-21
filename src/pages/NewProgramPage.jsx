@@ -22,9 +22,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
 
 const GRADES = ["PK", "K", 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 const CATEGORIES = [
@@ -198,49 +195,212 @@ const KEYWORD_GROUPS = [
   },
 ];
 
-const schema = yup.object({
-  title: yup.string().required(),
-  description: yup.string().required(),
-  location: yup.string().oneOf(["in-school", "out-of-school"]).required(),
-  grades: yup
-    .array()
-    .of(yup.string())
-    .min(1, "At least one option must be selected"),
-  category: yup.array().min(1, "At least one option must be selected"),
-  keywords: yup.array().min(1, "At least one option must be selected"),
-  cost: yup.number().required().positive("Value must be positive"),
-  serviceType: yup
-    .string()
-    .oneOf(["workshop", "performance", "residency", "workshop-&-performance"]),
-  length: yup
-    .string()
-    .oneOf(["30-44-min", "45-59-min", "60-89-min", "90-199-min", "120+min"]),
-  performers: yup.number().required().positive("Value must be positive"),
-  costDetails: yup.string().required(),
-});
+const MIN_INPUT_LENGTH = 8;
+const MIN_TEXTAREA_LENGTH = 15;
 
 const NewProgramPage = () => {
   const [selectedKeywords, setSelectedKeywords] = useState([]);
-
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    watch,
-    formState: { errors },
-  } = useForm({
-    resolver: yupResolver(schema),
-    defaultValues: {
-      grades: [],
+  // This object handles the fields of the form that don't work well with React Hook Form's validation.
+  const [formValues, setFormValues] = useState({
+    title: "",
+    description: "",
+    location: null,
+    grades: [],
+    categories: [],
+    cost: 0,
+    serviceType: null,
+    lenght: null,
+    performers: 0,
+    costDetails: "",
+  });
+  const [formErrors, setFormErrors] = useState({
+    titleError: {
+      isTriggered: false,
+      message: "",
+    },
+    descriptionError: {
+      isTriggered: false,
+      message: "",
+    },
+    locationError: {
+      isTriggered: false,
+      message: "",
+    },
+    gradesError: {
+      isTriggered: false,
+      message: "",
+    },
+    categoryError: {
+      isTriggered: false,
+      message: "",
+    },
+    keywordsError: {
+      isTriggered: false,
+      message: "",
+    },
+    costError: {
+      isTriggered: false,
+      message: "",
+    },
+    serviceTypeError: {
+      isTriggered: false,
+      message: "",
+    },
+    lengthError: {
+      isTriggered: false,
+      message: "",
+    },
+    performersError: {
+      isTriggered: false,
+      message: "",
+    },
+    costDetailsError: {
+      isTriggered: false,
+      message: "",
     },
   });
 
-  const onSubmit = (data) => {
-    console.log(data);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    // for (const key in formErrors) {
+    //   setFormErrors((prev) => ({
+    //     ...prev,
+    //     [key]: { isTriggered: false, message: "" },
+    //   }));
+    // }
+
+    let isError = false;
+
+    if (formValues.title.length < MIN_INPUT_LENGTH) {
+      isError = true;
+      setFormErrors((prev) => ({
+        ...prev,
+        titleError: {
+          isTriggered: true,
+          message: `Title must be at least ${MIN_INPUT_LENGTH} characters long`,
+        },
+      }));
+    }
+
+    if (formValues.description.length < MIN_TEXTAREA_LENGTH) {
+      isError = true;
+      setFormErrors((prev) => ({
+        ...prev,
+        descriptionError: {
+          isTriggered: true,
+          message: `Description must be at least ${MIN_TEXTAREA_LENGTH} characters long`,
+        },
+      }));
+    }
+
+    if (formValues.location === null) {
+      isError = true;
+      setFormErrors((prev) => ({
+        ...prev,
+        locationError: {
+          isTriggered: true,
+          message: `Location is a required field`,
+        },
+      }));
+    }
+
+    if (formValues.grades.length === 0) {
+      isError = true;
+      setFormErrors((prev) => ({
+        ...prev,
+        gradesError: {
+          isTriggered: true,
+          message: `At least one grade is required`,
+        },
+      }));
+    }
+
+    if (formValues.categories.length === 0) {
+      isError = true;
+      setFormErrors((prev) => ({
+        ...prev,
+        categoryError: {
+          isTriggered: true,
+          message: `At least one category is required`,
+        },
+      }));
+    }
+
+    if (selectedKeywords.length === 0) {
+      isError = true;
+      setFormErrors((prev) => ({
+        ...prev,
+        keywordsError: {
+          isTriggered: true,
+          message: `At least one keyword is required`,
+        },
+      }));
+    }
+
+    if (formValues.cost <= 0) {
+      isError = true;
+      setFormErrors((prev) => ({
+        ...prev,
+        costError: {
+          isTriggered: true,
+          message: `Cost must be a positive number`,
+        },
+      }));
+    }
+
+    if (formValues.serviceType === null) {
+      isError = true;
+      setFormErrors((prev) => ({
+        ...prev,
+        serviceTypeError: {
+          isTriggered: true,
+          message: `Service type is a required field`,
+        },
+      }));
+    }
+
+    if (formValues.lenght === null) {
+      isError = true;
+      setFormErrors((prev) => ({
+        ...prev,
+        lengthError: {
+          isTriggered: true,
+          message: `Length is a required field`,
+        },
+      }));
+    }
+
+    if (formValues.performers <= 0) {
+      isError = true;
+      setFormErrors((prev) => ({
+        ...prev,
+        performersError: {
+          isTriggered: true,
+          message: `The performers field must be a positive integer number`,
+        },
+      }));
+    }
+
+    if (
+      formValues.costDetails.length < MIN_TEXTAREA_LENGTH &&
+      formValues.costDetails.length > 0
+    ) {
+      isError = true;
+      setFormErrors((prev) => ({
+        ...prev,
+        costDetailsError: {
+          isTriggered: true,
+          message: `Cost details must be at least ${MIN_TEXTAREA_LENGTH} characters long`,
+        },
+      }));
+    }
+
+    if (isError) return;
+
+    console.log("data submitted :D");
   };
 
-  console.log("ERRORS: ", errors);
-  console.log("Grades:", watch("grades"));
   return (
     <div className="py-5">
       <Card className="mx-auto max-w-[600px]">
@@ -251,37 +411,98 @@ const NewProgramPage = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-            <div>
-              <Label htmlFor="title">Title</Label>
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="space-y-1">
+              <Label htmlFor="title">
+                Title
+                <span className="font-extrabold text-red-500">*</span>
+              </Label>
               <Input
                 id="title"
                 type="text"
                 placeholder="Type here..."
-                {...register("title")}
+                value={formValues.title}
+                required
+                onChange={(e) => {
+                  setFormValues((prev) => ({ ...prev, title: e.target.value }));
+
+                  const isValid = e.target.value.length >= MIN_INPUT_LENGTH;
+                  setFormErrors((prev) => ({
+                    ...prev,
+                    titleError: {
+                      isTriggered: isValid ? false : true,
+                      message: isValid
+                        ? ""
+                        : `Program title must be at least ${MIN_INPUT_LENGTH} characters long`,
+                    },
+                  }));
+                }}
               />
+              {formErrors.titleError.isTriggered && (
+                <p className="text-red-500">{formErrors.titleError.message}</p>
+              )}
             </div>
 
-            <div>
-              <Label htmlFor="description">Description</Label>
+            <div className="space-y-1">
+              <Label htmlFor="description">
+                Description
+                <span className="font-extrabold text-red-500">*</span>
+              </Label>
               <Textarea
                 id="description"
                 type="text"
                 placeholder="Type here..."
                 className="min-h-40"
-                {...register("description")}
+                value={formValues.description}
+                minLength={MIN_TEXTAREA_LENGTH}
+                required
+                onChange={(e) => {
+                  setFormValues((prev) => ({
+                    ...prev,
+                    description: e.target.value,
+                  }));
+
+                  const isValid = e.target.value.length >= MIN_TEXTAREA_LENGTH;
+                  setFormErrors((prev) => ({
+                    ...prev,
+                    descriptionError: {
+                      isTriggered: isValid ? false : true,
+                      message: isValid
+                        ? ""
+                        : `Program description must be at least ${MIN_TEXTAREA_LENGTH} characters long`,
+                    },
+                  }));
+                }}
               />
+              {formErrors.descriptionError.isTriggered && (
+                <p className="text-red-500">
+                  {formErrors.descriptionError.message}
+                </p>
+              )}
             </div>
 
-            <RadioGroup>
-              <h2>Location</h2>
+            <RadioGroup
+              onValueChange={(value) => {
+                setFormValues((prev) => ({ ...prev, location: value }));
+                setFormErrors((prev) => ({
+                  ...prev,
+                  locationError: { isTriggered: false, message: "" },
+                }));
+              }}
+            >
+              <h2>
+                Location<span className="font-extrabold text-red-500">*</span>
+              </h2>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem
                   value="in-school"
                   id="in-school"
-                  {...register("location", {
-                    required: "Please select a location",
-                  })}
+                  onChange={() =>
+                    setFormValues((prev) => ({
+                      ...prev,
+                      location: e.target.value,
+                    }))
+                  }
                 />
                 <Label htmlFor="in-school">In school</Label>
               </div>
@@ -289,23 +510,53 @@ const NewProgramPage = () => {
                 <RadioGroupItem
                   value="out-of-school"
                   id="out-of-school"
-                  {...register("location", {
-                    required: "Please select a location",
-                  })}
+                  onChange={() =>
+                    setFormValues((prev) => ({
+                      ...prev,
+                      location: e.target.value,
+                    }))
+                  }
                 />
                 <Label htmlFor="out-of-school">Out of school</Label>
               </div>
+              {formErrors.locationError.isTriggered && (
+                <p className="text-red-500">
+                  {formErrors.locationError.message}
+                </p>
+              )}
             </RadioGroup>
 
             <div>
-              <h2>Grades</h2>
+              <h2>
+                Grades<span className="font-extrabold text-red-500">*</span>
+              </h2>
               {GRADES.map((grade) => (
                 <div key={grade}>
                   <Checkbox
                     id={grade}
                     className="my-1 mr-1"
                     value={grade}
-                    {...register("grades")}
+                    onCheckedChange={(checked) => {
+                      const newGrades = checked
+                        ? [...formValues.grades, grade]
+                        : formValues.grades.filter((g) => g !== grade);
+
+                      setFormValues((prev) => ({
+                        ...prev,
+                        grades: newGrades,
+                      }));
+
+                      const isValid = newGrades.length > 0;
+                      setFormErrors((prev) => ({
+                        ...prev,
+                        gradesError: {
+                          isTriggered: isValid ? false : true,
+                          message: isValid
+                            ? ""
+                            : `At least one grade is required`,
+                        },
+                      }));
+                    }}
                   />
                   <Label
                     htmlFor={grade}
@@ -315,16 +566,41 @@ const NewProgramPage = () => {
                   </Label>
                 </div>
               ))}
+              {formErrors.gradesError.isTriggered && (
+                <p className="text-red-500">{formErrors.gradesError.message}</p>
+              )}
             </div>
 
             <div>
-              <h2>Category</h2>
+              <h2>
+                Category<span className="font-extrabold text-red-500">*</span>
+              </h2>
               {CATEGORIES.map((category) => (
                 <div key={category}>
                   <Checkbox
                     id={category}
                     className="my-1 mr-1"
-                    {...register("category")}
+                    onCheckedChange={(checked) => {
+                      const newCategories = checked
+                        ? [...formValues.categories, category]
+                        : formValues.categories.filter((c) => c !== category);
+
+                      setFormValues((prev) => ({
+                        ...prev,
+                        categories: newCategories,
+                      }));
+
+                      const isValid = newCategories.length > 0;
+                      setFormErrors((prev) => ({
+                        ...prev,
+                        categoryError: {
+                          isTriggered: isValid ? false : true,
+                          message: isValid
+                            ? ""
+                            : "At least one category is required",
+                        },
+                      }));
+                    }}
                   />
                   <Label
                     htmlFor={category}
@@ -334,10 +610,17 @@ const NewProgramPage = () => {
                   </Label>
                 </div>
               ))}
+              {formErrors.categoryError.isTriggered && (
+                <p className="text-red-500">
+                  {formErrors.categoryError.message}
+                </p>
+              )}
             </div>
 
             <div>
-              <h2>Keywords</h2>
+              <h2>
+                Keywords<span className="font-extrabold text-red-500">*</span>
+              </h2>
               <MultiSelect
                 options={KEYWORD_GROUPS}
                 onValueChange={setSelectedKeywords}
@@ -346,24 +629,62 @@ const NewProgramPage = () => {
                 variant="inverted"
                 animation={2}
                 maxCount={72}
-                {...register("keywords")}
               />
+              {formErrors.keywordsError.isTriggered &&
+                selectedKeywords.length === 0 && (
+                  <p className="text-red-500">
+                    {formErrors.keywordsError.message}
+                  </p>
+                )}
             </div>
 
-            <div>
-              <Label htmlFor="cost">Cost</Label>
+            <div className="space-y-1">
+              <Label htmlFor="cost">
+                Cost<span className="font-extrabold text-red-500">*</span>
+              </Label>
               <Input
                 id="cost"
                 type="number"
                 placeholder="Type here..."
                 min="0"
-                {...register("cost")}
+                value={formValues.cost}
+                required
+                onChange={(e) => {
+                  setFormValues((prev) => ({ ...prev, cost: e.target.value }));
+
+                  const isValid = e.target.value > 0;
+                  setFormErrors((prev) => ({
+                    ...prev,
+                    costError: {
+                      isTriggered: isValid ? false : true,
+                      message: isValid ? "" : `Cost must be a positive number`,
+                    },
+                  }));
+                }}
               />
+              {formErrors.costError.isTriggered && (
+                <p className="text-red-500">{formErrors.costError.message}</p>
+              )}
             </div>
 
             <div>
-              <Label htmlFor="service-type">Service Type</Label>
-              <Select id="service-type" {...register("serviceType")}>
+              <Label htmlFor="service-type">
+                Service Type
+                <span className="font-extrabold text-red-500">*</span>
+              </Label>
+              <Select
+                id="service-type"
+                onValueChange={(value) => {
+                  setFormValues((prev) => ({ ...prev, serviceType: value }));
+                  setFormErrors((prev) => ({
+                    ...prev,
+                    serviceTypeError: {
+                      isTriggered: false,
+                      message: "",
+                    },
+                  }));
+                }}
+              >
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Select a service type" />
                 </SelectTrigger>
@@ -379,11 +700,27 @@ const NewProgramPage = () => {
                   </SelectGroup>
                 </SelectContent>
               </Select>
+              {formErrors.serviceTypeError.isTriggered && (
+                <p className="text-red-500">
+                  {formErrors.serviceTypeError.message}
+                </p>
+              )}
             </div>
 
             <div>
-              <Label htmlFor="length">Length</Label>
-              <Select id="length" {...register("length")}>
+              <Label htmlFor="length">
+                Length<span className="font-extrabold text-red-500">*</span>
+              </Label>
+              <Select
+                id="length"
+                onValueChange={(value) => {
+                  setFormValues((prev) => ({ ...prev, lenght: value }));
+                  setFormErrors((prev) => ({
+                    ...prev,
+                    lengthError: { isTriggered: false, message: "" },
+                  }));
+                }}
+              >
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Select length" />
                 </SelectTrigger>
@@ -398,17 +735,48 @@ const NewProgramPage = () => {
                   </SelectGroup>
                 </SelectContent>
               </Select>
+              {formErrors.lengthError.isTriggered && (
+                <p className="text-red-500">{formErrors.lengthError.message}</p>
+              )}
             </div>
 
-            <div>
-              <Label htmlFor="performers">Performers</Label>
+            <div className="space-y-1">
+              <Label htmlFor="performers">
+                Performers<span className="font-extrabold text-red-500">*</span>
+              </Label>
               <Input
                 id="performers"
                 type="number"
                 placeholder="Type here..."
                 min="0"
-                {...register("performers")}
+                step="1"
+                value={formValues.performers}
+                required
+                onChange={(e) => {
+                  const value = parseFloat(e.target.value) || undefined;
+
+                  setFormValues((prev) => ({
+                    ...prev,
+                    performers: value,
+                  }));
+
+                  const isValid = value > 0 && Number.isInteger(value);
+                  setFormErrors((prev) => ({
+                    ...prev,
+                    performersError: {
+                      isTriggered: isValid ? false : true,
+                      message: isValid
+                        ? ""
+                        : `Performers must be a positive integer number`,
+                    },
+                  }));
+                }}
               />
+              {formErrors.performersError.isTriggered && (
+                <p className="text-red-500">
+                  {formErrors.performersError.message}
+                </p>
+              )}
             </div>
 
             <div>
@@ -417,8 +785,33 @@ const NewProgramPage = () => {
                 id="cost-details"
                 placeholder="Type here..."
                 className="min-h-40"
-                {...register("costDetails")}
+                value={formValues.costDetails}
+                minLength={MIN_TEXTAREA_LENGTH}
+                onChange={(e) => {
+                  setFormValues((prev) => ({
+                    ...prev,
+                    costDetails: e.target.value,
+                  }));
+
+                  const isValid =
+                    e.target.value.length >= MIN_TEXTAREA_LENGTH ||
+                    e.target.value.lenght === 0;
+                  setFormErrors((prev) => ({
+                    ...prev,
+                    costDetailsError: {
+                      isTriggered: isValid ? false : true,
+                      message: isValid
+                        ? ""
+                        : `Cost details must be at least ${MIN_TEXTAREA_LENGTH} characters long`,
+                    },
+                  }));
+                }}
               />
+              {formErrors.costDetailsError.isTriggered && (
+                <p className="text-red-500">
+                  {formErrors.costDetailsError.message}
+                </p>
+              )}
             </div>
 
             <Button className="w-full" size="lg" type="submit">
