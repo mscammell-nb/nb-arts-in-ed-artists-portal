@@ -11,6 +11,7 @@ import ProgramsPage from "./pages/ProgramsPage";
 import NewProgramPage from "./pages/NewProgramPage";
 import store from "./redux/store";
 import { Provider } from "react-redux";
+import PrintableKeywordListPage from "./pages/PrintableKeywordListPage";
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
             <Route path="/programs" element={<ProgramsPage />} />
             <Route path="/new-program" element={<NewProgramPage />} />
             <Route path="/evaluation" element={<EvaluationPage />} />
+            <Route path="/keyword-list" element={<PrintableKeywordListPage />} />
           </Route>
         </Route>
       </Routes>

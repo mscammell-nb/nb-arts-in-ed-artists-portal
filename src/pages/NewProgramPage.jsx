@@ -33,6 +33,7 @@ import { useAddOrUpdateRecordMutation } from "@/redux/api/quickbaseApi";
 import { useToast } from "@/components/ui/use-toast";
 import { getCurrentFiscalYearKey } from "@/utils/utils";
 import DefinitionsDialog from "@/components/DefinitionsDialog";
+import { Link } from "react-router-dom";
 
 const MIN_INPUT_LENGTH = 8;
 const MIN_TEXTAREA_LENGTH = 15;
@@ -545,9 +546,16 @@ const NewProgramPage = () => {
             </div>
 
             <div>
-              <h2>
-                Keywords<span className="font-extrabold text-red-500">*</span>
-              </h2>
+              <div className="flex items-center">
+                <h2>
+                  Keywords<span className="font-extrabold text-red-500">*</span>
+                </h2>
+                <Link to="/keyword-list" target="_blank">
+                  <Button variant="link" type="button">
+                    Printable Keyword List
+                  </Button>
+                </Link>
+              </div>
               <MultiSelect
                 options={KEYWORD_GROUPS}
                 onValueChange={setSelectedKeywords}
