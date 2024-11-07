@@ -101,7 +101,6 @@ const LoginPage = () => {
               />
               <Button
                 tepe="submit"
-                variant="bocesPrimary"
                 className="mt-7 w-full"
                 isLoading={isLoading}
               >

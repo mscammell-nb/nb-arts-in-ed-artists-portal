@@ -202,7 +202,7 @@ const EvaluationPage = () => {
             )}
           />
 
-          <Button type="submit" variant="bocesPrimary" size="lg">
+          <Button type="submit" size="lg">
             Submit
           </Button>
         </form>

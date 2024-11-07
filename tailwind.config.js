@@ -27,6 +27,14 @@ module.exports = {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
         },
+        darker: {
+          DEFAULT: "hsl(var(--darker))",
+          foreground: "hsl(var(--darker-foreground))",
+        },
+        lighter: {
+          DEFAULT: "hsl(var(--lighter))",
+          foreground: "hsl(var(--lighter-foreground))",
+        },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
@@ -37,7 +45,7 @@ module.exports = {
         },
         success: {
           DEFAULT: "hsl(var(--success))",
-          foreground: "hsl(var(--success-foreground))"
+          foreground: "hsl(var(--success-foreground))",
         },
         bocesPrimary: {
           DEFAULT: "hsl(var(--boces-primary))",

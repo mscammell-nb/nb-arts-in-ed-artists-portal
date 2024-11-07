@@ -11,9 +11,8 @@ import { useNavigate } from "react-router-dom";
 import { PasswordInput } from "../components/ui/password-input";
 import { useToast } from "@/components/ui/use-toast";
 import { useState, useEffect } from "react";
-
-import { getCurrentFiscalYearKey } from "@/utils/getCurrentFiscalYearKey";
-import { capitalizeString } from "@/utils/capitalizeString";
+import { getCurrentFiscalYearKey } from "@/utils/utils";
+import { capitalizeString } from "@/utils/utils";
 import {
   Form,
   FormControl,
@@ -337,7 +336,6 @@ const RegistrationPage = () => {
           }}
           disabled={!isValid}
           type="button"
-          variant="bocesPrimary"
         >
           Next
         </Button>
@@ -345,7 +343,6 @@ const RegistrationPage = () => {
     } else if (formStep === 2) {
       return (
         <Button
-          variant="bocesPrimary"
           disabled={!isValid || isRequestLoading()}
           isLoading={isRequestLoading()}
           type="submit"
@@ -772,7 +769,6 @@ const RegistrationPage = () => {
                   <Button
                     type="button"
                     size="sm"
-                    variant="bocesSecondary"
                     disabled={!isValid}
                     onClick={() =>
                       append({

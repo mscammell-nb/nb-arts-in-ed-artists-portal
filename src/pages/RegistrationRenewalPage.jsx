@@ -9,7 +9,7 @@ import {
   useQueryForDataQuery,
   useAddOrUpdateRecordMutation,
 } from "@/redux/api/quickbaseApi";
-import { parsePhoneNumber } from "@/utils/parsePhoneNumber";
+import { parsePhoneNumber } from "@/utils/utils";
 import {
   Form,
   FormControl,
@@ -413,7 +413,6 @@ const RegistrationRenewalPage = () => {
 
               <Button
                 type="submit"
-                variant="bocesPrimary"
                 className="mt-7 w-full"
                 disabled={isNewArtistRegistrationLoading}
               >

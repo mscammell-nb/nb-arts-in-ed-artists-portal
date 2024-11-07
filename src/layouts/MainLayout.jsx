@@ -19,9 +19,12 @@ const MainLayout = () => {
         <Outlet />
       </main>
 
-      <footer className="flex flex-col items-center bg-bocesPrimary p-5 text-sm text-white">
+      <footer className="flex flex-col items-center bg-darker p-5 text-sm text-white">
         <p>
-          &copy; 2024 Nassau BOCES. All Rights Reserved.{" "}
+          &copy; {new Date().getUTCFullYear()} Nassau BOCES. All Rights
+          Reserved.
+        </p>
+        <div className="space-x-2">
           <a
             className="underline"
             href="https://nbws.nasboces.org/artsined/main/company/terms.asp"
@@ -29,7 +32,6 @@ const MainLayout = () => {
           >
             Terms & Conditions
           </a>
-          .{" "}
           <a
             className="underline"
             href="https://nbws.nasboces.org/artsined/main/company/privacy.asp"
@@ -37,8 +39,7 @@ const MainLayout = () => {
           >
             Privacy Policy
           </a>
-          .
-        </p>
+        </div>
       </footer>
 
       <Toaster />
