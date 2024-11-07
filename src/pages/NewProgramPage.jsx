@@ -293,6 +293,19 @@ const NewProgramPage = () => {
         description: "The new program was added successfully.",
         variant: "success",
       });
+      setFormValues({
+        title: "",
+        description: "",
+        location: null,
+        grades: [],
+        categories: [],
+        cost: 0,
+        serviceType: null,
+        length: null,
+        performers: 0,
+        costDetails: "",
+      });
+      setSelectedKeywords([]);
     }
 
     if (isAddProgramError) {
