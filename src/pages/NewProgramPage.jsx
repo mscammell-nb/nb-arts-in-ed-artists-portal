@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -25,7 +25,7 @@ import { Button } from "@/components/ui/button";
 import { GRADES, CATEGORIES, KEYWORD_GROUPS } from "@/constants/constants";
 import { useAddOrUpdateRecordMutation } from "@/redux/api/quickbaseApi";
 import { useToast } from "@/components/ui/use-toast";
-import { getCurrentFiscalYear, getCurrentFiscalYearKey } from "@/utils/utils";
+import { getCurrentFiscalYearKey } from "@/utils/utils";
 
 const MIN_INPUT_LENGTH = 8;
 const MIN_TEXTAREA_LENGTH = 15;
@@ -236,9 +236,6 @@ const NewProgramPage = () => {
 
     if (isError) return;
 
-    console.log("data submitted :D");
-    console.log(formValues);
-
     addProgram({
       to: import.meta.env.VITE_QUICKBASE_PROGRAMS_TABLE_ID,
       data: [
@@ -288,6 +285,25 @@ const NewProgramPage = () => {
       ],
     });
   };
+
+  useEffect(() => {
+    if (isAddProgramSuccess) {
+      toast({
+        title: "Operation successful!",
+        description: "The new program was added successfully.",
+        variant: "success",
+      });
+    }
+
+    if (isAddProgramError) {
+      toast({
+        title: "There's been an error",
+        description: "There was an error adding the program.",
+        variant: "destructive",
+      });
+      console.log(isAddProgramError);
+    }
+  }, [toast, isAddProgramSuccess, isAddProgramError, isAddProgramError]);
 
   return (
     <div className="py-5">
