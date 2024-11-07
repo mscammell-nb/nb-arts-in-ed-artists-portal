@@ -22,10 +22,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { GRADES, CATEGORIES, KEYWORD_GROUPS } from "@/constants/constants";
+import {
+  GRADES,
+  CATEGORIES,
+  KEYWORD_GROUPS,
+  CATEGORY_DEFINITIONS,
+  SERVICE_TYPE_DEFINITIONS,
+} from "@/constants/constants";
 import { useAddOrUpdateRecordMutation } from "@/redux/api/quickbaseApi";
 import { useToast } from "@/components/ui/use-toast";
 import { getCurrentFiscalYearKey } from "@/utils/utils";
+import DefinitionsDialog from "@/components/DefinitionsDialog";
 
 const MIN_INPUT_LENGTH = 8;
 const MIN_TEXTAREA_LENGTH = 15;
@@ -489,9 +496,12 @@ const NewProgramPage = () => {
             </div>
 
             <div>
-              <h2>
-                Category<span className="font-extrabold text-red-500">*</span>
-              </h2>
+              <div className="flex items-center">
+                <h2>
+                  Category<span className="font-extrabold text-red-500">*</span>
+                </h2>
+                <DefinitionsDialog definitions={CATEGORY_DEFINITIONS} />
+              </div>
               {CATEGORIES.map((category) => (
                 <div key={category}>
                   <Checkbox
@@ -589,6 +599,7 @@ const NewProgramPage = () => {
                 Service Type
                 <span className="font-extrabold text-red-500">*</span>
               </Label>
+              <DefinitionsDialog definitions={SERVICE_TYPE_DEFINITIONS} />
               <Select
                 id="service-type"
                 onValueChange={(value) => {
@@ -608,6 +619,7 @@ const NewProgramPage = () => {
                 <SelectContent>
                   <SelectGroup>
                     <SelectLabel>Service Type</SelectLabel>
+
                     <SelectItem value="workshop">Workshop</SelectItem>
                     <SelectItem value="performance">Performance</SelectItem>
                     <SelectItem value="residency">Residency</SelectItem>

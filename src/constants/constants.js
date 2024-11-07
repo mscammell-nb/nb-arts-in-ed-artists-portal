@@ -227,3 +227,68 @@ export const KEYWORD_GROUPS = [
     ],
   },
 ];
+
+export const CATEGORY_DEFINITIONS = [
+  {
+    title: "DANCE",
+    content: "Ballet, Ethnic, Folk, History, Modern, Tap, Country",
+  },
+  {
+    title: "MEDIA ARTS",
+    content:
+      "Works that explore the technological, aesthetical, and communicative potential of electronic means such as video, internet, streaming, computer, software, gaming, mobile devices and applications, code, GPS, sound production devices, robotics, and other evolving and emerging tools under development.",
+  },
+  {
+    title: "MUSIC",
+    content:
+      "Ethnic, Folk, History, Instrumental, Jazz, Modern, Electronic, Opera, Musical Theatre, Vocal, Magic",
+  },
+  {
+    title: "THEATRE",
+    content:
+      "Circus Art, History, Improvisation, Musical Theatre, Puppets & Mime, Comedy",
+  },
+  {
+    title: "VISUAL ARTS",
+    content:
+      "Bookmaking, Crafts, Environmental Arts, Fashion Design, History, Murals & Portraiture, Photography, Sculpture, Game Show, Holography, Book Illustration",
+  },
+  {
+    title: "LITERATURE",
+    content:
+      "Authors, Creative Writing, Fiction, Illustrator, Journalism, Magic, Poetry, Storytelling",
+  },
+  {
+    title: "PROFESSIONAL DEVELOPMENT",
+    content:
+      "Any lecture, program, presentation, demonstration, workshop, etc. which is designed for teachers and/or administrators and which DOES directly support the Arts in Education Standards / Curriculum.",
+  },
+  {
+    title: "EXPLORATORY ENRICHMENT",
+    content:
+      "Character Education (includes Anti-Bullying), Math, Science, Technology, Social Studies, English Language Arts, Health and Careers",
+  },
+];
+
+export const SERVICE_TYPE_DEFINITIONS = [
+  {
+    title: "Performance",
+    content:
+      "Generally regarded as an assembly program because it is designed for a large group of students with no or minimal student participation in the 'on-stage' activities, a Performance can be presented in any art form (music, dance, theater, pantomime, storytelling, etc.) or combination of art forms.",
+  },
+  {
+    title: "Workshop",
+    content:
+      "A Workshop is an interactive session with the artist or artists, involving hands-on work with the students. A workshop is generally a single session in a classroom or other small-group setting. The goal of a workshop can be to make something together (hands-on) or can be an opportunity for the artist to describe his/her work in great detail (less hands-on). Workshops are an excellent alternative to assembly programs because they involve students with artists in a 'close-up' setting. Note: Multiple workshops within a school need not be with the same group of students, but workshops within a Residency must be with the same students.",
+  },
+  {
+    title: "Workshop & Performance",
+    content:
+      "A Workshop & Performance must include at least one workshop and one performance, but should not be confused with a Residency which takes place over a minimum of five days with the same group of students.",
+  },
+  {
+    title: "Residency",
+    content:
+      "A residency is a series of workshops over a period of five days or more which might include one or more performances. It is important that a residency include sequential visits to the same group(s) of students by the artist(s). Residencies generally take place in a classroom, a dance studio, or art gallery, etc. Residency artists work directly with the students to produce a final product (concert, performance, mural, theater piece, etc.).",
+  },
+];
