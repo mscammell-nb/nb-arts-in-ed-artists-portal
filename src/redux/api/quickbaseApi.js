@@ -13,12 +13,23 @@ export const quickbaseApi = createApi({
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "QB-Realm-Hostname": "nassauboces.quickbase.com",
+          "QB-Realm-Hostname": import.meta.env.VITE_QB_REALM_HOSTNAME,
           Authorization: `QB-USER-TOKEN ${import.meta.env.VITE_QUICKBASE_AUTHORIZATION_TOKEN}`,
         },
         body,
       }),
       providesTags: ["QuickbaseRecords"],
+    }),
+    getField: build.query({
+      query: ({ fieldId, tableId }) => ({
+        url: `/fields/${fieldId}?tableId=${tableId}`,
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "QB-Realm-Hostname": import.meta.env.VITE_QB_REALM_HOSTNAME,
+          Authorization: `QB-USER-TOKEN ${import.meta.env.VITE_QUICKBASE_AUTHORIZATION_TOKEN}`,
+        },
+      }),
     }),
     addOrUpdateRecord: build.mutation({
       query: (body) => ({
@@ -26,7 +37,7 @@ export const quickbaseApi = createApi({
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "QB-Realm-Hostname": "nassauboces.quickbase.com",
+          "QB-Realm-Hostname": import.meta.env.VITE_QB_REALM_HOSTNAME,
           Authorization: `QB-USER-TOKEN ${import.meta.env.VITE_QUICKBASE_AUTHORIZATION_TOKEN}`,
         },
         body,
@@ -39,5 +50,6 @@ export const quickbaseApi = createApi({
 export const {
   useAddOrUpdateRecordMutation,
   useQueryForDataQuery,
+  useGetFieldQuery,
   useLazyQueryForDataQuery,
 } = quickbaseApi;

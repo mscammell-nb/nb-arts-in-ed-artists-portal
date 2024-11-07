@@ -9,6 +9,7 @@ import EvaluationPage from "./pages/EvaluationPage";
 import PerformersPage from "./pages/PerformersPage";
 import ProgramsPage from "./pages/ProgramsPage";
 import NewProgramPage from "./pages/NewProgramPage";
+import FileUploadPage from "./pages/FileUploadPage";
 import store from "./redux/store";
 import { Provider } from "react-redux";
 import PrintableKeywordListPage from "./pages/PrintableKeywordListPage";
@@ -25,6 +26,7 @@ function App() {
               path="/registration-renewal"
               element={<RegistrationRenewalPage />}
             />
+            <Route path="/file-upload" element={<FileUploadPage />} />
             <Route path="/registration-gate" element={<RegistrationGate />} />
             <Route path="/performers" element={<PerformersPage />} />
             <Route path="/programs" element={<ProgramsPage />} />
