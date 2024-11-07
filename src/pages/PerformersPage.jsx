@@ -341,7 +341,7 @@ const PerformersPage = () => {
   }
 
   if (performersData == undefined) {
-    return <p>No performers</p>
+    return <p>No performers</p>;
   }
 
   return (

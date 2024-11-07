@@ -22,183 +22,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-
-const GRADES = ["PK", "K", 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-const CATEGORIES = [
-  "Dance (DA)",
-  "Media Arts (MA)",
-  "Music (MU)",
-  "Theatre (TH)",
-  "Visual Arts (VA)",
-  "Literature (LI)",
-  "Professional Development",
-  "Exploratory Enrichment",
-  "Virtual Programs",
-];
-const KEYWORD_GROUPS = [
-  {
-    heading: "Academics (other than the Arts)",
-    options: [
-      { value: "consumer-science", label: "Consumer Science" },
-      { value: "study-skills", label: "Study Skills" },
-      { value: "career-development", label: "Career Development" },
-      { value: "health", label: "Health" },
-      {
-        value: "languages-other-than-english",
-        label: "Languages Other Than English",
-      },
-      { value: "math", label: "Math" },
-      { value: "science", label: "Science" },
-      { value: "social-studies-history", label: "Social Studies / History" },
-      { value: "technology", label: "Technology" },
-      { value: "common-core", label: "Common Core" },
-      { value: "stem-steam", label: "STEM / STEAM" },
-    ],
-  },
-  {
-    heading: "Art",
-    options: [
-      { value: "media-art", label: "Media Art" },
-      { value: "visual-art", label: "Visual Art" },
-      { value: "art-instruction", label: "Art Instruction" },
-    ],
-  },
-  {
-    heading: "Music",
-    options: [
-      {
-        value: "accompanist-for-music-dance-students",
-        label: "Accompanist for Music/Dance Students",
-      },
-      { value: "clinician", label: "Clinician" },
-      { value: "conductor", label: "Conductor" },
-      { value: "instrumental-music", label: "Instrumental Music" },
-      { value: "vocal-music", label: "Vocal Music" },
-      { value: "music-instruction", label: "Music Instruction" },
-      { value: "music-performance", label: "Music Performance" },
-      { value: "composer", label: "Composer" },
-    ],
-  },
-  {
-    heading: "School Play / Drama",
-    options: [
-      {
-        value: "accompanist-for-school-play-drama",
-        label: "Accompanist for School Play/Drama",
-      },
-      { value: "choreographer", label: "Choreographer" },
-      { value: "costume-designer", label: "Costume Designer" },
-      { value: "music-director", label: "Music Director" },
-      {
-        value: "set-lighting-sound-designer",
-        label: "Set, Lighting, Sound Designer",
-      },
-    ],
-  },
-  {
-    heading: "Youth Safety",
-    options: [
-      { value: "anti-bullying", label: "Anti-Bullying" },
-      { value: "conflict-resolution", label: "Conflict Resolution" },
-      { value: "cyber-bullying", label: "Cyber-Bullying" },
-      {
-        value: "suicide-prevention-depression",
-        label: "Suicide Prevention / Depression",
-      },
-      {
-        value: "alcohol-vaping-controlled-substance-abuse",
-        label: "Alcohol / Vaping / Controlled Substance Abuse",
-      },
-      { value: "driver-safety", label: "Driver Safety" },
-      {
-        value: "internet-safety-social-media",
-        label: "Internet Safety / Social Media",
-      },
-      { value: "peer-pressure", label: "Peer Pressure" },
-      { value: "sex-education", label: "Sex Education" },
-      { value: "stranger-danger", label: "Stranger Danger" },
-      { value: "fire-safety", label: "Fire Safety" },
-      {
-        value: "alcohol-controlled-substance-abuse",
-        label: "Alcohol/Controlled Substance Abuse",
-      },
-      { value: "mental-health", label: "Mental Health" },
-    ],
-  },
-  {
-    heading: "Character Education",
-    options: [
-      { value: "anger-management", label: "Anger Management" },
-      { value: "empowerment", label: "Empowerment" },
-      { value: "motivation", label: "Motivation" },
-      {
-        value: "self-esteem-self-control",
-        label: "Self-Esteem / Self-Control",
-      },
-      { value: "citizenship", label: "Citizenship" },
-      { value: "emotional-well-being", label: "Emotional Well Being" },
-      { value: "dignity-act", label: "Dignity Act" },
-      { value: "self-control", label: "Self Control" },
-      { value: "team-building", label: "Team Building" },
-      { value: "character-education", label: "Character Education" },
-    ],
-  },
-  {
-    heading: "Literature",
-    options: [
-      { value: "literacy", label: "Literacy" },
-      { value: "poetry", label: "Poetry" },
-      { value: "reading", label: "Reading" },
-      { value: "writing", label: "Writing" },
-      {
-        value: "english-language-arts-ela",
-        label: "English Language Arts (ELA)",
-      },
-    ],
-  },
-  {
-    heading: "Author Visits",
-    options: [
-      { value: "storyteller", label: "Storyteller" },
-      { value: "writer-also-poet", label: "Writer (also Poet)" },
-      { value: "illustrator", label: "Illustrator" },
-    ],
-  },
-  {
-    heading: "Topical",
-    options: [
-      { value: "american-indian", label: "American Indian" },
-      { value: "black-history", label: "Black History" },
-      { value: "cultural-diversity", label: "Cultural Diversity" },
-      { value: "hispanic-heritage", label: "Hispanic Heritage" },
-      { value: "holiday", label: "Holiday" },
-      { value: "holocaust", label: "Holocaust" },
-      { value: "womens-history", label: "Women's History" },
-      { value: "american-history", label: "American History" },
-      { value: "biographical", label: "Biographical" },
-      { value: "environment", label: "Environment" },
-    ],
-  },
-  {
-    heading: "Dance",
-    options: [
-      { value: "dance-instruction", label: "Dance Instruction" },
-      { value: "dance-performance", label: "Dance Performance" },
-    ],
-  },
-  {
-    heading: "Theater",
-    options: [
-      { value: "theater-instruction", label: "Theater Instruction" },
-      { value: "theater-performance", label: "Theater Performance" },
-    ],
-  },
-];
+import { GRADES, CATEGORIES, KEYWORD_GROUPS } from "@/constants/constants";
+import { useAddOrUpdateRecordMutation } from "@/redux/api/quickbaseApi";
+import { useToast } from "@/components/ui/use-toast";
+import { getCurrentFiscalYear, getCurrentFiscalYearKey } from "@/utils/utils";
 
 const MIN_INPUT_LENGTH = 8;
 const MIN_TEXTAREA_LENGTH = 15;
 
 const NewProgramPage = () => {
+  const { toast } = useToast();
+  const artistRecordId = localStorage.getItem("artistRecordId");
+
   const [selectedKeywords, setSelectedKeywords] = useState([]);
   // This object handles the fields of the form that don't work well with React Hook Form's validation.
   const [formValues, setFormValues] = useState({
@@ -209,7 +44,7 @@ const NewProgramPage = () => {
     categories: [],
     cost: 0,
     serviceType: null,
-    lenght: null,
+    length: null,
     performers: 0,
     costDetails: "",
   });
@@ -260,15 +95,18 @@ const NewProgramPage = () => {
     },
   });
 
+  const [
+    addProgram,
+    {
+      isLoading: isAddProgramLoading,
+      isSuccess: isAddProgramSuccess,
+      isError: isAddProgramError,
+      data: addProgramData,
+    },
+  ] = useAddOrUpdateRecordMutation();
+
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    // for (const key in formErrors) {
-    //   setFormErrors((prev) => ({
-    //     ...prev,
-    //     [key]: { isTriggered: false, message: "" },
-    //   }));
-    // }
 
     let isError = false;
 
@@ -360,7 +198,7 @@ const NewProgramPage = () => {
       }));
     }
 
-    if (formValues.lenght === null) {
+    if (formValues.length === null) {
       isError = true;
       setFormErrors((prev) => ({
         ...prev,
@@ -399,6 +237,56 @@ const NewProgramPage = () => {
     if (isError) return;
 
     console.log("data submitted :D");
+    console.log(formValues);
+
+    addProgram({
+      to: import.meta.env.VITE_QUICKBASE_PROGRAMS_TABLE_ID,
+      data: [
+        {
+          8: {
+            value: artistRecordId,
+          },
+          15: {
+            value: getCurrentFiscalYearKey(),
+          },
+          11: {
+            value: formValues.title,
+          },
+          12: {
+            value: formValues.description,
+          },
+          13: {
+            value: formValues.location,
+          },
+          27: {
+            value: formValues.grades.map((grade) =>
+              isNaN(grade) ? grade : String(grade),
+            ),
+          },
+          22: {
+            value: formValues.categories,
+          },
+          20: {
+            value: selectedKeywords,
+          },
+          25: {
+            value: formValues.cost,
+          },
+          34: {
+            value: formValues.serviceType,
+          },
+          26: {
+            value: formValues.length,
+          },
+          30: {
+            value: formValues.performers,
+          },
+          29: {
+            value: formValues.costDetails,
+          },
+        },
+      ],
+    });
   };
 
   return (
@@ -495,7 +383,7 @@ const NewProgramPage = () => {
               </h2>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem
-                  value="in-school"
+                  value="In School"
                   id="in-school"
                   onChange={() =>
                     setFormValues((prev) => ({
@@ -508,7 +396,7 @@ const NewProgramPage = () => {
               </div>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem
-                  value="out-of-school"
+                  value="Out of School"
                   id="out-of-school"
                   onChange={() =>
                     setFormValues((prev) => ({
@@ -694,7 +582,7 @@ const NewProgramPage = () => {
                     <SelectItem value="workshop">Workshop</SelectItem>
                     <SelectItem value="performance">Performance</SelectItem>
                     <SelectItem value="residency">Residency</SelectItem>
-                    <SelectItem value="workshop-&-performance">
+                    <SelectItem value="workshop & performance">
                       Workshop & Performance
                     </SelectItem>
                   </SelectGroup>
@@ -714,7 +602,7 @@ const NewProgramPage = () => {
               <Select
                 id="length"
                 onValueChange={(value) => {
-                  setFormValues((prev) => ({ ...prev, lenght: value }));
+                  setFormValues((prev) => ({ ...prev, length: value }));
                   setFormErrors((prev) => ({
                     ...prev,
                     lengthError: { isTriggered: false, message: "" },
@@ -727,11 +615,11 @@ const NewProgramPage = () => {
                 <SelectContent>
                   <SelectGroup>
                     <SelectLabel>Length</SelectLabel>
-                    <SelectItem value="30-44-min">30 - 44 min</SelectItem>
-                    <SelectItem value="45-59-min">45 - 59 min</SelectItem>
-                    <SelectItem value="60-89-min">60 - 89 min</SelectItem>
-                    <SelectItem value="90-199-min">90 - 119 min</SelectItem>
-                    <SelectItem value="120+min">120+ min</SelectItem>
+                    <SelectItem value="30 - 44 min">30 - 44 min</SelectItem>
+                    <SelectItem value="45 - 59 min">45 - 59 min</SelectItem>
+                    <SelectItem value="60 - 89 min">60 - 89 min</SelectItem>
+                    <SelectItem value="90 - 199 min">90 - 119 min</SelectItem>
+                    <SelectItem value="120+ min">120+ min</SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
@@ -795,7 +683,7 @@ const NewProgramPage = () => {
 
                   const isValid =
                     e.target.value.length >= MIN_TEXTAREA_LENGTH ||
-                    e.target.value.lenght === 0;
+                    e.target.value.length === 0;
                   setFormErrors((prev) => ({
                     ...prev,
                     costDetailsError: {
@@ -814,7 +702,12 @@ const NewProgramPage = () => {
               )}
             </div>
 
-            <Button className="w-full" size="lg" type="submit">
+            <Button
+              className="w-full"
+              size="lg"
+              type="submit"
+              isLoading={isAddProgramLoading}
+            >
               Submit
             </Button>
           </form>
