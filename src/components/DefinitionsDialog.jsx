@@ -22,7 +22,7 @@ const DefinitionsDialog = ({ definitions }) => {
           <DialogDescription></DialogDescription>
         </DialogHeader>
         {definitions.map((definition) => (
-          <div>
+          <div key={definition}>
             <h2 className="font-semibold">{definition.title}</h2>
             <p>{definition.content}</p>
           </div>
