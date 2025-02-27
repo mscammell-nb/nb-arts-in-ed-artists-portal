@@ -1,33 +1,25 @@
 import { Outlet } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
-import { AppSidebar } from "@/components/app-sidebar"
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
-import { Separator } from "@/components/ui/separator"
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar"
 
 const MainLayout = () => {
   return (
     <div className="flex min-h-screen flex-col">
+      <header>
+        <nav className="border border-slate-200 p-5 shadow-lg">
+          <div className="max-w-36">
+            <img
+              src="https://nassauboces.quickbase.com/up/bpt5wxg92/a/r1/e7/v0"
+              alt="Nassau BOCES logo"
+            />
+          </div>
+        </nav>
+      </header>
 
       <main className="grow bg-slate-50 p-14">
-      <SidebarProvider>
-      <AppSidebar />
-      <Outlet />
-    </SidebarProvider>
+        <Outlet />
       </main>
 
-      <footer style={{zIndex:"1000000"}} className="flex flex-col items-center bg-darker p-5 text-sm text-white">
+      <footer className="flex flex-col items-center bg-darker p-5 text-sm text-white">
         <p>
           &copy; {new Date().getUTCFullYear()} Nassau BOCES. All Rights
           Reserved.
