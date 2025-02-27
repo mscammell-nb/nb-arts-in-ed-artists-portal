@@ -327,8 +327,8 @@ const NewProgramPage = () => {
   }, [toast, isAddProgramSuccess, isAddProgramError, isAddProgramError]);
 
   return (
-    <div className="py-5">
-      <Card className="mx-auto max-w-[600px]">
+    <div className="py-1">
+      <Card className="mx-auto max-w-[800px]">
         <CardHeader>
           <CardTitle>Add New Program</CardTitle>
           <CardDescription>
@@ -455,8 +455,12 @@ const NewProgramPage = () => {
               <h2>
                 Grades<span className="font-extrabold text-red-500">*</span>
               </h2>
+
+              <div className="flex items-center">
+
+
               {GRADES.map((grade) => (
-                <div key={grade}>
+                <div key={grade} class='pr-1'>
                   <Checkbox
                     id={grade}
                     className="my-1 mr-1"
@@ -483,6 +487,7 @@ const NewProgramPage = () => {
                       }));
                     }}
                   />
+                  <br/>
                   <Label
                     htmlFor={grade}
                     className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -491,9 +496,14 @@ const NewProgramPage = () => {
                   </Label>
                 </div>
               ))}
+              </div>
               {formErrors.gradesError.isTriggered && (
                 <p className="text-red-500">{formErrors.gradesError.message}</p>
               )}
+
+
+
+
             </div>
 
             <div>
