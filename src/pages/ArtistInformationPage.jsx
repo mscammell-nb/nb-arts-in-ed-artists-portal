@@ -1,9 +1,12 @@
-import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { PasswordInput } from "@/components/ui/password-input";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
 
 // TODO: Reset Password Functionality
+// TODO: Num Performers
 
 const ArtistInformationPage = () => {
   const artistRecordId = localStorage.getItem("artistRecordId");
@@ -40,7 +43,7 @@ const ArtistInformationPage = () => {
           </div>
           <div>
             <Label className="font-semibold">Number of Performers</Label>
-            <p>NUMBER HERE</p>
+            <p>-</p>
           </div>
           <div>
             <Label className="font-semibold">Email</Label>
@@ -56,10 +59,35 @@ const ArtistInformationPage = () => {
             <Label className="font-semibold">Address</Label>
             <p>{artistsData?.data && artistsData.data[0][12].value}</p>
           </div>
+          <Sheet>
+            <SheetTrigger className="mt-3 w-fit cursor-pointer text-sm text-blue-500 hover:underline">
+              Change Password
+            </SheetTrigger>
+            <SheetContent>
+              <div className="flex flex-col gap-3 w-full">
+                <div>
+                  <p className="font-bold text-2xl">Change Password</p>
+                  <p className="text-gray-500"> Ensure your account is using a long, random passowrd to stay secure.</p>
+                </div>
+                <div>
+                  <Label className="font-semibold">Current Password</Label>
+                  <PasswordInput />
+                </div>
 
-          <p className="mt-3 w-fit cursor-pointer text-sm text-blue-500 hover:underline">
-            Reset Password
-          </p>
+                <div>
+                  <Label className="font-semibold">New Password</Label>
+                  <PasswordInput />
+                </div>
+
+                <div>
+                  <Label className="font-semibold">Confirm Password</Label>
+                  <PasswordInput />
+                </div>
+
+                <Button disabled className="w-fit">Save</Button>
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
       )}
     </div>
