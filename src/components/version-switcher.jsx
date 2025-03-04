@@ -29,8 +29,9 @@ export function VersionSwitcher({
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
               <div
-                className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                className="flex aspect-square size-8 items-center justify-center rounded-lg bg-white text-sidebar-primary-foreground">
                 <GalleryVerticalEnd className="size-4" />
+                <img className="" style={{padding: "4px"}} src="https://nassauboces.quickbase.com/up/butswtb25/a/r74/e8/v0"/>
               </div>
               <div className="flex flex-col gap-0.5 leading-none">
                 <span className="font-semibold">Arts in Education</span>

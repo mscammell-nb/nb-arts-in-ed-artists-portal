@@ -22,12 +22,12 @@ const MainLayout = () => {
 
       <main className="grow bg-slate-50 p-14">
       <SidebarProvider>
-      <AppSidebar />
-      <Outlet />
-    </SidebarProvider>
+        <AppSidebar />
+        <Outlet />
+      </SidebarProvider>
       </main>
 
-      <footer style={{zIndex:"1000000"}} className="flex flex-col items-center bg-darker p-5 text-sm text-white">
+      <footer style={{zIndex:"1000000"}} className="flex flex-col items-center bg-primary p-5 text-sm text-white">
         <p>
           &copy; {new Date().getUTCFullYear()} Nassau BOCES. All Rights
           Reserved.

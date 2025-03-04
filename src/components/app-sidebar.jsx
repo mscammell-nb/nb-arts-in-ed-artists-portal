@@ -15,9 +15,9 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 
-// This is sample data.
+
 const data = {
-  versions: ["Artist Portal", "District Portal"],
+  versions: ["Email Help", "Sign Out"],
   navMain: [
     {
       title: "Account Information",
@@ -25,11 +25,11 @@ const data = {
       items: [
         {
           title: "Artist Information",
-          url: "#",
+          url: "/artist-information",
         },
         {
           title: "Artist Registrations",
-          url: "#",
+          url: "/artist-registrations",
         },
       ],
     },
@@ -39,11 +39,11 @@ const data = {
       items: [
         {
           title: "Artist Documents",
-          url: "#",
+          url: "/artist-documents",
         },
         {
           title: "Artist Evaluations",
-          url: "#",
+          url: "/artist-evaluations",
           //isActive: true,
         },
         {
@@ -63,9 +63,9 @@ export function AppSidebar({
   ...props
 }) {
   return (
-    (<Sidebar {...props}>
-      <SidebarHeader>
-        <VersionSwitcher versions={data.versions} defaultVersion={data.versions[0]} />
+    (<Sidebar className={"side-bar"} {...props}>
+      <SidebarHeader >
+        <VersionSwitcher  className={"side-bar"} versions={data.versions} defaultVersion={data.versions[0]} />
         {/*<SearchForm />*/}
       </SidebarHeader>
       <SidebarContent>
