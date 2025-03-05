@@ -9,7 +9,7 @@ const RegistrationGate = () => {
   const {
     data: artistData,
     isSuccess: isArtistDataSuccess,
-    isLoading: isArtisDataLoading,
+    isLoading: isArtistDataLoading,
     isError: isArtistDataError,
   } = useQueryForDataQuery({
     from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
@@ -28,7 +28,7 @@ const RegistrationGate = () => {
     }
   }, [artistData]);
 
-  if (isArtisDataLoading) {
+  if (isArtistDataLoading) {
     return (
       <div className="flex h-full w-full justify-center pt-24">
         <Spinner />

@@ -26,9 +26,25 @@ export const getCurrentFiscalYearKey = () => {
 export const parsePhoneNumber = (phoneNumber) => phoneNumber.replace(/\D/g, "");
 
 export const getCurrentFiscalYear = () => {
-  const currentYear = new Date().getFullYear();
-  const nextYear = currentYear + 1;
-  const nextYearLastTwoDigits = nextYear.toString().substring(2, 4);
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = d.getMonth() + 1;
+  const fiscalYear =
+    month > 5
+      ? year.toString().slice(2) + "/" + (year + 1).toString().slice(2)
+      : (year - 1).toString().slice(2) + "/" + year.toString().slice(2);
 
-  return String(currentYear).slice(2) + "/" + nextYearLastTwoDigits;
+  return fiscalYear;
+};
+
+export const getNextFiscalYear = () => {
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = d.getMonth() + 1;
+  const fiscalYear =
+    month > 5
+      ? (year + 1).toString().slice(2) + "/" + (year + 2).toString().slice(2)
+      : year.toString().slice(2) + "/" + (year + 1).toString().slice(2);
+
+  return fiscalYear;
 };
