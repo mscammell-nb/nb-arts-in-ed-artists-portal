@@ -8,6 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { getNextFiscalYear } from "@/utils/utils";
 import { Check } from "lucide-react";
 import { useEffect } from "react";
 import { useQueryForDataQuery } from "../redux/api/quickbaseApi";
@@ -25,11 +26,15 @@ const ArtistRegistrationsPage = () => {
     where: `{13.EX.${userUid}}`,
   });
 
-  useEffect(() => {
-    if (registrationData) {
-      console.log(registrationData);
-    }
-  }, [registrationData]);
+  const {
+    data: artistData,
+    isError: isArtistDataError,
+    error: artistDataError,
+  } = useQueryForDataQuery({
+    from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
+    select: [30],
+    where: `{10.EX.${userUid}}`,
+  });
 
   const renderStatusIcon = (value) => {
     switch (value) {
@@ -42,14 +47,20 @@ const ArtistRegistrationsPage = () => {
     }
   };
 
-  if (!registrationData && !isRegistrationDataError)
+  if (
+    (!registrationData && !isRegistrationDataError) ||
+    (!artistData && !isArtistDataError)
+  )
     return (
       <div className="flex h-full w-full justify-center pt-24">
         <Spinner />
       </div>
     );
 
-  if (isRegistrationDataError && registrationDataError) {
+  if (
+    (isRegistrationDataError && registrationDataError) ||
+    (isArtistDataError && artistDataError)
+  ) {
     console.log("User Data Error: ", registrationDataError);
     return (
       <div className="flex w-full justify-center pt-24">
@@ -62,8 +73,27 @@ const ArtistRegistrationsPage = () => {
 
   return (
     <div className="flex flex-col items-center">
-      <div className="min-w-[850px] max-w-3xl">
-        <section>
+      <div className="max-w-fit">
+        <section className="flex flex-col space-y-6">
+          {artistData.data[0][30].value && (
+            <Card className="z-999 flex min-w-fit max-w-xl bg-red-200 text-gray-800 shadow-lg">
+              <CardHeader className="flex flex-col items-start">
+                <CardHeader className="text-xl font-semibold">
+                  Your Registration Has Expired
+                </CardHeader>
+                <CardContent className="mt-2 max-w-xl text-sm">
+                  Your registration has expired for this fiscal year, please
+                  re-register to be eligible to apply for programs.
+                </CardContent>
+                <a
+                  href="/registration-renewal"
+                  className="font-semi m-6 cursor-pointer rounded-lg bg-red-500 px-4 py-2 font-semibold text-white hover:bg-red-400 focus:outline-none"
+                >
+                  Re-register Now
+                </a>
+              </CardHeader>
+            </Card>
+          )}
           <Card>
             <CardHeader>
               <CardTitle>Registration Information</CardTitle>
@@ -127,3 +157,4 @@ const ArtistRegistrationsPage = () => {
 export default ArtistRegistrationsPage;
 
 // TODO See if any columns need to be changed or have error checking (if fields can be left blank what do we show?)
+// TODO Change parameters on when to show a warning that the registration is about to expire.
