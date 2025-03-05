@@ -73,7 +73,13 @@ const ProgramsPage = () => {
     { skip: !fiscalYear },
   );
 
-  if (isFiscalYearsDataLoading || isProgramsDataLoading) return <Spinner />;
+  if (isFiscalYearsDataLoading || isProgramsDataLoading) {
+    return (
+      <div className="flex w-2/3 items-center justify-center">
+        <Spinner />
+      </div>
+    );
+  }
 
   if (isFiscalYearsDataError) {
     console.error(fiscalYearsDataError);

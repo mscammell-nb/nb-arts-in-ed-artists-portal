@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import MainLayout from "./layouts/MainLayout";
 import MainLayoutNoSidebar from "./layouts/MainLayoutNoSidebar";
 import RegistrationPage from "./pages/RegistrationPage";
@@ -23,7 +23,30 @@ function App() {
   return (
     <Provider store={store}>
       <Routes>
-      <Route path="/" element={<MainLayoutNoSidebar />}>
+        <Route element={<ProtectedRoutesWrapper />}>
+          <Route element={<MainLayout />}>
+            <Route path="/" element={<Navigate to="/programs"/>}/>
+            <Route path="/performers" element={<PerformersPage />} />
+            <Route path="/programs" element={<ProgramsPage />} />
+            <Route path="/new-program" element={<NewProgramPage />} />
+            <Route path="/evaluation" element={<EvaluationPage />} />
+            <Route path="/artist-documents" element={<ArtistDocumentsPage />} />
+            <Route
+              path="/artist-evaluations"
+              element={<ArtistEvaluationsPage />}
+            />
+            <Route
+              path="/artist-information"
+              element={<ArtistInformationPage />}
+            />
+            <Route
+              path="/artist-registrations"
+              element={<ArtistRegistrationsPage />}
+            />
+          </Route>
+        </Route>
+
+        <Route element={<MainLayoutNoSidebar />}>
           <Route path="/registration" element={<RegistrationPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/" element={<ProtectedRoutesWrapper />}>
@@ -33,18 +56,6 @@ function App() {
             />
             <Route path="/file-upload" element={<FileUploadPage />} />
             <Route path="/registration-gate" element={<RegistrationGate />} />
-          </Route>
-        </Route>
-        <Route path="/" element={<MainLayout />}>
-          <Route path="/" element={<ProtectedRoutesWrapper />}>
-            <Route path="/performers" element={<PerformersPage />} />
-            <Route path="/programs" element={<ProgramsPage />} />
-            <Route path="/new-program" element={<NewProgramPage />} />
-            <Route path="/evaluation" element={<EvaluationPage />} />
-            <Route path="/artist-documents" element={<ArtistDocumentsPage />} />
-            <Route path="/artist-evaluations" element={<ArtistEvaluationsPage />} />
-            <Route path="/artist-information" element={<ArtistInformationPage />} />
-            <Route path="/artist-registrations" element={<ArtistRegistrationsPage />} />
           </Route>
         </Route>
       </Routes>
