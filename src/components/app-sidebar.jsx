@@ -1,6 +1,5 @@
 import * as React from "react"
 
-import { SearchForm } from "@/components/search-form"
 import { VersionSwitcher } from "@/components/version-switcher"
 import {
   Sidebar,
@@ -65,7 +64,7 @@ export function AppSidebar({
   return (
     (<Sidebar className={"side-bar"} {...props}>
       <SidebarHeader >
-        <VersionSwitcher  className={"side-bar"} versions={data.versions} defaultVersion={data.versions[0]} />
+        <VersionSwitcher  className={"side-bar"} />
         {/*<SearchForm />*/}
       </SidebarHeader>
       <SidebarContent>
