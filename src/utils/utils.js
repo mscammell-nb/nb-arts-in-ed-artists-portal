@@ -36,3 +36,15 @@ export const getCurrentFiscalYear = () => {
 
   return fiscalYear;
 };
+
+export const getNextFiscalYear = () => {
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = d.getMonth() + 1;
+  const fiscalYear =
+    month > 5
+      ? (year + 1).toString().slice(2) + "/" + (year + 2).toString().slice(2)
+      : year.toString().slice(2) + "/" + (year + 1).toString().slice(2);
+
+  return fiscalYear;
+};
