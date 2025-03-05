@@ -13,12 +13,20 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { CheckIcon, CaretSortIcon } from "@radix-ui/react-icons"
+import { getAuth, signOut } from "firebase/auth"
+import { useNavigate } from "react-router-dom"
 
 export function VersionSwitcher({
   versions,
   defaultVersion
 }) {
-  const [selectedVersion, setSelectedVersion] = React.useState(defaultVersion)
+  const auth = getAuth();
+  const navigate = useNavigate();
+  const signUserOut = ()=>{
+    signOut(auth);
+    localStorage.clear();
+    navigate('/login')    
+  }
 
   return (
     (<SidebarMenu>
@@ -41,12 +49,9 @@ export function VersionSwitcher({
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width]" align="start">
-            {versions.map((version) => (
-              <DropdownMenuItem key={version} onSelect={() => setSelectedVersion(version)}>
-                {version}{" "}
-                {version === selectedVersion && <CheckIcon className="ml-auto" />}
-              </DropdownMenuItem>
-            ))}
+            {/* TODO: Implement email help */}
+            <DropdownMenuItem className="cursor-pointer">Email Help</DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer" onClick={()=>{signUserOut()}}>Sign out</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
