@@ -79,7 +79,8 @@ const ArtistRegistrationsPage = () => {
                     <TableHead className="text-center">
                       Number of Performers
                     </TableHead>
-                    <TableHead className="text-center">Phone Number</TableHead>
+                    <TableHead className="text-center">Phone</TableHead>
+                    <TableHead className="text-center">Alt Phone</TableHead>
                     <TableHead className="text-center">Email</TableHead>
                     <TableHead className="text-center">Approved</TableHead>
                   </TableRow>
@@ -97,15 +98,14 @@ const ArtistRegistrationsPage = () => {
                         <TableCell className="text-center">
                           {registration[21].value || "N/A"}
                         </TableCell>
-                        <TableCell>
-                          <div className="flex justify-center">
-                            {registration[11].value}
-                          </div>
+                        <TableCell className="text-center">
+                          {registration[11].value}
                         </TableCell>
-                        <TableCell>
-                          <div className="flex justify-center">
-                            {registration[9].value}
-                          </div>
+                        <TableCell className="text-center">
+                          {registration[12].value}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {registration[9].value}
                         </TableCell>
                         <TableCell>
                           <div className="flex justify-center">
