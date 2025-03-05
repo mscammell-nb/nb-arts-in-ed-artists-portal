@@ -7,3 +7,5 @@ const ProtectedRoutesWrapper = () => {
 };
 
 export default ProtectedRoutesWrapper;
+
+// ! Doesn't actually authenticate the access token, just checks if there is one.
