@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/table";
 import { getNextFiscalYear } from "@/utils/utils";
 import { Check } from "lucide-react";
-import { useEffect } from "react";
 import { useQueryForDataQuery } from "../redux/api/quickbaseApi";
 
 const userUid = localStorage.getItem("uid");
@@ -71,6 +70,27 @@ const ArtistRegistrationsPage = () => {
     );
   }
 
+  const isRegistrationExpiring = () => {
+    const nextFiscalYear = getNextFiscalYear();
+    const date = new Date();
+    const currMonth = date.getMonth();
+
+    // Check if registered for next fiscal year
+    const registeredNextYear = registrationData.data.forEach((registration) => {
+      if (registration[25].value === nextFiscalYear) {
+        return false;
+      }
+    });
+
+    if (registeredNextYear) return false;
+
+    // Not registered for next fiscal year, check month
+    if (currMonth > 3 && currMonth < 6) {
+      return true;
+    }
+    return false;
+  };
+
   return (
     <div className="flex flex-col items-center">
       <div className="max-w-fit">
@@ -88,6 +108,27 @@ const ArtistRegistrationsPage = () => {
                 <a
                   href="/registration-renewal"
                   className="font-semi m-6 cursor-pointer rounded-lg bg-red-500 px-4 py-2 font-semibold text-white hover:bg-red-400 focus:outline-none"
+                >
+                  Re-register Now
+                </a>
+              </CardHeader>
+            </Card>
+          )}
+          {isRegistrationExpiring() && (
+            <Card className="z-999 flex min-w-fit max-w-xl bg-yellow-100 text-gray-800 shadow-lg">
+              <CardHeader className="flex flex-col items-start">
+                <CardHeader className="text-xl font-semibold">
+                  Your Registration Is Expiring Soon!
+                </CardHeader>
+                <CardContent className="mt-2 max-w-xl text-sm">
+                  Your registration will be expiring on&nbsp;
+                  <span className="font-semibold underline">June 1st.</span>
+                  &nbsp;Please renew your registration to be eligible to apply
+                  for programs.
+                </CardContent>
+                <a
+                  href="/registration-renewal"
+                  className="m-6 cursor-pointer rounded-lg bg-yellow-500 px-4 py-2 font-semibold hover:bg-yellow-400 focus:outline-none"
                 >
                   Re-register Now
                 </a>
