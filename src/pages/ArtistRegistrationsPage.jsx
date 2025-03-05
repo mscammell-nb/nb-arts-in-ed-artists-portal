@@ -25,16 +25,6 @@ const ArtistRegistrationsPage = () => {
     where: `{13.EX.${userUid}}`,
   });
 
-  const {
-    data: artistData,
-    isError: isArtistDataError,
-    error: artistDataError,
-  } = useQueryForDataQuery({
-    from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
-    select: [30],
-    where: `{10.EX.${userUid}}`,
-  });
-
   const renderStatusIcon = (value) => {
     switch (value) {
       case true:
@@ -47,8 +37,7 @@ const ArtistRegistrationsPage = () => {
   };
 
   if (
-    (!registrationData && !isRegistrationDataError) ||
-    (!artistData && !isArtistDataError)
+    (!registrationData && !isRegistrationDataError)
   )
     return (
       <div className="flex h-full w-full justify-center pt-24">
@@ -57,8 +46,7 @@ const ArtistRegistrationsPage = () => {
     );
 
   if (
-    (isRegistrationDataError && registrationDataError) ||
-    (isArtistDataError && artistDataError)
+    (isRegistrationDataError && registrationDataError)
   ) {
     console.log("User Data Error: ", registrationDataError);
     return (
@@ -95,25 +83,6 @@ const ArtistRegistrationsPage = () => {
     <div className="flex flex-col items-center">
       <div className="max-w-fit">
         <section className="flex flex-col space-y-6">
-          {artistData.data[0][30].value && (
-            <Card className="z-999 flex min-w-fit max-w-xl bg-red-200 text-gray-800 shadow-lg">
-              <CardHeader className="flex flex-col items-start">
-                <CardHeader className="text-xl font-semibold">
-                  Your Registration Has Expired
-                </CardHeader>
-                <CardContent className="mt-2 max-w-xl text-sm">
-                  Your registration has expired for this fiscal year, please
-                  re-register to be eligible to apply for programs.
-                </CardContent>
-                <a
-                  href="/registration-renewal"
-                  className="font-semi m-6 cursor-pointer rounded-lg bg-red-500 px-4 py-2 font-semibold text-white hover:bg-red-400 focus:outline-none"
-                >
-                  Re-register Now
-                </a>
-              </CardHeader>
-            </Card>
-          )}
           {isRegistrationExpiring() && (
             <Card className="z-999 flex min-w-fit max-w-xl bg-yellow-100 text-gray-800 shadow-lg">
               <CardHeader className="flex flex-col items-start">
