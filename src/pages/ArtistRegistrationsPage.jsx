@@ -9,7 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { getNextFiscalYear } from "@/utils/utils";
-import { Check } from "lucide-react";
+import { Check, X } from "lucide-react";
 import { useQueryForDataQuery } from "../redux/api/quickbaseApi";
 
 const userUid = localStorage.getItem("uid");
