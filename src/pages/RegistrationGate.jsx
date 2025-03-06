@@ -21,12 +21,12 @@ const RegistrationGate = () => {
   const [isRegistrationExpired, setIsRegistrationExpired] = useState(false);
 
   useEffect(() => {
-    if (artistData) {
+    if (artistData && !isArtistDataLoading) {
       setIsApproved(artistData.data[0][29].value);
       setIsRegistrationExpired(artistData.data[0][30].value);
       localStorage.setItem("artistRecordId", artistData.data[0][3].value);
     }
-  }, [artistData]);
+  }, [artistData, isArtistDataLoading]);
 
   if (isArtistDataLoading) {
     return (

@@ -13,6 +13,7 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar"
+import { Link } from "react-router-dom";
 
 
 const data = {
@@ -77,7 +78,7 @@ export function AppSidebar({
                 {item.items.map((item) => (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild isActive={item.isActive}>
-                      <a href={item.url} className="hover:bg-white hover:bg-opacity-20 transition-all">{item.title}</a>
+                      <Link to={item.url} className="hover:bg-white hover:bg-opacity-20 transition-all">{item.title}</Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}
