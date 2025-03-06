@@ -23,7 +23,7 @@ import {
   useQueryForDataQuery,
 } from "@/redux/api/quickbaseApi";
 import { Pencil1Icon } from "@radix-ui/react-icons";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 // TODO: Reset Password Functionality
 // TODO: Address format not letting update happen, redo editing for address to match registration page
@@ -142,8 +142,8 @@ const ArtistInformationPage = () => {
   ] = useAddOrUpdateRecordMutation();
   let {
     data: artistsData,
-    isLoading: isArtstsLoading,
-    isError: isPerformersError,
+    isLoading: isArtistsLoading,
+    isError: isArtistsError,
     error: artistsError,
   } = useQueryForDataQuery({
     from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
@@ -252,7 +252,7 @@ const ArtistInformationPage = () => {
           </Tooltip>
         </TooltipProvider>
       </div>
-      {isArtstsLoading ? (
+      {isArtistsLoading ? (
         <div className="flex w-full flex-col items-start gap-4 rounded border border-gray-200 bg-white p-2.5">
           <Skeleton className="h-[20px] w-[300px] rounded-full" />
           <Skeleton className="h-[20px] w-[200px] rounded-full" />
