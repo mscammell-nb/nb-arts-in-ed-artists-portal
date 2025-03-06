@@ -1,11 +1,65 @@
-import { Navigate, Outlet } from "react-router-dom";
+import Spinner from "@/components/ui/Spinner";
+import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
+import { data } from "autoprefixer";
+import { getAuth } from "firebase/auth";
+import { use } from "react";
+import { useEffect, useState } from "react";
+import { Navigate, Outlet, useNavigate } from "react-router-dom";
 
 const ProtectedRoutesWrapper = () => {
-  const authToken = localStorage.getItem("accessToken");
+  const navigate = useNavigate();
+  const auth = getAuth();
+  const artistRecordId = localStorage.getItem("artistRecordId");
+  let {
+    data: artistsData,
+    isLoading: isArtistLoading,
+    isError: isPerformersError,
+    error: artistsError,
+  } = useQueryForDataQuery({
+    from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
+    select: [29, 30],
+    where: `{3.EX.${artistRecordId}}`,
+  });
+  const [authenticated, setAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [expired, setExpired] = useState(null);
+  const [approved, setApproved] = useState(null);
 
-  return authToken ? <Outlet /> : <Navigate to="/login" />;
+  useEffect(() => {
+    console.log("t")
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setAuthenticated(!!user);
+      setLoading(false);
+    });
+    return unsubscribe;
+  }, [auth]);
+
+  useEffect(()=>{
+    if(artistsData && !isArtistLoading){
+      setApproved(artistsData.data[0][29].value);
+      setExpired(artistsData.data[0][30].value);
+    }
+  },[isArtistLoading, artistsData]);
+
+  useEffect(()=>{
+    if(!loading){
+      if(!authenticated){
+        navigate('/login')
+      }else if(expired == true || approved == false){
+        navigate('/registration-gate')
+      }
+    }
+  },[loading, authenticated, expired, approved, navigate])
+
+  if (loading) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center">
+        <Spinner />
+      </div>
+    );
+  }
+
+  return <Outlet />;
 };
 
 export default ProtectedRoutesWrapper;
-
-// ! Doesn't actually authenticate the access token, just checks if there is one.
