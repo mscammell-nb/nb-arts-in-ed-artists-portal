@@ -1,15 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { useNavigate } from "react-router-dom";
-import { ReloadIcon } from "@radix-ui/react-icons";
-import { useToast } from "@/components/ui/use-toast";
-import { useEffect } from "react";
-import {
-  useQueryForDataQuery,
-  useAddOrUpdateRecordMutation,
-} from "@/redux/api/quickbaseApi";
-import { parsePhoneNumber } from "@/utils/utils";
 import {
   Form,
   FormControl,
@@ -18,11 +8,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
-import Spinner from "../components/ui/Spinner";
-import { STATES } from "@/constants/constants";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -30,7 +16,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { VALID_WEBSITE_URL_REGEX } from "@/constants/constants";
+import { useToast } from "@/components/ui/use-toast";
+import { STATES, VALID_WEBSITE_URL_REGEX } from "@/constants/constants";
+import {
+  useAddOrUpdateRecordMutation,
+  useQueryForDataQuery,
+} from "@/redux/api/quickbaseApi";
+import {
+  getCurrentFiscalYear,
+  getCurrentFiscalYearKey,
+  parsePhoneNumber,
+} from "@/utils/utils";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { ReloadIcon } from "@radix-ui/react-icons";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import * as yup from "yup";
+import Spinner from "../components/ui/Spinner";
 
 const schema = yup.object({
   artistOrg: yup.string().required(),
@@ -72,8 +75,7 @@ const schema = yup.object({
 });
 
 const RegistrationRenewalPage = () => {
-  const userUid = localStorage.getItem("userUid");
-
+  const userUid = localStorage.getItem("uid");
   const navigate = useNavigate();
   const { toast } = useToast();
   const {
@@ -86,7 +88,7 @@ const RegistrationRenewalPage = () => {
     where: `{10.EX.${userUid}}`,
   });
   const [
-    addOrupdateRecord,
+    addOrUpdateRecord,
     {
       data: newArtistRegistrationData,
       isLoading: isNewArtistRegistrationLoading,
@@ -109,6 +111,7 @@ const RegistrationRenewalPage = () => {
       city: "",
       state: "",
       zipCode: "",
+      fiscalYear: "",
     },
   });
 
@@ -129,6 +132,8 @@ const RegistrationRenewalPage = () => {
         city: data[15].value,
         state: data[16].value,
         zipCode: data[17].value,
+        fiscalYear: getCurrentFiscalYear(),
+        fiscalYearKey: getCurrentFiscalYearKey(),
       };
       reset(defaultValues);
       setValue("state", data[16].value);
@@ -170,6 +175,9 @@ const RegistrationRenewalPage = () => {
           20: {
             value: "United States",
           },
+          24: {
+            value: data.fiscalYearKey,
+          },
         },
       ],
     };
@@ -196,7 +204,7 @@ const RegistrationRenewalPage = () => {
         title: "Operation successful!",
         description: "New registration created.",
       });
-      navigate("/dashboard");
+      navigate("/programs");
     }
 
     if (isNewArtistRegistrationError && newArtistRegistrationError) {
@@ -205,7 +213,7 @@ const RegistrationRenewalPage = () => {
         title: "Uh oh! Something went wrong.",
         description: newArtistRegistrationError.data.code,
       });
-      navigate("/dashboard");
+      navigate("/");
     }
   }, [
     isNewArtistRegistrationSuccess,
@@ -215,7 +223,7 @@ const RegistrationRenewalPage = () => {
   ]);
 
   const onSubmit = (data) => {
-    addOrupdateRecord(formatDataForQuickbase(data));
+    addOrUpdateRecord(formatDataForQuickbase(data));
   };
 
   if (!artistData && !isArtistDataError)
@@ -411,6 +419,20 @@ const RegistrationRenewalPage = () => {
                 )}
               />
 
+              <FormField
+                control={form.control}
+                name="fiscalYear"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Fiscal Year</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Fiscal Year" disabled />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               <Button
                 type="submit"
                 className="mt-7 w-full"
@@ -430,3 +452,5 @@ const RegistrationRenewalPage = () => {
 };
 
 export default RegistrationRenewalPage;
+
+// TODO Right now the Fiscal Year is decided based on the current Fiscal Year. Once Matt finds out the cutoff date for registering for the current year we need to replace it with that.
