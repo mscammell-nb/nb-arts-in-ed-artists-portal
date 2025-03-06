@@ -26,7 +26,6 @@ const ProtectedRoutesWrapper = () => {
   const [approved, setApproved] = useState(null);
 
   useEffect(() => {
-    console.log("t")
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setAuthenticated(!!user);
       setLoading(false);

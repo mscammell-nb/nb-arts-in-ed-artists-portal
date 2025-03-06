@@ -39,12 +39,6 @@ export function VersionSwitcher({ versions, defaultVersion }) {
     where: `{10.EX.${userUid}}`,
   });
 
-  useEffect(() => {
-    if (artistsData) {
-      console.log(artistsData);
-    }
-  }, [artistsData]);
-
   return (
     <SidebarMenu>
       <SidebarMenuItem>
