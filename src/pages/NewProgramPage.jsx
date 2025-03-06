@@ -460,7 +460,7 @@ const NewProgramPage = () => {
 
 
               {GRADES.map((grade) => (
-                <div key={grade} class='pr-1'>
+                <div key={grade} className='pr-1'>
                   <Checkbox
                     id={grade}
                     className="my-1 mr-1"
