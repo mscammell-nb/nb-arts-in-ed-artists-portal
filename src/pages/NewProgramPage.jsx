@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import DefinitionsDialog from "@/components/DefinitionsDialog";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -6,12 +7,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { MultiSelect } from "@/components/ui/multi-select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Select,
   SelectContent,
@@ -21,18 +21,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/components/ui/use-toast";
 import {
-  GRADES,
   CATEGORIES,
-  KEYWORD_GROUPS,
   CATEGORY_DEFINITIONS,
+  GRADES,
+  KEYWORD_GROUPS,
   SERVICE_TYPE_DEFINITIONS,
 } from "@/constants/constants";
 import { useAddOrUpdateRecordMutation } from "@/redux/api/quickbaseApi";
-import { useToast } from "@/components/ui/use-toast";
 import { getCurrentFiscalYearKey } from "@/utils/utils";
-import DefinitionsDialog from "@/components/DefinitionsDialog";
+import { ArrowLeftIcon } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 const MIN_INPUT_LENGTH = 8;
@@ -327,7 +328,17 @@ const NewProgramPage = () => {
   }, [toast, isAddProgramSuccess, isAddProgramError, isAddProgramError]);
 
   return (
-    <div className="py-1">
+    <div className="space-y-4 py-1">
+      <Link to="/programs">
+        <Button
+          variant="secondary"
+          className="flex items-center space-x-2 rounded-md bg-slate-500 px-4 py-2 text-white hover:bg-slate-600"
+        >
+          <ArrowLeftIcon className="h-5 w-5" />
+          <span>Back</span>
+        </Button>
+      </Link>
+
       <Card className="mx-auto max-w-[800px]">
         <CardHeader>
           <CardTitle>Add New Program</CardTitle>
@@ -457,53 +468,47 @@ const NewProgramPage = () => {
               </h2>
 
               <div className="flex items-center">
+                {GRADES.map((grade) => (
+                  <div key={grade} className="pr-1">
+                    <Checkbox
+                      id={grade}
+                      className="my-1 mr-1"
+                      value={grade}
+                      onCheckedChange={(checked) => {
+                        const newGrades = checked
+                          ? [...formValues.grades, grade]
+                          : formValues.grades.filter((g) => g !== grade);
 
+                        setFormValues((prev) => ({
+                          ...prev,
+                          grades: newGrades,
+                        }));
 
-              {GRADES.map((grade) => (
-                <div key={grade} class='pr-1'>
-                  <Checkbox
-                    id={grade}
-                    className="my-1 mr-1"
-                    value={grade}
-                    onCheckedChange={(checked) => {
-                      const newGrades = checked
-                        ? [...formValues.grades, grade]
-                        : formValues.grades.filter((g) => g !== grade);
-
-                      setFormValues((prev) => ({
-                        ...prev,
-                        grades: newGrades,
-                      }));
-
-                      const isValid = newGrades.length > 0;
-                      setFormErrors((prev) => ({
-                        ...prev,
-                        gradesError: {
-                          isTriggered: isValid ? false : true,
-                          message: isValid
-                            ? ""
-                            : `At least one grade is required`,
-                        },
-                      }));
-                    }}
-                  />
-                  <br/>
-                  <Label
-                    htmlFor={grade}
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    {grade}
-                  </Label>
-                </div>
-              ))}
+                        const isValid = newGrades.length > 0;
+                        setFormErrors((prev) => ({
+                          ...prev,
+                          gradesError: {
+                            isTriggered: isValid ? false : true,
+                            message: isValid
+                              ? ""
+                              : `At least one grade is required`,
+                          },
+                        }));
+                      }}
+                    />
+                    <br />
+                    <Label
+                      htmlFor={grade}
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      {grade}
+                    </Label>
+                  </div>
+                ))}
               </div>
               {formErrors.gradesError.isTriggered && (
                 <p className="text-red-500">{formErrors.gradesError.message}</p>
               )}
-
-
-
-
             </div>
 
             <div>
