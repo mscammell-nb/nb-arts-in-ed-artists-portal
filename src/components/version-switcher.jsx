@@ -35,7 +35,7 @@ export function VersionSwitcher({ versions, defaultVersion }) {
     error: artistsError,
   } = useQueryForDataQuery({
     from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
-    select: [6],
+    select: [3, 6, 29, 30],
     where: `{10.EX.${userUid}}`,
   });
 

@@ -9,7 +9,7 @@ import { Navigate, Outlet, useNavigate } from "react-router-dom";
 const ProtectedRoutesWrapper = () => {
   const navigate = useNavigate();
   const auth = getAuth();
-  const artistRecordId = localStorage.getItem("artistRecordId");
+  const uid = localStorage.getItem("uid");
   let {
     data: artistsData,
     isLoading: isArtistLoading,
@@ -17,8 +17,8 @@ const ProtectedRoutesWrapper = () => {
     error: artistsError,
   } = useQueryForDataQuery({
     from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
-    select: [29, 30],
-    where: `{3.EX.${artistRecordId}}`,
+    select: [3, 6, 29, 30],
+    where: `{10.EX.${uid}}`,
   });
   const [authenticated, setAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);

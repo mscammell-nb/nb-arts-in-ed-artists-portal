@@ -26,7 +26,6 @@ import { Pencil1Icon } from "@radix-ui/react-icons";
 import { useEffect, useState } from "react";
 
 // TODO: Reset Password Functionality
-// TODO: Address format not letting update happen, redo editing for address to match registration page
 // NOTE: Do we display alternate phone?
 /* NOTE: update password on firebase first
           - once accepted change it on quickbase
@@ -66,7 +65,6 @@ const ArtistItem = ({
       </Select>
     );
   } else if (address) {
-    console.log(value);
     item = (
       <>
         <Label>Street line 1</Label>

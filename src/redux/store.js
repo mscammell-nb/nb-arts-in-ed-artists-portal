@@ -11,6 +11,7 @@ const store = configureStore({
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(authApi.middleware, quickbaseApi.middleware),
+  devTools: import.meta.env.VITE_MODE !== 'production', // Enable Redux DevTools in development mode
 });
 
 export default store;

@@ -6,6 +6,7 @@ export const quickbaseApi = createApi({
     baseUrl: "https://api.quickbase.com/v1",
   }),
   tagTypes: ["QuickbaseRecords"],
+  keepUnusedDataFor: 300, // This will cache our data for 5 minutes (300s)
   endpoints: (build) => ({
     queryForData: build.query({
       query: (body) => ({
