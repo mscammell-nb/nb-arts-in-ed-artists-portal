@@ -3,7 +3,6 @@ import Spinner from "@/components/ui/Spinner";
 import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
 
 const formatProgramsData = (programsData) => {
-  console.log("hello", programsData);
   const { data } = programsData;
 
   return data.map((record) => ({
@@ -43,10 +42,14 @@ const ArtistEvaluationsPage = () => {
 
   return (
     <div className="w-2/3 md:w-[920px]">
-      <EvaluationsDataTable
-        data={formatProgramsData(contractData)}
-        usePagination
-      />
+      {
+        contractData && (
+          <EvaluationsDataTable
+            data={formatProgramsData(contractData)}
+            usePagination
+          />
+        )
+      }
     </div>
   );
 };
