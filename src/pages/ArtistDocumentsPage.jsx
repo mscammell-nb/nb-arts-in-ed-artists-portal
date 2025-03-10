@@ -34,8 +34,6 @@ import {
 } from "@radix-ui/react-icons";
 import { AlertCircleIcon, Loader2, UploadIcon } from "lucide-react";
 import { useEffect, useState } from "react";
-import { set } from "react-hook-form";
-import { promise } from "zod";
 
 const ArtistDocumentsPage = () => {
   const [fileUploads, setFileUploads] = useState(null);
@@ -58,8 +56,9 @@ const ArtistDocumentsPage = () => {
     isError: isDocumentsDataError,
   } = useQueryForDataQuery({
     from: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
-    select: [11, 9, 16, 7, 12, 6, 14, 3],
+    select: [11, 9, 16, 7, 12, 6, 14, 3, 10],
     where: `{9.EX.${artist}}`,
+    sortBy: [{fieldId: 10}, {order: 'DESC'}]
   });
 
   const [
