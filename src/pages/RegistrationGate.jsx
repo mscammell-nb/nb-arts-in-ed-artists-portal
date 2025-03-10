@@ -25,6 +25,7 @@ const RegistrationGate = () => {
       setIsApproved(artistData.data[0][29].value);
       setIsRegistrationExpired(artistData.data[0][30].value);
       localStorage.setItem("artistRecordId", artistData.data[0][3].value);
+      localStorage.setItem("artist/org", artistData.data[0][6].value);
     }
   }, [artistData, isArtistDataLoading]);
 
