@@ -195,7 +195,8 @@ const ArtistDocumentsPage = () => {
     };
     const fiscalYear = getCurrentFiscalYearKey();
     const artist = localStorage.getItem("artist/org");
-    const base64 = await fileToBase64(fileUploads);
+    let base64 = await fileToBase64(fileUploads);
+    base64 = base64.split('base64,')[1]
     addDocument({
       to: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
       data: [
@@ -385,5 +386,3 @@ const ArtistDocumentsPage = () => {
 };
 
 export default ArtistDocumentsPage;
-
-// TODO: Add functionality to the upload file form
