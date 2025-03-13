@@ -35,6 +35,7 @@ const ProtectedRoutesWrapper = () => {
 
   useEffect(()=>{
     if(artistsData && !isArtistLoading){
+      localStorage.setItem("artist/org", artistsData.data[0][6].value)
       setApproved(artistsData.data[0][29].value);
       setExpired(artistsData.data[0][30].value);
     }

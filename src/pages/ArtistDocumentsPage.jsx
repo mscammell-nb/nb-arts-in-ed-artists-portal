@@ -39,16 +39,19 @@ const ArtistDocumentsPage = () => {
   const [fileUploads, setFileUploads] = useState(null);
   const [open, setOpen] = useState(false);
   const [downloadLoading, setDownloadLoading] = useState(false);
-  const fileTypes = [
-    "Fingerprinting Document",
-    "BOCES Anthem",
-    "Vendor Agreement Document",
-    "Tax Document",
-    "DEI Document",
-  ];
-  const [selectedType, setSelectedType] = useState(fileTypes[0]);
-  const [missingFiles, setMissingFiles] = useState(fileTypes);
+  const [selectedType, setSelectedType] = useState(null);
+  const [missingFiles, setMissingFiles] = useState([]);
   const artist = localStorage.getItem("artist/org");
+
+  const {
+    data: fileTypes,
+    isSuccess: isFileTypesSuccess,
+    isLoading: isFileTypesLoading,
+    isError: isFileTypesError,
+  } = useQueryForDataQuery({
+    from: import.meta.env.VITE_QUICKBASE_DOCUMENT_TYPES_TABLE_ID,
+    select: [3, 7, 31],
+  });
   const {
     data: documentsData,
     isSuccess: isDocumentsDataSuccess,
@@ -58,7 +61,7 @@ const ArtistDocumentsPage = () => {
     from: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
     select: [11, 9, 16, 7, 12, 6, 14, 3, 10],
     where: `{9.EX.${artist}}`,
-    sortBy: [{fieldId: 10}, {order: 'DESC'}]
+    sortBy: [{ fieldId: 10 }, { order: "DESC" }],
   });
 
   const [
@@ -88,7 +91,7 @@ const ArtistDocumentsPage = () => {
     return null;
   };
 
-  const downloadFile = async (doc) => {
+  const downloadFile = async (tableId, fieldId, id, versionNumber) => {
     setDownloadLoading(true);
     let headers = {
       "QB-Realm-Hostname": import.meta.env.VITE_QB_REALM_HOSTNAME,
@@ -97,7 +100,7 @@ const ArtistDocumentsPage = () => {
       "Content-Type": "application/octet-stream",
     };
     fetch(
-      `https://api.quickbase.com/v1/files/${import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID}/${doc.id}/7/${doc.versionNumber}`,
+      `https://api.quickbase.com/v1/files/${tableId}/${id}/${fieldId}/${versionNumber}`,
       {
         method: "GET",
         headers: headers,
@@ -142,20 +145,37 @@ const ArtistDocumentsPage = () => {
   }, [documentsData, isDocumentsDataLoading]);
 
   useEffect(() => {
+    // Once file types and doc data are loaded, check to see which files are missing
+    // Missing docs names, compare them to the docData.fileType
+    if (documentsData && fileTypes) {
+      let userTypes = documentsData.data
+        .map((doc) => {
+          if (doc[10].value == getCurrentFiscalYearKey()) return doc[6].value;
+        })
+        .filter((n) => n);
+      for (let type of fileTypes.data) {
+        if (!userTypes.includes(type[31].value)) {
+          setMissingFiles((curr) => [...curr, type[31].value]);
+        }
+      }
+    }
+  }, [fileTypes, documentsData]);
+
+  useEffect(() => {
     if (isAddDocumentError) {
       toast({
         variant: "destructive",
         title: "Error submitting documents",
         description: addArtistDocumentRecordError.data.message,
       });
-      setOpen(false)
+      setOpen(false);
     } else if (isAddDocumentSuccess) {
       toast({
         variant: "success",
         title: "Operation successful!",
         description: "Your documents have been submitted.",
       });
-      setOpen(false)
+      setOpen(false);
     }
   }, [isAddDocumentError, isAddDocumentSuccess]);
 
@@ -172,30 +192,34 @@ const ArtistDocumentsPage = () => {
 
   const formatData = (docData) => {
     const { data } = docData;
-    return data.map((record) => ({
-      id: record[3].value,
-      fiscalYear: record[11].value,
-      documentType: record[6].value,
-      artist: record[9].value,
-      documentName: record[7].value.versions[0].fileName,
-      versionNumber: record[7].value.versions[0].versionNumber,
-      file: record[7],
-    }));
+    return data.map((record) => {
+      let versionNumber = [...record[7].value.versions];
+      versionNumber = versionNumber.pop().versionNumber;
+      return {
+        id: record[3].value,
+        fiscalYear: record[11].value,
+        documentType: record[6].value,
+        artist: record[9].value,
+        documentName: record[7].value.versions[0].fileName,
+        versionNumber: versionNumber,
+        file: record[7],
+      };
+    });
   };
 
   const uploadFile = async () => {
-    if(fileUploads === null) {
+    if (fileUploads === null) {
       toast({
         variant: "destructive",
         title: "Error submitting documents",
         description: "Please upload a file.",
-      })
+      });
       return;
-    };
+    }
     const fiscalYear = getCurrentFiscalYearKey();
     const artist = localStorage.getItem("artist/org");
     let base64 = await fileToBase64(fileUploads);
-    base64 = base64.split('base64,')[1]
+    base64 = base64.split("base64,")[1];
     addDocument({
       to: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
       data: [
@@ -222,7 +246,14 @@ const ArtistDocumentsPage = () => {
     });
   };
 
-  if (isDocumentsDataLoading) {
+  const downloadTemplate = (file) => {
+    console.log(file);
+    let versionNumber = [...file[7].value.versions]
+    versionNumber = versionNumber.pop().versionNumber
+    downloadFile(import.meta.env.VITE_QUICKBASE_DOCUMENT_TYPES_TABLE_ID,7, file[3].value, versionNumber)
+  };
+
+  if (isDocumentsDataLoading || isFileTypesLoading) {
     return (
       <div className="flex h-full w-full justify-center pt-24">
         <Spinner />
@@ -248,12 +279,17 @@ const ArtistDocumentsPage = () => {
         </Alert>
       )}
       <div className="flex items-center gap-3">
-        {fileTypes.map((fileType) => (
-          <Button className="flex items-center gap-2" key={fileType}>
-            <DownloadIcon />
-            {fileType}
-          </Button>
-        ))}
+        {(!isFileTypesLoading && fileTypes) &&
+          fileTypes.data.map((f) => (
+            <Button
+              className="flex items-center gap-2"
+              key={f[31].value}
+              onClick={() => downloadTemplate(f)}
+            >
+              <DownloadIcon />
+              {f[31].value}
+            </Button>
+          ))}
       </div>
       {/* File Upload */}
       <div className="flex items-center gap-3">
@@ -278,9 +314,9 @@ const ArtistDocumentsPage = () => {
                   <SelectValue placeholder="Select a file type" />
                 </SelectTrigger>
                 <SelectContent>
-                  {fileTypes.map((fileType) => (
-                    <SelectItem value={fileType} key={fileType}>
-                      {fileType}
+                  {fileTypes.data.map((f) => (
+                    <SelectItem value={f[31].value} key={f[31].value}>
+                      {f[31].value}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -369,7 +405,14 @@ const ArtistDocumentsPage = () => {
               cell: ({ row }) => (
                 <div className="grid w-full place-items-center">
                   <Button
-                    onClick={() => downloadFile(row.original)}
+                    onClick={() =>
+                      downloadFile(
+                        import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
+                        7,
+                        row.original.id,
+                        row.original.versionNumber,
+                      )
+                    }
                     variant="outline"
                   >
                     <DownloadIcon />
