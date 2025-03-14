@@ -100,7 +100,7 @@ const LoginPage = () => {
                 )}
               />
               <Button
-                tepe="submit"
+                type="submit"
                 className="mt-7 w-full"
                 isLoading={isLoading}
               >

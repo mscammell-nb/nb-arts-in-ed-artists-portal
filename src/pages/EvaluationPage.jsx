@@ -16,18 +16,10 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import {
   useAddOrUpdateRecordMutation,
-  useQueryForDataQuery,
 } from "@/redux/api/quickbaseApi";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { useState } from "react";
-import { getCurrentFiscalYear } from "@/utils/utils";
-import { Check } from "lucide-react";
+
+import { useEffect, useState } from "react";
+import { Loader2 } from "lucide-react";
 import CustomSelect from "@/components/ui/CustomSelect";
 
 // TODO: Add more complex rules to the yup schema
@@ -60,7 +52,7 @@ schema = schema
   })
   .required();
 
-const EvaluationPage = ({ contractData, programData }) => {
+const EvaluationPage = ({ contractData, programData, closeSheet }) => {
   const [contract, setContract] = useState(null);
   const [
     addEvaluation,
@@ -130,10 +122,6 @@ const EvaluationPage = ({ contractData, programData }) => {
     return res === "yes" ? true : false;
   };
 
-  const handleValueChange = (value) => {
-    setContract(value);
-  };
-
   const formatContractData = (data) => {
     let copy = data.map((cd) => {
       const programName = programData.filter(
@@ -146,6 +134,12 @@ const EvaluationPage = ({ contractData, programData }) => {
     });
     return copy;
   };
+
+  useEffect(() => {
+    if(!isAddEvaluationLoading && isAddEvaluationSuccess){
+      closeSheet();
+    }
+  }, [isAddEvaluationLoading, isAddEvaluationSuccess])
 
   return (
     <div className="flex flex-col">
@@ -283,7 +277,8 @@ const EvaluationPage = ({ contractData, programData }) => {
             )}
           />
 
-          <Button type="submit" size="lg">
+          <Button type="submit" size="lg" disabled={isAddEvaluationLoading}>
+            {isAddEvaluationLoading && <Loader2 className="mr-2 animate-spin" />}
             Submit
           </Button>
         </form>

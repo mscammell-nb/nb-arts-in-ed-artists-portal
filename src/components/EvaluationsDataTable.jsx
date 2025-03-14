@@ -18,26 +18,11 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "./ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from "./ui/sheet";
-import {
-  CaretDownIcon,
-  CaretSortIcon,
-  CaretUpIcon,
-} from "@radix-ui/react-icons";
 import EvaluationPage from "@/pages/EvaluationPage";
 import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
 import { getCurrentFiscalYear } from "@/utils/utils";
 import { Loader2 } from "lucide-react";
-
-const getSortIcon = (column) => {
-  switch (column.getIsSorted()) {
-    case "asc":
-      return <CaretUpIcon className="ml-2 h-4 w-4" />;
-    case "desc":
-      return <CaretDownIcon className="ml-2 h-4 w-4" />;
-    default:
-      return <CaretSortIcon className="ml-2 h-4 w-4" />;
-  }
-};
+import { evalTableColumns } from "@/utils/EvaluationTableColumns";
 
 const EvaluationsDataTable = ({ data, usePagination = false }) => {
   const {
@@ -62,169 +47,12 @@ const EvaluationsDataTable = ({ data, usePagination = false }) => {
   });
   const [sorting, setSorting] = useState([]);
   const [row, setRow] = useState(null);
-  const [evaluation, setEvaluation] = useState("");
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
-  const columns = [
-    {
-      accessorKey: "programName",
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Program
-          {getSortIcon(column)}
-        </Button>
-      ),
-      cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
-    },
-    {
-      accessorKey: "evaluationDate",
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Evaluation Date
-          {getSortIcon(column)}
-        </Button>
-      ),
-      cell: (info) => <p className="text-center">{info.getValue()}</p>,
-    },
-    {
-      accessorKey: "servicePerformed",
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Service Performed
-          {getSortIcon(column)}
-        </Button>
-      ),
-      cell: (info) => <p className="text-center">{info.getValue()}</p>,
-    },
-    {
-      accessorKey: "approverName",
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Approver Name
-          {getSortIcon(column)}
-        </Button>
-      ),
-      cell: (info) => <p className="text-center">{info.getValue()}</p>,
-    },
-    {
-      accessorKey: "guideUsed",
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Guide Used
-          {getSortIcon(column)}
-        </Button>
-      ),
-      cell: (info) => <p className="text-center">{info.getValue()}</p>,
-    },
-    {
-      accessorKey: "studentsAttentive",
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Attentive?
-          {getSortIcon(column)}
-        </Button>
-      ),
-      cell: (info) => <p className="text-center">{info.getValue()}</p>,
-    },
-    {
-      accessorKey: "studentConduct",
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Conduct?
-          {getSortIcon(column)}
-        </Button>
-      ),
-      cell: (info) => <p className="text-center">{info.getValue()}</p>,
-    },
-    {
-      accessorKey: "teacherRemained",
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Teacher Remained?
-          {getSortIcon(column)}
-        </Button>
-      ),
-      cell: (info) => <p className="text-center">{info.getValue()}</p>,
-    },
-    {
-      accessorKey: "spaceSetUp",
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Space Set Up?
-          {getSortIcon(column)}
-        </Button>
-      ),
-      cell: (info) => <p className="text-center">{info.getValue()}</p>,
-    },
-    {
-      accessorKey: "equipmentUsed",
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Equipment
-          {getSortIcon(column)}
-        </Button>
-      ),
-      cell: (info) => <p className="text-center">{info.getValue()}</p>,
-    },
-    {
-      accessorKey: "onSchedule",
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          On Schedule
-          {getSortIcon(column)}
-        </Button>
-      ),
-      cell: (info) => <p className="text-center">{info.getValue()}</p>,
-    },
-    {
-      accessorKey: "additionalComments",
-      header: ({ column }) => (
-        <p
-          className="text-nowrap"
-        >
-          Additional Comments
-        </p>
-      ),
-      cell: (info) => <p className="text-left">{info.getValue()}</p>,
-    },
-  ];
 
   const table = useReactTable({
     data,
-    columns,
+    columns: evalTableColumns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -242,7 +70,6 @@ const EvaluationsDataTable = ({ data, usePagination = false }) => {
 
   const closeSheet = () => {
     setIsSheetOpen(false);
-    setEvaluation(""); // Reset input on close
   };
 
   return (
@@ -373,6 +200,7 @@ const EvaluationsDataTable = ({ data, usePagination = false }) => {
             <EvaluationPage
               contractData={contracts.data}
               programData={programsData.data}
+              closeSheet={closeSheet}
             />
           )}
         </SheetContent>
@@ -383,5 +211,3 @@ const EvaluationsDataTable = ({ data, usePagination = false }) => {
 
 export default EvaluationsDataTable;
 // TODO: Download eval doc on click
-// TODO: Add eval doc on submit
-// TODO: MAKE ALL QUESTIONS FIELDS ON QB for evaluations, determine eval field based on if others are done

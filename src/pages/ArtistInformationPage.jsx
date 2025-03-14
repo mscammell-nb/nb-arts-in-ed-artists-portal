@@ -26,12 +26,11 @@ import { Pencil1Icon } from "@radix-ui/react-icons";
 import { useEffect, useState } from "react";
 
 // TODO: Reset Password Functionality
-// NOTE: Do we display alternate phone?
 /* NOTE: update password on firebase first
           - once accepted change it on quickbase
           - if an error occurs do not change on quickbase
 
-   NOTE: PASSWORD WORRY, firebase does not allow diret retrieval of user passwords bc of security risks,
+   NOTE: PASSWORD WORRY, firebase does not allow direct retrieval of user passwords bc of security risks,
          we can work around this by accessing the user's current password via quickbase, then updating it on firebase
          We need to get the user's password becaus we need to verify the user knows the current password to change it
 */
@@ -133,7 +132,7 @@ const ArtistInformationPage = () => {
     updateArtist,
     {
       isLoading: isUpdateArtistLoading,
-      isSuccess: isUpdateArtistSucess,
+      isSuccess: isUpdateArtistSuccess,
       isError: isUpdateArtistError,
       error: updateArtistError,
     },
@@ -155,7 +154,7 @@ const ArtistInformationPage = () => {
   }, [artistsData]);
 
   useEffect(() => {
-    if (isUpdateArtistSucess) {
+    if (isUpdateArtistSuccess) {
       toast({
         title: "Operation successful!",
         description: "Artists information updated",
@@ -170,7 +169,7 @@ const ArtistInformationPage = () => {
       });
       console.log(updateArtistError);
     }
-  }, [updateArtistError, isUpdateArtistSucess, isUpdateArtistError]);
+  }, [updateArtistError, isUpdateArtistSuccess, isUpdateArtistError]);
 
   const onSave = () => {
     updateArtist({
@@ -308,7 +307,7 @@ const ArtistInformationPage = () => {
                   <p className="text-2xl font-bold">Change Password</p>
                   <p className="text-gray-500">
                     {" "}
-                    Ensure your account is using a long, random passowrd to stay
+                    Ensure your account is using a long, random password to stay
                     secure.
                   </p>
                 </div>

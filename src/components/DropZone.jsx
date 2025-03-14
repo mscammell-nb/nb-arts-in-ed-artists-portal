@@ -1,3 +1,4 @@
+import { Label } from "@radix-ui/react-dropdown-menu";
 import { UploadCloudIcon } from "lucide-react";
 import React from "react";
 import { useDropzone } from "react-dropzone";
@@ -26,6 +27,7 @@ export const DropZone = ({setUploadedFile}) => {
       <aside>
         {acceptedFiles.length > 0 && (
           <div>
+            <Label>Selected File:</Label>
             <p>{acceptedFiles[0].name}</p>
           </div>
         )}

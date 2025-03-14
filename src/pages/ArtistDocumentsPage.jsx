@@ -26,6 +26,7 @@ import {
   useQueryForDataQuery,
 } from "@/redux/api/quickbaseApi";
 import { getCurrentFiscalYear, getCurrentFiscalYearKey } from "@/utils/utils";
+import { Label } from "@radix-ui/react-dropdown-menu";
 import {
   CaretDownIcon,
   CaretSortIcon,
@@ -38,8 +39,7 @@ import { useEffect, useState } from "react";
 const ArtistDocumentsPage = () => {
   const [fileUploads, setFileUploads] = useState(null);
   const [open, setOpen] = useState(false);
-  const [downloadLoading, setDownloadLoading] = useState(false);
-  const [selectedType, setSelectedType] = useState(null);
+  const [selectedType, setSelectedType] = useState('');
   const [missingFiles, setMissingFiles] = useState([]);
   const artist = localStorage.getItem("artist/org");
 
@@ -92,7 +92,6 @@ const ArtistDocumentsPage = () => {
   };
 
   const downloadFile = async (tableId, fieldId, id, versionNumber) => {
-    setDownloadLoading(true);
     let headers = {
       "QB-Realm-Hostname": import.meta.env.VITE_QB_REALM_HOSTNAME,
       "User-Agent": "{User-Agent}",
@@ -118,12 +117,10 @@ const ArtistDocumentsPage = () => {
             res.headers.get("content-disposition"),
           );
           downloadLink.click();
-          setDownloadLoading(false);
           return;
         }
       })
       .catch((err) => {
-        setDownloadLoading(false);
         console.error(err);
       });
   };
@@ -216,6 +213,14 @@ const ArtistDocumentsPage = () => {
       });
       return;
     }
+    if (selectedType === '') {
+      toast({
+        variant: "destructive",
+        title: "Error submitting documents",
+        description: "Please select a file type",
+      });
+      return;
+    }
     const fiscalYear = getCurrentFiscalYearKey();
     const artist = localStorage.getItem("artist/org");
     let base64 = await fileToBase64(fileUploads);
@@ -305,6 +310,7 @@ const ArtistDocumentsPage = () => {
             </DialogHeader>
             <Separator />
             <div className="flex flex-col gap-2">
+              <Label>File Type</Label>
               <Select
                 value={selectedType}
                 onValueChange={(e) => setSelectedType(e)}

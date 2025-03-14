@@ -39,7 +39,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useState, useEffect } from "react";
-import { Check, X, Plus, ListFilter, FilePenLine, Mail } from "lucide-react";
+import { Check, X, Plus, ListFilter, FilePenLine, Mail, Loader2 } from "lucide-react";
 import {
   useAddOrUpdateRecordMutation,
   useQueryForDataQuery,
@@ -328,6 +328,15 @@ const PerformersPage = () => {
         return "";
     }
   };
+
+  if(isPerformersLoading){
+    return (
+      <div className="flex flex-col h-full w-2/3 items-center justify-center pt-24">
+        <Loader2 className="animate-spin" />
+        Loading...
+      </div>
+    )
+  }
 
   if (isPerformersError) {
     console.log(
@@ -640,7 +649,7 @@ const PerformersPage = () => {
                                       canEditPerformerData.data[0][18]
                                         .value && (
                                         <DialogDescription>
-                                          Entern your changes and click save
+                                          Enter your changes and click save
                                           when you're ready.
                                         </DialogDescription>
                                       )}
@@ -741,5 +750,5 @@ const PerformersPage = () => {
 export default PerformersPage;
 
 // TODO: figure out why the background of the edit dialog is black
-// TODO: add spacebar listener to the edit buttons so that they follow the same logic of when they are clicked.
-// TODO: WHen the user doesn't have any performers (there's no data in the table) and I try to select a filter, I get a warning saying each item in a list should have a unique key. Probably fixable by stopping the filtering process if the data returned by the API has a length of 0 (early return).
+// TODO: add space bar listener to the edit buttons so that they follow the same logic of when they are clicked.
+// TODO: When the user doesn't have any performers (there's no data in the table) and I try to select a filter, I get a warning saying each item in a list should have a unique key. Probably fixable by stopping the filtering process if the data returned by the API has a length of 0 (early return).
