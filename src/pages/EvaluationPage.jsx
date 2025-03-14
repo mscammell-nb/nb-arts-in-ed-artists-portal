@@ -106,7 +106,6 @@ const EvaluationPage = ({ contractData, programData }) => {
     });
 
     form.reset(defaultValues);
-    console.log(data, formattedData);
     addEvaluation({
       to: import.meta.env.VITE_QUICKBASE_EVALUATIONS_TABLE_ID,
       data: [
@@ -128,7 +127,6 @@ const EvaluationPage = ({ contractData, programData }) => {
   };
 
   const convertResponse = (res) => {
-    console.log("RES", res, res === "yes");
     return res === "yes" ? true : false;
   };
 

@@ -120,7 +120,6 @@ const RegistrationRenewalPage = () => {
   useEffect(() => {
     if (artistData) {
       const data = artistData.data[0];
-      console.log("data: ", data);
       const defaultValues = {
         artistOrg: data[6].value,
         email: data[7].value,

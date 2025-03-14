@@ -247,7 +247,6 @@ const ArtistDocumentsPage = () => {
   };
 
   const downloadTemplate = (file) => {
-    console.log(file);
     let versionNumber = [...file[7].value.versions]
     versionNumber = versionNumber.pop().versionNumber
     downloadFile(import.meta.env.VITE_QUICKBASE_DOCUMENT_TYPES_TABLE_ID,7, file[3].value, versionNumber)

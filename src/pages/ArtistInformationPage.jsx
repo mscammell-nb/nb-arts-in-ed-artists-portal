@@ -173,7 +173,6 @@ const ArtistInformationPage = () => {
   }, [updateArtistError, isUpdateArtistSucess, isUpdateArtistError]);
 
   const onSave = () => {
-    console.log(addressObject);
     updateArtist({
       to: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
       data: [
