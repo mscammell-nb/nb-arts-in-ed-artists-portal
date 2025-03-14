@@ -14,9 +14,24 @@ import {
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import {
+  useAddOrUpdateRecordMutation,
+  useQueryForDataQuery,
+} from "@/redux/api/quickbaseApi";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useState } from "react";
+import { getCurrentFiscalYear } from "@/utils/utils";
+import { Check } from "lucide-react";
+import CustomSelect from "@/components/ui/CustomSelect";
 
 // TODO: Add more complex rules to the yup schema
-// TODO: see if I can get the radio button checkmarks to go away when the form is reset.
+// TODO: see if I can get the radio button checkmark to go away when the form is reset.
 
 const questions = [
   "Was it apparent that students had used your study guide/support materials?",
@@ -45,7 +60,17 @@ schema = schema
   })
   .required();
 
-const EvaluationPage = () => {
+const EvaluationPage = ({ contractData, programData }) => {
+  const [contract, setContract] = useState(null);
+  const [
+    addEvaluation,
+    {
+      isLoading: isAddEvaluationLoading,
+      isSuccess: isAddEvaluationSuccess,
+      isError: isAddEvaluationError,
+      error: addEvaluationError,
+    },
+  ] = useAddOrUpdateRecordMutation();
 
   const defaultValues = questions.reduce(
     (values, _, index) => {
@@ -69,6 +94,7 @@ const EvaluationPage = () => {
       additionalComments: data.additionalComments,
       approverName: data.approverName,
       wereServicesPerformed: data.wereServicesPerformed === "yes",
+      relatedContract: contract,
     };
 
     questions.forEach((question, index) => {
@@ -79,14 +105,52 @@ const EvaluationPage = () => {
       };
     });
 
-    console.log(formattedData);
     form.reset(defaultValues);
+    console.log(data, formattedData);
+    addEvaluation({
+      to: import.meta.env.VITE_QUICKBASE_EVALUATIONS_TABLE_ID,
+      data: [
+        {
+          6: { value: formattedData.relatedContract[3].value }, // Related Contract
+          13: { value: formattedData.wereServicesPerformed }, //Services Performed
+          14: { value: formattedData.approverName }, //Approver Name
+          15: { value: convertResponse(formattedData.question1.response) }, //Guide Used
+          16: { value: convertResponse(formattedData.question2.response) }, //Students Attentive
+          17: { value: convertResponse(formattedData.question3.response) }, //Student Conduct
+          18: { value: convertResponse(formattedData.question4.response) }, //Teacher Remained
+          19: { value: convertResponse(formattedData.question5.response) }, //Space set up
+          20: { value: convertResponse(formattedData.question6.response) }, //Materials Given
+          21: { value: convertResponse(formattedData.question7.response) }, //On Schedule
+          22: { value: formattedData.additionalComments }, //Additional Comments
+        },
+      ],
+    });
+  };
+
+  const convertResponse = (res) => {
+    console.log("RES", res, res === "yes");
+    return res === "yes" ? true : false;
+  };
+
+  const handleValueChange = (value) => {
+    setContract(value);
+  };
+
+  const formatContractData = (data) => {
+    let copy = data.map((cd) => {
+      const programName = programData.filter(
+        (d) => d[3].value === cd[8].value,
+      )[0][11].value;
+      return {
+        ...cd,
+        name: programName,
+      };
+    });
+    return copy;
   };
 
   return (
-    <>
-      <h1 className="mb-5 text-4xl font-semibold">Evaluation Form</h1>
-
+    <div className="flex flex-col">
       <Separator className="my-4" />
 
       <Form {...form}>
@@ -94,6 +158,25 @@ const EvaluationPage = () => {
           onSubmit={form.handleSubmit(onSubmit)}
           className="w-full space-y-6"
         >
+          <h2 className="text-lg font-semibold">Evaluation Information</h2>
+          <FormField
+            control={form.control}
+            name="relatedContract"
+            render={({ field }) => (
+              <FormItem className="space-y-3">
+                <FormControl>
+                  <CustomSelect
+                    data={formatContractData(contractData)}
+                    label={"Related Contract"}
+                    placeholder={"Select a contract"}
+                    value={contract}
+                    setValue={setContract}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <Separator />
           <h2 className="text-lg font-semibold">
             SERVICES PERFORMANCE CONFIRMATION
           </h2>
@@ -207,7 +290,7 @@ const EvaluationPage = () => {
           </Button>
         </form>
       </Form>
-    </>
+    </div>
   );
 };
 

@@ -17,13 +17,16 @@ import {
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "./ui/button";
-import { Sheet, SheetContent } from "./ui/sheet";
-import { Label } from "./ui/label";
+import { Sheet, SheetContent, SheetDescription, SheetTitle } from "./ui/sheet";
 import {
   CaretDownIcon,
   CaretSortIcon,
   CaretUpIcon,
 } from "@radix-ui/react-icons";
+import EvaluationPage from "@/pages/EvaluationPage";
+import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
+import { getCurrentFiscalYear } from "@/utils/utils";
+import { Loader2 } from "lucide-react";
 
 const getSortIcon = (column) => {
   switch (column.getIsSorted()) {
@@ -37,25 +40,34 @@ const getSortIcon = (column) => {
 };
 
 const EvaluationsDataTable = ({ data, usePagination = false }) => {
+  const {
+    data: programsData,
+    isLoading: isProgramsDataLoading,
+    isError: isProgramsDataError,
+    error: programsDataError,
+  } = useQueryForDataQuery({
+    from: import.meta.env.VITE_QUICKBASE_PROGRAMS_TABLE_ID,
+    select: [1, 3, 8, 11, 16, 31, 32, 33],
+    where: `{8.EX.${localStorage.getItem("artistRecordId")}}AND{16.EX.${getCurrentFiscalYear()}}`,
+  });
+  const {
+    data: contracts,
+    isLoading: isContractsLoading,
+    isError: isContractsError,
+    error: contractsError,
+  } = useQueryForDataQuery({
+    from: import.meta.env.VITE_QUICKBASE_CONTRACTS_TABLE_ID,
+    select: [1, 3, 8, 10, 12, 13, 15, 16],
+    where: `{9.EX.${localStorage.getItem("artistRecordId")}}AND{15.EX.${getCurrentFiscalYear()}}`,
+  });
   const [sorting, setSorting] = useState([]);
+  const [row, setRow] = useState(null);
   const [evaluation, setEvaluation] = useState("");
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   const columns = [
     {
-      accessorKey: "dateCreated",
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Date Created
-          {getSortIcon(column)}
-        </Button>
-      ),
-    },
-    {
-      accessorKey: "program",
+      accessorKey: "programName",
       header: ({ column }) => (
         <Button
           variant="ghost"
@@ -65,42 +77,148 @@ const EvaluationsDataTable = ({ data, usePagination = false }) => {
           {getSortIcon(column)}
         </Button>
       ),
+      cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
     },
     {
-      accessorKey: "inactive",
+      accessorKey: "evaluationDate",
       header: ({ column }) => (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Inactive
+          Evaluation Date
           {getSortIcon(column)}
         </Button>
       ),
+      cell: (info) => <p className="text-center">{info.getValue()}</p>,
     },
     {
-      accessorKey: "evaluated",
+      accessorKey: "servicePerformed",
       header: ({ column }) => (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Evaluated
+          Service Performed
           {getSortIcon(column)}
         </Button>
       ),
+      cell: (info) => <p className="text-center">{info.getValue()}</p>,
     },
     {
-      header: "Actions", // Column Header
-      id: "actions",
-      cell: ({ row }) => (
-        <button
-          onClick={() => openSheet()}
-          className="rounded bg-blue-500 px-3 py-1 text-white"
+      accessorKey: "approverName",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Add Evaluation
-        </button>
+          Approver Name
+          {getSortIcon(column)}
+        </Button>
       ),
+      cell: (info) => <p className="text-center">{info.getValue()}</p>,
+    },
+    {
+      accessorKey: "guideUsed",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Guide Used
+          {getSortIcon(column)}
+        </Button>
+      ),
+      cell: (info) => <p className="text-center">{info.getValue()}</p>,
+    },
+    {
+      accessorKey: "studentsAttentive",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Attentive?
+          {getSortIcon(column)}
+        </Button>
+      ),
+      cell: (info) => <p className="text-center">{info.getValue()}</p>,
+    },
+    {
+      accessorKey: "studentConduct",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Conduct?
+          {getSortIcon(column)}
+        </Button>
+      ),
+      cell: (info) => <p className="text-center">{info.getValue()}</p>,
+    },
+    {
+      accessorKey: "teacherRemained",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Teacher Remained?
+          {getSortIcon(column)}
+        </Button>
+      ),
+      cell: (info) => <p className="text-center">{info.getValue()}</p>,
+    },
+    {
+      accessorKey: "spaceSetUp",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Space Set Up?
+          {getSortIcon(column)}
+        </Button>
+      ),
+      cell: (info) => <p className="text-center">{info.getValue()}</p>,
+    },
+    {
+      accessorKey: "equipmentUsed",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Equipment
+          {getSortIcon(column)}
+        </Button>
+      ),
+      cell: (info) => <p className="text-center">{info.getValue()}</p>,
+    },
+    {
+      accessorKey: "onSchedule",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          On Schedule
+          {getSortIcon(column)}
+        </Button>
+      ),
+      cell: (info) => <p className="text-center">{info.getValue()}</p>,
+    },
+    {
+      accessorKey: "additionalComments",
+      header: ({ column }) => (
+        <p
+          className="text-nowrap"
+        >
+          Additional Comments
+        </p>
+      ),
+      cell: (info) => <p className="text-left">{info.getValue()}</p>,
     },
   ];
 
@@ -119,7 +237,6 @@ const EvaluationsDataTable = ({ data, usePagination = false }) => {
   });
 
   const openSheet = () => {
-    console.log("OPEN");
     setIsSheetOpen(true);
   };
 
@@ -130,7 +247,7 @@ const EvaluationsDataTable = ({ data, usePagination = false }) => {
 
   return (
     <>
-      <div className="flex items-center py-4">
+      <div className="flex items-center justify-between py-4">
         <Input
           placeholder="Search..."
           value={table.getState().globalFilter ?? ""}
@@ -139,6 +256,19 @@ const EvaluationsDataTable = ({ data, usePagination = false }) => {
           }
           className="max-w-sm"
         />
+        <Button
+          onClick={() => {
+            setRow(row);
+            openSheet();
+          }}
+          disabled={isContractsLoading || isProgramsDataLoading}
+          className="rounded bg-blue-500 px-3 py-1 text-white"
+        >
+          {(isContractsLoading || isProgramsDataLoading) && (
+            <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+          )}
+          Add Evaluation
+        </Button>
       </div>
       <div className="rounded-md border">
         <Table>
@@ -233,24 +363,18 @@ const EvaluationsDataTable = ({ data, usePagination = false }) => {
           </div>
         </div>
       )}
-      <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-        <SheetContent>
-          <h2 className="mb-4 text-xl font-bold">Add Evaluation</h2>
-          <div className="mb-4">
-            <Label htmlFor="evaluation">Evaluation</Label>
-            <Input
-              id="evaluation"
-              value={evaluation}
-              onChange={(e) => setEvaluation(e.target.value)}
-              placeholder="Enter evaluation"
+      <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen} className="z-20">
+        <SheetContent className="sm:max-w-1/3 w-1/3 overflow-y-scroll">
+          <SheetTitle className="text-3xl">Evaluation Form</SheetTitle>
+          <SheetDescription className="hidden">
+            Evaluation Form
+          </SheetDescription>
+          {!isContractsLoading && !isProgramsDataLoading && (
+            <EvaluationPage
+              contractData={contracts.data}
+              programData={programsData.data}
             />
-          </div>
-          <div className="flex justify-end space-x-2">
-            <Button variant="outline" onClick={closeSheet}>
-              Cancel
-            </Button>
-            <Button onClick={() => {}}>Submit</Button>
-          </div>
+          )}
         </SheetContent>
       </Sheet>
     </>
@@ -258,3 +382,6 @@ const EvaluationsDataTable = ({ data, usePagination = false }) => {
 };
 
 export default EvaluationsDataTable;
+// TODO: Download eval doc on click
+// TODO: Add eval doc on submit
+// TODO: MAKE ALL QUESTIONS FIELDS ON QB for evaluations, determine eval field based on if others are done
