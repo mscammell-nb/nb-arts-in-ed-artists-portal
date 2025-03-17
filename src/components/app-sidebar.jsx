@@ -4,6 +4,7 @@ import { VersionSwitcher } from "@/components/version-switcher";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -12,9 +13,21 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { Link } from "react-router-dom";
-import { BookText, ClipboardList, Drum, FileText, UserRoundCog, MonitorCog, Icon } from "lucide-react";
+import {
+  BookText,
+  ClipboardList,
+  Drum,
+  FileText,
+  UserRoundCog,
+  MonitorCog,
+  Icon,
+  ChevronRight,
+  ChevronLeft,
+} from "lucide-react";
+import { Button } from "./ui/button";
 
 const data = {
   versions: ["Email Help", "Sign Out"],
@@ -31,7 +44,7 @@ const data = {
         {
           title: "Artist Registrations",
           url: "/artist-registrations",
-          icon: <BookText/>,
+          icon: <BookText />,
         },
       ],
     },
@@ -42,24 +55,24 @@ const data = {
         {
           title: "Artist Documents",
           url: "/artist-documents",
-          icon: <FileText/>,
+          icon: <FileText />,
         },
         {
           title: "Artist Evaluations",
           url: "/artist-evaluations",
-          icon: <ClipboardList/>,
+          icon: <ClipboardList />,
 
           //isActive: true,
         },
         {
           title: "Performers",
           url: "/performers",
-          icon: <Drum/>,
+          icon: <Drum />,
         },
         {
           title: "Programs",
           url: "/programs",
-          icon: <MonitorCog/>,
+          icon: <MonitorCog />,
         },
       ],
     },
@@ -67,6 +80,7 @@ const data = {
 };
 
 export function AppSidebar({ ...props }) {
+  const { open, setOpen } = useSidebar();
   return (
     <Sidebar className={"side-bar"} {...props}>
       <SidebarHeader>
@@ -98,6 +112,20 @@ export function AppSidebar({ ...props }) {
           </SidebarGroup>
         ))}
       </SidebarContent>
+      <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem></SidebarMenuItem>
+          <SidebarMenuButton asChild>
+            <Button
+              variant="ghost"
+              className="justify-end"
+              onClick={() => setOpen(!open)}
+            >
+              {open ? <ChevronLeft /> : <ChevronRight />}
+            </Button>
+          </SidebarMenuButton>
+        </SidebarMenu>
+      </SidebarFooter>
       <SidebarRail />
     </Sidebar>
   );
