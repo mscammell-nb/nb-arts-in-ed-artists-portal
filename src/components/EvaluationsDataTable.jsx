@@ -28,8 +28,6 @@ const EvaluationsDataTable = ({ data, usePagination = false }) => {
   const {
     data: programsData,
     isLoading: isProgramsDataLoading,
-    isError: isProgramsDataError,
-    error: programsDataError,
   } = useQueryForDataQuery({
     from: import.meta.env.VITE_QUICKBASE_PROGRAMS_TABLE_ID,
     select: [1, 3, 8, 11, 16, 31, 32, 33],
@@ -38,8 +36,6 @@ const EvaluationsDataTable = ({ data, usePagination = false }) => {
   const {
     data: contracts,
     isLoading: isContractsLoading,
-    isError: isContractsError,
-    error: contractsError,
   } = useQueryForDataQuery({
     from: import.meta.env.VITE_QUICKBASE_CONTRACTS_TABLE_ID,
     select: [1, 3, 8, 10, 12, 13, 15, 16],
@@ -210,4 +206,3 @@ const EvaluationsDataTable = ({ data, usePagination = false }) => {
 };
 
 export default EvaluationsDataTable;
-// TODO: Download eval doc on click

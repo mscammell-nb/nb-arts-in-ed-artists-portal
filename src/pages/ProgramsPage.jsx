@@ -70,12 +70,12 @@ const ProgramsPage = () => {
       select: [1, 3, 8, 11, 16, 31, 32, 33],
       where: `{8.EX.${localStorage.getItem("artistRecordId")}}AND{16.EX.${fiscalYear}}`,
     },
-    { skip: !fiscalYear },
+    { skip: !fiscalYear, refetchOnMountOrArgChange: true },
   );
 
   if (isFiscalYearsDataLoading || isProgramsDataLoading) {
     return (
-      <div className="flex w-2/3 items-center justify-center">
+      <div className="flex h-full w-full justify-center pt-24">
         <Spinner />
       </div>
     );

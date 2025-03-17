@@ -1,57 +1,41 @@
 import Spinner from "@/components/ui/Spinner";
 import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
-import { data } from "autoprefixer";
-import { getAuth } from "firebase/auth";
-import { use } from "react";
 import { useEffect, useState } from "react";
-import { Navigate, Outlet, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { Outlet, useNavigate } from "react-router-dom";
 
 const ProtectedRoutesWrapper = () => {
+  const { user, authReady } = useSelector((state) => state.auth);
   const navigate = useNavigate();
-  const auth = getAuth();
-  const uid = localStorage.getItem("uid");
-  let {
-    data: artistsData,
-    isLoading: isArtistLoading,
-    isError: isPerformersError,
-    error: artistsError,
-  } = useQueryForDataQuery({
+  let { data: artistsData, isLoading: isArtistLoading } = useQueryForDataQuery(
+    user ? {
     from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
     select: [3, 6, 29, 30],
-    where: `{10.EX.${uid}}`,
-  });
-  const [authenticated, setAuthenticated] = useState(false);
-  const [loading, setLoading] = useState(true);
+    where: `{10.EX.${user.uid}}`,
+  } : {skip:true, refetchOnMountOrArgChange: true});
   const [expired, setExpired] = useState(null);
   const [approved, setApproved] = useState(null);
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      setAuthenticated(!!user);
-      setLoading(false);
-    });
-    return unsubscribe;
-  }, [auth]);
-
-  useEffect(()=>{
-    if(artistsData && !isArtistLoading){
-      localStorage.setItem("artist/org", artistsData.data[0][6].value)
+    if (artistsData?.data && !isArtistLoading) {
+      localStorage.setItem("artist/org", artistsData.data[0][6].value);
+      localStorage.setItem("artistRecordId", artistsData.data[0][3].value);
       setApproved(artistsData.data[0][29].value);
       setExpired(artistsData.data[0][30].value);
     }
-  },[isArtistLoading, artistsData]);
+  }, [isArtistLoading, artistsData]);
 
-  useEffect(()=>{
-    if(!loading){
-      if(!authenticated){
-        navigate('/login')
-      }else if(expired == true || approved == false){
-        navigate('/registration-gate')
+  useEffect(() => {
+    if (authReady) {
+      if (!user) {
+        navigate("/login");
+      } else if (expired == true || approved == false) {
+        navigate("/registration-gate");
       }
     }
-  },[loading, authenticated, expired, approved, navigate])
+  }, [expired, approved, navigate, authReady, user]);
 
-  if (loading) {
+  if (!authReady) {
     return (
       <div className="flex h-screen w-full items-center justify-center">
         <Spinner />

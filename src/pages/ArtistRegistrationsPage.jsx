@@ -11,19 +11,20 @@ import {
 import { getNextFiscalYear } from "@/utils/utils";
 import { Check, X } from "lucide-react";
 import { useQueryForDataQuery } from "../redux/api/quickbaseApi";
+import { useSelector } from "react-redux";
 
-const userUid = localStorage.getItem("uid");
 
 const ArtistRegistrationsPage = () => {
+  const {user} = useSelector((state) => state.auth);
   const {
     data: registrationData,
     isError: isRegistrationDataError,
     error: registrationDataError,
-  } = useQueryForDataQuery({
+  } = useQueryForDataQuery(user ?{
     from: import.meta.env.VITE_QUICKBASE_ARTIST_REGISTRATIONS_TABLE_ID,
     select: [3, 6, 8, 9, 11, 12, 14, 21, 23, 25, 28],
-    where: `{13.EX.${userUid}}`,
-  });
+    where: `{13.EX.${user.uid}}`,
+  }: {skip:!user, refetchOnMountOrArgChange: true});
 
   const renderStatusIcon = (value) => {
     switch (value) {

@@ -1,17 +1,28 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
+import { Button } from "@/components/ui/button";
+import { useDispatch } from "react-redux";
+import { signOut } from "@/redux/slices/authSlice";
 
 const MainLayout = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const handleClick = async()=>{
+    await dispatch(signOut());
+    localStorage.clear();
+    navigate("/login");
+  }
   return (
     <div className="flex min-h-screen flex-col">
       <header>
-        <nav className="border border-slate-200 p-5 shadow-lg">
+        <nav className="border border-slate-200 p-5 shadow-lg flex justify-between items-center">
           <div className="max-w-36">
             <img
               src="https://nassauboces.quickbase.com/up/bpt5wxg92/a/r1/e7/v0"
               alt="Nassau BOCES logo"
             />
           </div>
+          <Button onClick={()=>handleClick()}>Sign Out</Button>
         </nav>
       </header>
 

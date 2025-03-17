@@ -13,31 +13,29 @@ import {
 } from "@/components/ui/sidebar";
 import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
 import { CaretSortIcon } from "@radix-ui/react-icons";
-import { getAuth, signOut } from "firebase/auth";
-import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { signOut } from "@/redux/slices/authSlice";
 
 export function VersionSwitcher({ versions, defaultVersion }) {
-  const auth = getAuth();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const signUserOut = () => {
-    signOut(auth);
-    localStorage.clear();
-    navigate("/login");
+  const signUserOut = async() => {
+    await dispatch(signOut()).then(res=>{
+      localStorage.clear();
+      navigate("/login");
+    });
   };
 
-  const userUid = localStorage.getItem("uid");
+  const {user} = useSelector(state => state.auth);
 
   const {
     data: artistsData,
-    isLoading: isArtistsLoading,
-    isError: isPerformersError,
-    error: artistsError,
-  } = useQueryForDataQuery({
+  } = useQueryForDataQuery(user?{
     from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
     select: [3, 6, 29, 30],
-    where: `{10.EX.${userUid}}`,
-  });
+    where: `{10.EX.${user.uid}}`,
+  }: {skip: !user, refetchOnMountOrArgChange: true});
 
   return (
     <SidebarMenu>

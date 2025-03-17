@@ -39,7 +39,15 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useState, useEffect } from "react";
-import { Check, X, Plus, ListFilter, FilePenLine, Mail, Loader2 } from "lucide-react";
+import {
+  Check,
+  X,
+  Plus,
+  ListFilter,
+  FilePenLine,
+  Mail,
+  Loader2,
+} from "lucide-react";
 import {
   useAddOrUpdateRecordMutation,
   useQueryForDataQuery,
@@ -329,13 +337,12 @@ const PerformersPage = () => {
     }
   };
 
-  if(isPerformersLoading){
+  if (isPerformersLoading) {
     return (
-      <div className="flex flex-col h-full w-2/3 items-center justify-center pt-24">
-        <Loader2 className="animate-spin" />
-        Loading...
+      <div className="flex h-full w-full justify-center pt-24">
+        <Spinner />
       </div>
-    )
+    );
   }
 
   if (isPerformersError) {
@@ -649,8 +656,8 @@ const PerformersPage = () => {
                                       canEditPerformerData.data[0][18]
                                         .value && (
                                         <DialogDescription>
-                                          Enter your changes and click save
-                                          when you're ready.
+                                          Enter your changes and click save when
+                                          you're ready.
                                         </DialogDescription>
                                       )}
                                   </DialogHeader>

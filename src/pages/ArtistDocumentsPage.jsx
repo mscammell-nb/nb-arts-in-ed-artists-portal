@@ -127,6 +127,7 @@ const ArtistDocumentsPage = () => {
 
   useEffect(() => {
     if (documentsData && !isDocumentsDataLoading) {
+      setMissingFiles([])
       documentsData.data.forEach((doc) => {
         if (
           missingFiles.includes(doc[6].value) &&
@@ -433,3 +434,13 @@ const ArtistDocumentsPage = () => {
 };
 
 export default ArtistDocumentsPage;
+// TODO: Email all docs in welcome email when artist is created (from which email?)
+// TODO: For the missing files, separate required files from optional files. 
+/*
+  - Vendor Application (Required)
+  - w-9 (Required)
+  - OSPRA 102 (based on district)
+  - OSPRA 104 (based on district)
+  - Insurance Specification (artist information)
+  - Program Contracts Payments Required (artist information)
+*/

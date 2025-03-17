@@ -17,11 +17,12 @@ import ArtistEvaluationsPage from "./pages/ArtistEvaluationsPage";
 import ArtistRegistrationsPage from "./pages/ArtistRegistrationsPage";
 import store from "./redux/store";
 import { Provider } from "react-redux";
-import PrintableKeywordListPage from "./pages/PrintableKeywordListPage";
+import FirebaseAuthListener from "./auth/FirebaseAuthListener";
 
 function App() {
   return (
     <Provider store={store}>
+      <FirebaseAuthListener/>
       <Routes>
         <Route element={<ProtectedRoutesWrapper />}>
           <Route element={<MainLayout />}>

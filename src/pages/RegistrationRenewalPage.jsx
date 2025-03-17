@@ -34,6 +34,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import Spinner from "../components/ui/Spinner";
+import { useSelector } from "react-redux";
 
 const schema = yup.object({
   artistOrg: yup.string().required(),
@@ -75,18 +76,18 @@ const schema = yup.object({
 });
 
 const RegistrationRenewalPage = () => {
-  const userUid = localStorage.getItem("uid");
+  const { user } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const { toast } = useToast();
   const {
     data: artistData,
     isError: isArtistDataError,
     error: artistDataError,
-  } = useQueryForDataQuery({
+  } = useQueryForDataQuery(user ?{
     from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
     select: [3, 6, 7, 8, 9, 11, 13, 14, 15, 16, 17, 31],
-    where: `{10.EX.${userUid}}`,
-  });
+    where: `{10.EX.${user.uid}}`,
+  } : {skip: !user, refetchOnMountOrArgChange: true});
   const [
     addOrUpdateRecord,
     {

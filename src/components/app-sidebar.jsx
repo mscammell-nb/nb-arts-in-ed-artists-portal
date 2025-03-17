@@ -1,6 +1,6 @@
-import * as React from "react"
+import * as React from "react";
 
-import { VersionSwitcher } from "@/components/version-switcher"
+import { VersionSwitcher } from "@/components/version-switcher";
 import {
   Sidebar,
   SidebarContent,
@@ -12,9 +12,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
 import { Link } from "react-router-dom";
-
+import { BookText, ClipboardList, Drum, FileText, UserRoundCog, MonitorCog, Icon } from "lucide-react";
 
 const data = {
   versions: ["Email Help", "Sign Out"],
@@ -26,10 +26,12 @@ const data = {
         {
           title: "Artist Information",
           url: "/artist-information",
+          icon: <UserRoundCog />,
         },
         {
           title: "Artist Registrations",
           url: "/artist-registrations",
+          icon: <BookText/>,
         },
       ],
     },
@@ -40,32 +42,35 @@ const data = {
         {
           title: "Artist Documents",
           url: "/artist-documents",
+          icon: <FileText/>,
         },
         {
           title: "Artist Evaluations",
           url: "/artist-evaluations",
+          icon: <ClipboardList/>,
+
           //isActive: true,
         },
         {
           title: "Performers",
           url: "/performers",
+          icon: <Drum/>,
         },
         {
           title: "Programs",
           url: "/programs",
+          icon: <MonitorCog/>,
         },
       ],
     },
   ],
-}
+};
 
-export function AppSidebar({
-  ...props
-}) {
+export function AppSidebar({ ...props }) {
   return (
-    (<Sidebar className={"side-bar"} {...props}>
-      <SidebarHeader >
-        <VersionSwitcher  className={"side-bar"} />
+    <Sidebar className={"side-bar"} {...props}>
+      <SidebarHeader>
+        <VersionSwitcher className={"side-bar"} />
         {/*<SearchForm />*/}
       </SidebarHeader>
       <SidebarContent>
@@ -78,7 +83,13 @@ export function AppSidebar({
                 {item.items.map((item) => (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild isActive={item.isActive}>
-                      <Link to={item.url} className="hover:bg-white hover:bg-opacity-20 transition-all">{item.title}</Link>
+                      <Link
+                        to={item.url}
+                        className="transition-all hover:bg-white hover:bg-opacity-20"
+                      >
+                        {item.icon}
+                        <span>{item.title}</span>
+                      </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}
@@ -88,6 +99,6 @@ export function AppSidebar({
         ))}
       </SidebarContent>
       <SidebarRail />
-    </Sidebar>)
+    </Sidebar>
   );
 }

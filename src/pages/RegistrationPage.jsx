@@ -38,6 +38,8 @@ import Steps from "../components/Steps";
 import { Plus, Trash2 } from "lucide-react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/firebaseConfig";
+import { useDispatch } from "react-redux";
+import { signUp } from "@/redux/slices/authSlice";
 
 const STEP_TITLES = [
   "Personal Information",
@@ -59,6 +61,7 @@ const performerSchema = yup.object().shape({
 });
 
 const RegistrationPage = () => {
+  const dispatch = useDispatch();
   const [formStep, setFormStep] = useState(0);
 
   const [
@@ -359,27 +362,29 @@ const RegistrationPage = () => {
     isAddPerformersLoading;
 
   const onSubmit = async (data) => {
-    const firebaseResponse = await createUserWithEmailAndPassword(
-      auth,
-      data.email,
-      data.password,
-    );
+    let uid;
+    await dispatch(signUp({ email: data.email, password: data.password }))
+      .then(async (res) => {
+        if (signUp.fulfilled.match(res)) {
+          uid = res.payload.uid;
+          console.log(res.payload);
+          const response = await addArtist(
+            formatDataForTheArtistTable(data, uid),
+          );
+          const artistRecordId = response.data.data[0][3].value;
+          localStorage.setItem("artistRecordId", artistRecordId);
 
-    const { uid, accessToken } = firebaseResponse.user;
-    localStorage.setItem("uid", uid);
-    localStorage.setItem("accessToken", accessToken);
+          addArtistRegistration(
+            formatDataForTheArtistRegistrationTable(data, artistRecordId, uid),
+            artistRecordId,
+          );
 
-    const response = await addArtist(formatDataForTheArtistTable(data, uid));
-
-    const artistRecordId = response.data.data[0][3].value;
-    localStorage.setItem("artistRecordId", artistRecordId);
-
-    addArtistRegistration(
-      formatDataForTheArtistRegistrationTable(data, artistRecordId, uid),
-      artistRecordId,
-    );
-
-    addPerformers(formatDataForThePerformersTable(data, artistRecordId));
+          addPerformers(formatDataForThePerformersTable(data, artistRecordId));
+          return null;
+        }
+        return null;
+      })
+      .catch((err) => console.error(err));
   };
 
   useEffect(() => {
@@ -415,8 +420,7 @@ const RegistrationPage = () => {
       } else if (addArtistRegistrationError) {
         console.log("addArtistRegistrationError: ", addArtistRegistrationError);
         errorTitle = "Error adding data to the ArtistRegistrations table";
-        const { message, description } = addArtistRegistrationError.data;
-        errorMessage = `${message}: ${description}`;
+        errorMessage = addArtistRegistrationError.error;
       }
 
       toast({

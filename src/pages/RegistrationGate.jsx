@@ -3,25 +3,25 @@ import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
 import { useState, useEffect } from "react";
 import Spinner from "../components/ui/Spinner";
 import { Navigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const RegistrationGate = () => {
-  const uid = localStorage.getItem("uid");
+  const {user} = useSelector(state => state.auth);
   const {
     data: artistData,
     isSuccess: isArtistDataSuccess,
     isLoading: isArtistDataLoading,
-    isError: isArtistDataError,
-  } = useQueryForDataQuery({
+  } = useQueryForDataQuery(user ?{
     from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
     select: [3, 6, 29, 30],
-    where: `{10.EX.${uid}}`,
-  });
+    where: `{10.EX.${user.uid}}`,
+  }: {skip: !user, refetchOnMountOrArgChange: true});
 
   const [isApproved, setIsApproved] = useState(false);
   const [isRegistrationExpired, setIsRegistrationExpired] = useState(false);
 
   useEffect(() => {
-    if (artistData && !isArtistDataLoading) {
+    if (artistData?.data && !isArtistDataLoading) {
       setIsApproved(artistData.data[0][29].value);
       setIsRegistrationExpired(artistData.data[0][30].value);
       localStorage.setItem("artistRecordId", artistData.data[0][3].value);

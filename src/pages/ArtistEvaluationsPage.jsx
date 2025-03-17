@@ -71,7 +71,7 @@ const ArtistEvaluationsPage = () => {
 
   if (evaluationDataLoading) {
     return (
-      <div className="flex w-2/3 items-center justify-center">
+      <div className="flex h-full w-full justify-center pt-24">
         <Spinner />
       </div>
     );

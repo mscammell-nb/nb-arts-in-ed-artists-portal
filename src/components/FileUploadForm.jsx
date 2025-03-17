@@ -14,7 +14,6 @@ const FileUploadForm = ({
 }) => {
   const { toast } = useToast();
 
-  // TODO: change this to use global state from Redux once the protected routes method has been improved
   const artistRecordId = localStorage.getItem("artistRecordId");
 
   const navigate = useNavigate();

@@ -3,7 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
 import { PasswordInput } from "../components/ui/password-input";
-import useSignInUser from "@/hooks/useSignInUser";
 import { useEffect } from "react";
 import { useToast } from "../components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
@@ -18,6 +17,8 @@ import {
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import { useDispatch, useSelector } from "react-redux";
+import { signIn } from "@/redux/slices/authSlice";
 
 const schema = yup.object({
   email: yup.string().email().required(),
@@ -25,8 +26,8 @@ const schema = yup.object({
 });
 
 const LoginPage = () => {
-  const { signInUser, accessToken, uid, isLoading, isSuccess, isError, error } =
-    useSignInUser();
+  const dispatch = useDispatch();
+  const {user, loading, error: authError} = useSelector ((state)=> state.auth);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -39,9 +40,7 @@ const LoginPage = () => {
   });
 
   useEffect(() => {
-    if (isSuccess) {
-      localStorage.setItem("uid", uid);
-      localStorage.setItem("accessToken", accessToken);
+    if (user) {
       toast({
         variant: "success",
         title: "Operation successful!",
@@ -49,19 +48,21 @@ const LoginPage = () => {
       });
       navigate("/registration-gate");
     }
+  }, [user]);
 
-    if (isError && error) {
-      console.log("error: ", error);
+  useEffect(() => {
+    if (authError) {
+      console.log("error: ", authError);
       toast({
         variant: "destructive",
         title: "Uh oh! Something went wrong.",
-        description: `${error}`,
+        description: `${authError}`,
       });
     }
-  }, [isSuccess, accessToken, uid, isError, error, toast]);
+  }, [authError]);
 
   const onSubmit = async (data) => {
-    signInUser(data.email, data.password);
+    await dispatch(signIn({email:data.email, password:data.password}));
   };
 
   return (
@@ -102,7 +103,7 @@ const LoginPage = () => {
               <Button
                 type="submit"
                 className="mt-7 w-full"
-                isLoading={isLoading}
+                isLoading={loading}
               >
                 Sign in
               </Button>
