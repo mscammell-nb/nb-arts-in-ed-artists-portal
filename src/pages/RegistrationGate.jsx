@@ -1,21 +1,36 @@
-import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
-import { useState, useEffect } from "react";
+import { signOut } from "@/redux/slices/authSlice";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import Spinner from "../components/ui/Spinner";
-import { Navigate } from "react-router-dom";
-import { useSelector } from "react-redux";
 
 const RegistrationGate = () => {
-  const {user} = useSelector(state => state.auth);
+  const { user } = useSelector((state) => state.auth);
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const handleSignOut = async () => {
+    await dispatch(signOut());
+    localStorage.clear();
+    navigate("/login");
+  };
+
   const {
     data: artistData,
     isSuccess: isArtistDataSuccess,
     isLoading: isArtistDataLoading,
-  } = useQueryForDataQuery(user ?{
-    from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
-    select: [3, 6, 29, 30],
-    where: `{10.EX.${user.uid}}`,
-  }: {skip: !user, refetchOnMountOrArgChange: true});
+  } = useQueryForDataQuery(
+    user
+      ? {
+          from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
+          select: [3, 6, 29, 30],
+          where: `{10.EX.${user.uid}}`,
+        }
+      : { skip: !user, refetchOnMountOrArgChange: true },
+  );
 
   const [isApproved, setIsApproved] = useState(false);
   const [isRegistrationExpired, setIsRegistrationExpired] = useState(false);
@@ -43,12 +58,22 @@ const RegistrationGate = () => {
 
   if (isRegistrationExpired) {
     return (
-      <div>
-        Your registration has expired. Please go to the{" "}
-        <Link to={"/registration-renewal"} className="underline">
-          Registration Renewal
-        </Link>{" "}
-        page to submit a new registration.{" "}
+      <div className="space-y-6">
+        <div>
+          Your registration has expired. Please go to the{" "}
+          <Link to={"/registration-renewal"} className="underline">
+            Registration Renewal
+          </Link>{" "}
+          page to submit a new registration.{" "}
+        </div>
+        <div className="space-x-3">
+          <Button>
+            <Link to={"/registration-renewal"}>Registration Renewal</Link>
+          </Button>
+          <Button variant="outline" onClick={() => handleSignOut()}>
+            Sign Out
+          </Button>
+        </div>
       </div>
     );
   }
