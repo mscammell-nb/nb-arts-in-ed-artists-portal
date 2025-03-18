@@ -133,7 +133,7 @@ const EvaluationsDataTable = ({ data, usePagination = false }) => {
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={columns.length}
+                  colSpan={100}
                   className="h-24 text-center"
                 >
                   No results.
