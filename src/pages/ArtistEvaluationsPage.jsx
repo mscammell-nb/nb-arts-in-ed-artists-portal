@@ -78,7 +78,7 @@ const ArtistEvaluationsPage = () => {
   }
 
   return (
-    <div className="w-4/5">
+    <div className="w-full">
       <p className="font-bold text-4xl">Artist Evaluations</p>
       <Separator className="my-4"/>
       {evaluationData && (

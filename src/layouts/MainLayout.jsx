@@ -8,13 +8,13 @@ import {
 
 const MainLayout = () => {
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col max-w-screen">
       <main className="grow bg-slate-50">
         <SidebarProvider>
           <AppSidebar variant="inset" collapsible="icon"  />
           <div className="flex flex-1 flex-col">
 
-            <div className="flex min-w-2/3 p-10 pt-14 md:min-w-[920px] grow justify-start items-start">
+            <div className={`flex max-w-[calc(100vw-var(--sidebar-width))] p-10 pt-14 md:min-w-[920px] grow justify-start items-start`} >
               <Outlet />
             </div>
             <footer
