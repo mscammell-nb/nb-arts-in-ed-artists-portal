@@ -1,11 +1,4 @@
-import {
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-  getSortedRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-} from "@tanstack/react-table";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -14,37 +7,39 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useState } from "react";
-import { Input } from "@/components/ui/input";
-import { Button } from "./ui/button";
-import { Sheet, SheetContent, SheetDescription, SheetTitle } from "./ui/sheet";
 import EvaluationPage from "@/pages/EvaluationPage";
 import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
-import { getCurrentFiscalYear } from "@/utils/utils";
-import { Loader2 } from "lucide-react";
 import { evalTableColumns } from "@/utils/EvaluationTableColumns";
+import { getCurrentFiscalYear } from "@/utils/utils";
+import {
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import { Loader2 } from "lucide-react";
+import { useState } from "react";
+import { Button } from "./ui/button";
+import { Sheet, SheetContent, SheetDescription, SheetTitle } from "./ui/sheet";
 
 const EvaluationsDataTable = ({ data, usePagination = false }) => {
-  const {
-    data: programsData,
-    isLoading: isProgramsDataLoading,
-  } = useQueryForDataQuery({
-    from: import.meta.env.VITE_QUICKBASE_PROGRAMS_TABLE_ID,
-    select: [1, 3, 8, 11, 16, 31, 32, 33],
-    where: `{8.EX.${localStorage.getItem("artistRecordId")}}AND{16.EX.${getCurrentFiscalYear()}}`,
-  });
-  const {
-    data: contracts,
-    isLoading: isContractsLoading,
-  } = useQueryForDataQuery({
-    from: import.meta.env.VITE_QUICKBASE_CONTRACTS_TABLE_ID,
-    select: [1, 3, 8, 10, 12, 13, 15, 16],
-    where: `{9.EX.${localStorage.getItem("artistRecordId")}}AND{15.EX.${getCurrentFiscalYear()}}`,
-  });
+  const { data: programsData, isLoading: isProgramsDataLoading } =
+    useQueryForDataQuery({
+      from: import.meta.env.VITE_QUICKBASE_PROGRAMS_TABLE_ID,
+      select: [1, 3, 8, 11, 16, 31, 32, 33],
+      where: `{8.EX.${localStorage.getItem("artistRecordId")}}AND{16.EX.${getCurrentFiscalYear()}}`,
+    });
+  const { data: contracts, isLoading: isContractsLoading } =
+    useQueryForDataQuery({
+      from: import.meta.env.VITE_QUICKBASE_CONTRACTS_TABLE_ID,
+      select: [1, 3, 8, 10, 12, 13, 15, 16],
+      where: `{9.EX.${localStorage.getItem("artistRecordId")}}AND{15.EX.${getCurrentFiscalYear()}}`,
+    });
   const [sorting, setSorting] = useState([]);
   const [row, setRow] = useState(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
-
 
   const table = useReactTable({
     data,
@@ -132,10 +127,7 @@ const EvaluationsDataTable = ({ data, usePagination = false }) => {
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
+                <TableCell colSpan={100} className="h-24 text-center">
                   No results.
                 </TableCell>
               </TableRow>
