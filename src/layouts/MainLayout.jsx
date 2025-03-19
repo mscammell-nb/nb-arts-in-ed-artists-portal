@@ -6,8 +6,6 @@ import { Outlet } from "react-router-dom";
 
 const MainLayout = () => {
   const isMobile = useIsMobile();
-  console.log(isMobile);
-
   const mainWidth = isMobile ? "100%" : "calc(100vw - var(--sidebar-width))";
 
   return (
