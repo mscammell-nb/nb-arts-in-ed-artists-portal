@@ -1,6 +1,3 @@
-import * as React from "react";
-
-import { VersionSwitcher } from "@/components/version-switcher";
 import {
   Sidebar,
   SidebarContent,
@@ -15,19 +12,22 @@ import {
   SidebarRail,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { Link } from "react-router-dom";
+import { VersionSwitcher } from "@/components/version-switcher";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { HamburgerMenuIcon } from "@radix-ui/react-icons";
 import {
   BookText,
+  ChevronLeft,
+  ChevronRight,
   ClipboardList,
   Drum,
   FileText,
-  UserRoundCog,
   MonitorCog,
-  Icon,
-  ChevronRight,
-  ChevronLeft,
+  UserRoundCog,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Button } from "./ui/button";
+import { Sheet, SheetClose, SheetContent, SheetTrigger } from "./ui/sheet";
 
 const data = {
   versions: ["Email Help", "Sign Out"],
@@ -81,6 +81,47 @@ const data = {
 
 export function AppSidebar({ ...props }) {
   const { open, setOpen } = useSidebar();
+
+  if (useIsMobile()) {
+    return (
+      <Sheet>
+        <SheetTrigger className="ml-5 mt-5 w-fit cursor-pointer text-xl">
+          <HamburgerMenuIcon className="h-7 w-7" />
+        </SheetTrigger>
+        <SheetContent side="left" className="side-bar max-w-[66%] border-0">
+          <SidebarHeader>
+            <VersionSwitcher className={"side-bar"} />
+            {/*<SearchForm />*/}
+          </SidebarHeader>
+          {data.navMain.map((item) => (
+            <SidebarGroup key={item.title}>
+              <SidebarGroupLabel>{item.title}</SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {item.items.map((item) => (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton asChild isActive={item.isActive}>
+                        <SheetClose asChild>
+                          <Link
+                            to={item.url}
+                            className="transition-all hover:bg-white hover:bg-opacity-20"
+                          >
+                            {item.icon}
+                            <span>{item.title}</span>
+                          </Link>
+                        </SheetClose>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          ))}
+        </SheetContent>
+      </Sheet>
+    );
+  }
+
   return (
     <Sidebar className={"side-bar"} {...props}>
       <SidebarHeader>
