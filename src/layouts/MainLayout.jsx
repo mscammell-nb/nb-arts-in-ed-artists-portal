@@ -5,14 +5,15 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { Outlet } from "react-router-dom";
 
 const MainLayout = () => {
-  const containerClass = useIsMobile ? "flex flex-1 flex-col" : "flex flex-1 flex-col";
+  const isMobile = useIsMobile();
 
   return (
     <div className="max-w-screen flex min-h-screen flex-col">
       <main className="grow bg-slate-50">
         <SidebarProvider>
-          <AppSidebar variant="inset" collapsible="icon" />
-          <div className={containerClass}>
+          {!isMobile && <AppSidebar variant="inset" collapsible="icon" />}
+          <div className="flex flex-1 flex-col">
+            {isMobile && <AppSidebar variant="inset" collapsible="icon" />}
             <div
               className={`flex max-w-[calc(100vw-var(--sidebar-width))] grow items-start justify-start p-10 pt-14 md:min-w-[920px]`}
             >
