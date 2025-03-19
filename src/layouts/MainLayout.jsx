@@ -6,6 +6,9 @@ import { Outlet } from "react-router-dom";
 
 const MainLayout = () => {
   const isMobile = useIsMobile();
+  console.log(isMobile);
+
+  const mainWidth = isMobile ? "100%" : "calc(100vw - var(--sidebar-width))";
 
   return (
     <div className="max-w-screen flex min-h-screen flex-col">
@@ -14,9 +17,7 @@ const MainLayout = () => {
           {!isMobile && <AppSidebar variant="inset" collapsible="icon" />}
           <div className="flex flex-1 flex-col">
             {isMobile && <AppSidebar variant="inset" collapsible="icon" />}
-            <div
-              className={`flex max-w-[calc(100vw-var(--sidebar-width))] grow items-start justify-start p-10 pt-14 md:min-w-[920px]`}
-            >
+            <div className={`flex max-w-[${mainWidth}] grow items-start justify-start p-10 pt-14`}>
               <Outlet />
             </div>
             <footer className="flex flex-col items-center bg-primary p-5 text-sm text-white">

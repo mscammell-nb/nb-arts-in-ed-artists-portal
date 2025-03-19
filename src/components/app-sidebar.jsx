@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/sidebar";
 import { VersionSwitcher } from "@/components/version-switcher";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { HamburgerMenuIcon } from "@radix-ui/react-icons";
 import {
   BookText,
   ChevronLeft,
@@ -84,10 +85,10 @@ export function AppSidebar({ ...props }) {
   if (useIsMobile()) {
     return (
       <Sheet>
-        <SheetTrigger className="mt-3 w-fit cursor-pointer text-sm text-blue-500 hover:underline">
-          Open Sidebar
+        <SheetTrigger className="ml-5 mt-5 w-fit cursor-pointer text-xl">
+          <HamburgerMenuIcon className="h-7 w-7" />
         </SheetTrigger>
-        <SheetContent side="left" className="side-bar border-r-0">
+        <SheetContent side="left" className="side-bar max-w-[66%] border-0">
           <SidebarHeader>
             <VersionSwitcher className={"side-bar"} />
             {/*<SearchForm />*/}
