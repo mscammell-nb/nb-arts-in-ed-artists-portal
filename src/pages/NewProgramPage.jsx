@@ -215,7 +215,7 @@ const NewProgramPage = () => {
         ...prev,
         costError: {
           isTriggered: true,
-          message: `Cost must be a positive number`,
+          message: `Cost must be a positive number greater than 0`,
         },
       }));
     }
@@ -268,7 +268,6 @@ const NewProgramPage = () => {
     }
 
     if (formValues.costDetails.length >= MAX_COST_LENGTH - 50) {
-      isError = true;
       setFormErrors((prev) => ({
         ...prev,
         costLengthError: {
@@ -790,9 +789,6 @@ const NewProgramPage = () => {
                   const closeToMax =
                     e.target.value.length >= MAX_COST_LENGTH - 50;
 
-                  console.log(closeToMax);
-                  console.log(MAX_COST_LENGTH - e.target.value.length);
-
                   setFormErrors((prev) => ({
                     ...prev,
                     costDetailsError: {
@@ -801,16 +797,16 @@ const NewProgramPage = () => {
                         ? ""
                         : `Cost details must be at least ${MIN_TEXTAREA_LENGTH} characters long`,
                     },
-                  }));
-
-                  setFormErrors((prev) => ({
-                    ...prev,
                     costLengthError: {
                       isTriggered: closeToMax ? true : false,
                       message: closeToMax
                         ? `${MAX_COST_LENGTH - e.target.value.length} characters left`
                         : "",
                     },
+                  }));
+
+                  setFormErrors((prev) => ({
+                    ...prev,
                   }));
                 }}
               />
