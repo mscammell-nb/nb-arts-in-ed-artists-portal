@@ -38,12 +38,15 @@ import { Link } from "react-router-dom";
 
 const MIN_INPUT_LENGTH = 8;
 const MIN_TEXTAREA_LENGTH = 15;
+const MAX_COST_LENGTH = 100;
 
 const NewProgramPage = () => {
   const { toast } = useToast();
   const artistRecordId = localStorage.getItem("artistRecordId");
 
   const [selectedKeywords, setSelectedKeywords] = useState([]);
+  const [costLength, setCostLength] = useState(0);
+
   // This object handles the fields of the form that don't work well with React Hook Form's validation.
   const [formValues, setFormValues] = useState({
     title: "",
@@ -99,6 +102,10 @@ const NewProgramPage = () => {
       message: "",
     },
     costDetailsError: {
+      isTriggered: false,
+      message: "",
+    },
+    costLengthError: {
       isTriggered: false,
       message: "",
     },
@@ -239,6 +246,17 @@ const NewProgramPage = () => {
         costDetailsError: {
           isTriggered: true,
           message: `Cost details must be at least ${MIN_TEXTAREA_LENGTH} characters long`,
+        },
+      }));
+    }
+
+    if (formValues.costDetails.length >= MAX_COST_LENGTH - 50) {
+      isError = true;
+      setFormErrors((prev) => ({
+        ...prev,
+        costLengthError: {
+          isTriggered: true,
+          message: `${MAX_COST_LENGTH - formValues.costDetails.length} characters left`,
         },
       }));
     }
@@ -739,6 +757,7 @@ const NewProgramPage = () => {
                 className="min-h-40"
                 value={formValues.costDetails}
                 minLength={MIN_TEXTAREA_LENGTH}
+                maxLength={MAX_COST_LENGTH}
                 onChange={(e) => {
                   setFormValues((prev) => ({
                     ...prev,
@@ -748,6 +767,13 @@ const NewProgramPage = () => {
                   const isValid =
                     e.target.value.length >= MIN_TEXTAREA_LENGTH ||
                     e.target.value.length === 0;
+
+                  const closeToMax =
+                    e.target.value.length >= MAX_COST_LENGTH - 50;
+
+                  console.log(closeToMax);
+                  console.log(MAX_COST_LENGTH - e.target.value.length);
+
                   setFormErrors((prev) => ({
                     ...prev,
                     costDetailsError: {
@@ -757,11 +783,26 @@ const NewProgramPage = () => {
                         : `Cost details must be at least ${MIN_TEXTAREA_LENGTH} characters long`,
                     },
                   }));
+
+                  setFormErrors((prev) => ({
+                    ...prev,
+                    costLengthError: {
+                      isTriggered: closeToMax ? true : false,
+                      message: closeToMax
+                        ? `${MAX_COST_LENGTH - e.target.value.length} characters left`
+                        : "",
+                    },
+                  }));
                 }}
               />
               {formErrors.costDetailsError.isTriggered && (
                 <p className="text-red-500">
                   {formErrors.costDetailsError.message}
+                </p>
+              )}
+              {formErrors.costLengthError.isTriggered && (
+                <p className="text-red-500">
+                  {formErrors.costLengthError.message}
                 </p>
               )}
             </div>
