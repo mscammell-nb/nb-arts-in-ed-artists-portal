@@ -22,7 +22,9 @@ import {
   useAddOrUpdateRecordMutation,
   useQueryForDataQuery,
 } from "@/redux/api/quickbaseApi";
+import { getCurrentFiscalYear } from "@/utils/utils";
 import { Pencil1Icon } from "@radix-ui/react-icons";
+import { CircleAlert, Pencil } from "lucide-react";
 import { useEffect, useState } from "react";
 
 // TODO: Reset Password Functionality
@@ -137,18 +139,20 @@ const ArtistInformationPage = () => {
       error: updateArtistError,
     },
   ] = useAddOrUpdateRecordMutation();
+  // SHOW ARTIST_INFO TABLE BUT UPDATE REGISTRATION
   let {
     data: artistsData,
     isLoading: isArtistsLoading,
     isError: isArtistsError,
     error: artistsError,
   } = useQueryForDataQuery({
-    from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
-    select: [6, 7, 9, 19, 12, 13, 14, 15, 16, 17, 11, 31],
-    where: `{3.EX.${artistRecordId}}`,
+    from: import.meta.env.VITE_QUICKBASE_ARTIST_REGISTRATIONS_TABLE_ID,
+    select: [3, 6, 7, 8, 9, 11, 12, 14, 15, 16, 17, 18, 19, 21, 23, 24, 25],
+    where: `{7.EX.${artistRecordId}.and.25.EX.${getCurrentFiscalYear()}}`,
   });
   useEffect(() => {
     if (artistsData) {
+      console.log(artistsData);
       resetInformation();
     }
   }, [artistsData]);
@@ -157,7 +161,7 @@ const ArtistInformationPage = () => {
     if (isUpdateArtistSuccess) {
       toast({
         title: "Operation successful!",
-        description: "Artists information updated",
+        description: "Request to update information is pending!",
         variant: "success",
       });
     }
@@ -173,33 +177,33 @@ const ArtistInformationPage = () => {
 
   const onSave = () => {
     updateArtist({
-      to: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
+      to: import.meta.env.VITE_QUICKBASE_ARTIST_REGISTRATIONS_TABLE_ID,
       data: [
         {
           3: {
-            value: artistRecordId,
+            value: artistsData.data[0][3].value,
           },
-          6: {
+          8: {
             value: artistVal,
           },
-          19: {
+          21: {
             value: performersVal,
           },
-          7: {
+          9: {
             value: emailVal,
           },
-          9: {
+          11: {
             value: phoneVal,
           },
-          13: { value: addressObject.street1 },
-          14: { value: addressObject.street2 },
-          15: { value: addressObject.city },
-          16: { value: addressObject.state },
-          17: { value: addressObject.zipCode },
-          18: {
+          15: { value: addressObject.street1 },
+          16: { value: addressObject.street2 },
+          17: { value: addressObject.city },
+          18: { value: addressObject.state },
+          19: { value: addressObject.zipCode },
+          20: {
             value: "United States",
           },
-          31: {
+          23: {
             value: websiteVal,
           },
         },
@@ -213,33 +217,44 @@ const ArtistInformationPage = () => {
   };
 
   const resetInformation = () => {
-    setArtistVal(artistsData.data[0][6].value);
-    setPerformersVal(artistsData.data[0][19].value);
-    setEmailVal(artistsData.data[0][7].value);
-    setPhoneVal(artistsData.data[0][9].value);
-    setAddressVal(artistsData.data[0][12].value);
-    setWebsiteVal(artistsData.data[0][31].value);
+    setArtistVal(artistsData.data[0][8].value);
+    setPerformersVal(artistsData.data[0][21].value);
+    setEmailVal(artistsData.data[0][9].value);
+    setPhoneVal(artistsData.data[0][11].value);
+    setAddressVal(artistsData.data[0][14].value);
+    setWebsiteVal(artistsData.data[0][23].value);
     setAddressObject({
-      street1: artistsData.data[0][13].value,
-      street2: artistsData.data[0][14].value,
-      city: artistsData.data[0][15].value,
-      state: artistsData.data[0][16].value,
-      zipCode: artistsData.data[0][17].value,
+      street1: artistsData.data[0][15].value,
+      street2: artistsData.data[0][16].value,
+      city: artistsData.data[0][17].value,
+      state: artistsData.data[0][18].value,
+      zipCode: artistsData.data[0][19].value,
     });
   };
 
   return (
-    <div className="flex w-full flex-col gap-3">
+    <div className="flex w-full max-w-[1200px] flex-col gap-3">
+      {(artistsData && !artistsData.data[0][6]) && (
+        <div className="flex w-full items-center justify-start gap-3 border border-yellow-500 bg-yellow-100 p-2 text-yellow-700">
+          <CircleAlert size={20} />
+          <p>
+            This information is{" "}
+            <span className="font-bold">Pending Approval</span>
+          </p>
+        </div>
+      )}
+
       <div className="flex w-full items-center justify-between rounded border border-gray-200 bg-white p-2.5">
         <p className="text-xl font-semibold">Artist Information</p>
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger>
-              <Pencil1Icon
-                className="size-5 cursor-pointer text-blue-400"
+              <Pencil
+                className="cursor-pointer text-blue-400"
                 onClick={() => {
                   setEditing(!editing);
                 }}
+                size={20}
               />
             </TooltipTrigger>
             <TooltipContent>
