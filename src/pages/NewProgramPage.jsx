@@ -30,7 +30,10 @@ import {
   KEYWORD_GROUPS,
   SERVICE_TYPE_DEFINITIONS,
 } from "@/constants/constants";
-import { useAddOrUpdateRecordMutation } from "@/redux/api/quickbaseApi";
+import {
+  useAddOrUpdateRecordMutation,
+  useQueryForDataQuery,
+} from "@/redux/api/quickbaseApi";
 import { getCurrentFiscalYearKey } from "@/utils/utils";
 import { ArrowLeftIcon } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -46,6 +49,20 @@ const NewProgramPage = () => {
 
   const [selectedKeywords, setSelectedKeywords] = useState([]);
   const [costLength, setCostLength] = useState(0);
+
+  const {
+    data: performersData,
+    isLoading: isPerformersLoading,
+    isError: isPerformersError,
+    error: performersError,
+  } = useQueryForDataQuery({
+    from: import.meta.env.VITE_QUICKBASE_PERFORMERS_TABLE_ID,
+    select: [3, 9, 10, 11, 14],
+    where: `{14.EX.${artistRecordId}} AND {9.EX."Yes"} AND {10.EX."Yes"} AND {11.EX."true"}`,
+  });
+
+  const maxPerformers =
+    performersData && !isPerformersLoading ? performersData.data.length : 0;
 
   // This object handles the fields of the form that don't work well with React Hook Form's validation.
   const [formValues, setFormValues] = useState({
@@ -730,14 +747,16 @@ const NewProgramPage = () => {
                     performers: value,
                   }));
 
-                  const isValid = value > 0 && Number.isInteger(value);
+                  const isValid =
+                    value > 0 && value <= maxPerformers && value <= 999;
+                  Number.isInteger(value);
                   setFormErrors((prev) => ({
                     ...prev,
                     performersError: {
                       isTriggered: isValid ? false : true,
                       message: isValid
                         ? ""
-                        : `Performers must be a positive integer number`,
+                        : `You only have ${maxPerformers} active performers.`,
                     },
                   }));
                 }}
