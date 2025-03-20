@@ -3,12 +3,12 @@ import { getAuth } from "firebase/auth";
 
 // Add security rules in firebase to make sure that putting this here is safe.
 const firebaseConfig = {
-  apiKey: "AIzaSyBafzz7QZ7Da9Ke-6gXunyTQmCftBa5IMk",
-  authDomain: "musical-instruments-5bd86.firebaseapp.com",
-  projectId: "musical-instruments-5bd86",
-  storageBucket: "musical-instruments-5bd86.appspot.com",
-  messagingSenderId: "22040299814",
-  appId: "1:22040299814:web:b083b43194d41f1386d9e7",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
 const firebaseApp = initializeApp(firebaseConfig);
