@@ -49,6 +49,7 @@ const NewProgramPage = () => {
 
   const [selectedKeywords, setSelectedKeywords] = useState([]);
   const [costLength, setCostLength] = useState(0);
+  const [tempCategories, setTempCategories] = useState([]);
 
   const {
     data: performersData,
@@ -77,6 +78,7 @@ const NewProgramPage = () => {
     performers: 0,
     costDetails: "",
   });
+
   const [formErrors, setFormErrors] = useState({
     titleError: {
       isTriggered: false,
@@ -127,6 +129,35 @@ const NewProgramPage = () => {
       message: "",
     },
   });
+
+  useEffect(() => {
+    const exploratoryChecked = formValues.categories.includes(
+      "Exploratory Enrichment",
+    );
+    const VirtualChecked = formValues.categories.includes("Virtual Programs");
+
+    if (exploratoryChecked) {
+      setTempCategories(
+        formValues.categories.filter(
+          (category) =>
+            category !== "Exploratory Enrichment" &&
+            category !== "Virtual Programs",
+        ),
+      );
+      setFormValues((prev) => ({
+        ...prev,
+        categories: VirtualChecked
+          ? ["Exploratory Enrichment", "Virtual Programs"]
+          : ["Exploratory Enrichment"],
+      }));
+    } else {
+      setFormValues((prev) => ({
+        ...prev,
+        categories: [...prev.categories, ...tempCategories],
+      }));
+      setTempCategories([]);
+    }
+  }, [formValues.categories.includes("Exploratory Enrichment")]);
 
   const [
     addProgram,
@@ -557,6 +588,13 @@ const NewProgramPage = () => {
                   <Checkbox
                     id={category}
                     className="my-1 mr-1"
+                    disabled={
+                      formValues.categories.includes(
+                        "Exploratory Enrichment",
+                      ) &&
+                      category !== "Exploratory Enrichment" &&
+                      category !== "Virtual Programs"
+                    }
                     onCheckedChange={(checked) => {
                       const newCategories = checked
                         ? [...formValues.categories, category]
