@@ -379,6 +379,9 @@ const NewProgramPage = () => {
         performers: 0,
         costDetails: "",
       });
+      const form = document.getElementById("mainform");
+      form.reset();
+      
       setSelectedKeywords([]);
     }
 
@@ -412,7 +415,7 @@ const NewProgramPage = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form id="mainform" onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-1">
               <Label htmlFor="title">
                 Title
