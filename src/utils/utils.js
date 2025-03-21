@@ -48,3 +48,54 @@ export const getNextFiscalYear = () => {
 
   return fiscalYear;
 };
+
+const getFileName = (contentDisposition) => {
+  if (!contentDisposition) return null;
+
+  const filenameStarMatch = contentDisposition.match(
+    /filename\*=utf-8''([^;]+)/i,
+  );
+  // RFC 5987 encoded (ex: filename*=utf-8''filename.txt)
+  if (filenameStarMatch && filenameStarMatch[1])
+    return decodeURIComponent(filenameStarMatch[1]);
+
+  // Normal format
+  const filenameMatch = contentDisposition.match(/filename\*="?(.+?)"?$/);
+  if (filenameMatch && filenameMatch[1]) return filenameMatch[1];
+
+  return null;
+};
+
+export const downloadFile = async (tableId, fieldId, id, versionNumber) => {
+  let headers = {
+    "QB-Realm-Hostname": import.meta.env.VITE_QB_REALM_HOSTNAME,
+    "User-Agent": "{User-Agent}",
+    Authorization: `QB-USER-TOKEN ${import.meta.env.VITE_QUICKBASE_AUTHORIZATION_TOKEN}`,
+    "Content-Type": "application/octet-stream",
+  };
+  fetch(
+    `https://api.quickbase.com/v1/files/${tableId}/${id}/${fieldId}/${versionNumber}`,
+    {
+      method: "GET",
+      headers: headers,
+    },
+  )
+    .then(async (res) => {
+      if (res.ok) {
+        const contentType = res.headers.get("content-type");
+        const base64Data = await res.text();
+        const linkSource = `data:${contentType};base64,${base64Data}`;
+        const downloadLink = document.createElement("a");
+
+        downloadLink.href = linkSource;
+        downloadLink.download = getFileName(
+          res.headers.get("content-disposition"),
+        );
+        downloadLink.click();
+        return;
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+};

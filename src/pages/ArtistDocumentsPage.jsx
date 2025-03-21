@@ -11,6 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import Table from "@/components/ui/data-grid";
 import {
   Select,
   SelectItem,
@@ -25,12 +26,11 @@ import {
   useAddOrUpdateRecordMutation,
   useQueryForDataQuery,
 } from "@/redux/api/quickbaseApi";
-import { getCurrentFiscalYear, getCurrentFiscalYearKey } from "@/utils/utils";
+import getSortIcon from "@/utils/getSortIcon";
+import { documentColumns } from "@/utils/TableColumns";
+import { downloadFile, getCurrentFiscalYear, getCurrentFiscalYearKey } from "@/utils/utils";
 import { Label } from "@radix-ui/react-dropdown-menu";
 import {
-  CaretDownIcon,
-  CaretSortIcon,
-  CaretUpIcon,
   DownloadIcon,
 } from "@radix-ui/react-icons";
 import { AlertCircleIcon, Loader2, UploadIcon } from "lucide-react";
@@ -45,18 +45,14 @@ const ArtistDocumentsPage = () => {
 
   const {
     data: fileTypes,
-    isSuccess: isFileTypesSuccess,
     isLoading: isFileTypesLoading,
-    isError: isFileTypesError,
   } = useQueryForDataQuery({
     from: import.meta.env.VITE_QUICKBASE_DOCUMENT_TYPES_TABLE_ID,
     select: [3, 7, 31],
   });
   const {
     data: documentsData,
-    isSuccess: isDocumentsDataSuccess,
     isLoading: isDocumentsDataLoading,
-    isError: isDocumentsDataError,
   } = useQueryForDataQuery({
     from: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
     select: [11, 9, 16, 7, 12, 6, 14, 3, 10],
@@ -70,60 +66,8 @@ const ArtistDocumentsPage = () => {
       isLoading: isAddDocumentLoading,
       isSuccess: isAddDocumentSuccess,
       isError: isAddDocumentError,
-      error: addDocumentError,
     },
   ] = useAddOrUpdateRecordMutation();
-
-  const getFileName = (contentDisposition) => {
-    if (!contentDisposition) return null;
-
-    const filenameStarMatch = contentDisposition.match(
-      /filename\*=utf-8''([^;]+)/i,
-    );
-    // RFC 5987 encoded (ex: filename*=utf-8''filename.txt)
-    if (filenameStarMatch && filenameStarMatch[1])
-      return decodeURIComponent(filenameStarMatch[1]);
-
-    // Normal format
-    const filenameMatch = contentDisposition.match(/filename\*="?(.+?)"?$/);
-    if (filenameMatch && filenameMatch[1]) return filenameMatch[1];
-
-    return null;
-  };
-
-  const downloadFile = async (tableId, fieldId, id, versionNumber) => {
-    let headers = {
-      "QB-Realm-Hostname": import.meta.env.VITE_QB_REALM_HOSTNAME,
-      "User-Agent": "{User-Agent}",
-      Authorization: `QB-USER-TOKEN ${import.meta.env.VITE_QUICKBASE_AUTHORIZATION_TOKEN}`,
-      "Content-Type": "application/octet-stream",
-    };
-    fetch(
-      `https://api.quickbase.com/v1/files/${tableId}/${id}/${fieldId}/${versionNumber}`,
-      {
-        method: "GET",
-        headers: headers,
-      },
-    )
-      .then(async (res) => {
-        if (res.ok) {
-          const contentType = res.headers.get("content-type");
-          const base64Data = await res.text();
-          const linkSource = `data:${contentType};base64,${base64Data}`;
-          const downloadLink = document.createElement("a");
-
-          downloadLink.href = linkSource;
-          downloadLink.download = getFileName(
-            res.headers.get("content-disposition"),
-          );
-          downloadLink.click();
-          return;
-        }
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  };
 
   useEffect(() => {
     if (documentsData && !isDocumentsDataLoading) {
@@ -176,17 +120,6 @@ const ArtistDocumentsPage = () => {
       setOpen(false);
     }
   }, [isAddDocumentError, isAddDocumentSuccess]);
-
-  const getSortIcon = (column) => {
-    switch (column.getIsSorted()) {
-      case "asc":
-        return <CaretUpIcon className="ml-2 h-4 w-4" />;
-      case "desc":
-        return <CaretDownIcon className="ml-2 h-4 w-4" />;
-      default:
-        return <CaretSortIcon className="ml-2 h-4 w-4" />;
-    }
-  };
 
   const formatData = (docData) => {
     const { data } = docData;
@@ -266,7 +199,7 @@ const ArtistDocumentsPage = () => {
     );
   }
   return (
-    <div className="flex flex-col gap-4">
+    <div className="w-full flex flex-col gap-4 overflow-hidden">
       <p className="text-2xl font-semibold">Artist Documents</p>
       {missingFiles.length > 0 && (
         <Alert variant="destructive" className="bg-red-50">
@@ -283,11 +216,11 @@ const ArtistDocumentsPage = () => {
           </AlertDescription>
         </Alert>
       )}
-      <div className="flex items-center gap-3">
+      <div className="flex flex-col md:flex-row items-center gap-3">
         {(!isFileTypesLoading && fileTypes) &&
           fileTypes.data.map((f) => (
             <Button
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 w-full md:w-auto"
               key={f[31].value}
               onClick={() => downloadTemplate(f)}
             >
@@ -346,88 +279,10 @@ const ArtistDocumentsPage = () => {
         </Dialog>
       </div>
       {documentsData && (
-        <DataTable
+        <Table
           data={formatData(documentsData)}
-          columns={[
-            {
-              accessorKey: "fiscalYear",
-              header: ({ column }) => (
-                <Button
-                  variant="ghost"
-                  onClick={() =>
-                    column.toggleSorting(column.getIsSorted() === "asc")
-                  }
-                >
-                  Fiscal Year
-                  {getSortIcon(column)}
-                </Button>
-              ),
-            },
-            {
-              accessorKey: "artist",
-              header: ({ column }) => (
-                <Button
-                  variant="ghost"
-                  onClick={() =>
-                    column.toggleSorting(column.getIsSorted() === "asc")
-                  }
-                >
-                  Artist / Org
-                  {getSortIcon(column)}
-                </Button>
-              ),
-            },
-            {
-              accessorKey: "documentName",
-              header: ({ column }) => (
-                <Button
-                  variant="ghost"
-                  onClick={() =>
-                    column.toggleSorting(column.getIsSorted() === "asc")
-                  }
-                >
-                  Document Name
-                  {getSortIcon(column)}
-                </Button>
-              ),
-            },
-            {
-              accessorKey: "documentType",
-              header: ({ column }) => (
-                <Button
-                  variant="ghost"
-                  onClick={() =>
-                    column.toggleSorting(column.getIsSorted() === "asc")
-                  }
-                >
-                  Document Type
-                  {getSortIcon(column)}
-                </Button>
-              ),
-            },
-            {
-              header: "Download",
-              id: "download",
-              cell: ({ row }) => (
-                <div className="grid w-full place-items-center">
-                  <Button
-                    onClick={() =>
-                      downloadFile(
-                        import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
-                        7,
-                        row.original.id,
-                        row.original.versionNumber,
-                      )
-                    }
-                    variant="outline"
-                  >
-                    <DownloadIcon />
-                  </Button>
-                </div>
-              ),
-            },
-          ]}
-        />
+          columns={documentColumns}
+          />
       )}
     </div>
   );
