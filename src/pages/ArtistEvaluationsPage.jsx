@@ -1,8 +1,17 @@
-import EvaluationsDataTable from "@/components/EvaluationsDataTable";
+import Table from "@/components/ui/data-grid";
 import { Separator } from "@/components/ui/separator";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import Spinner from "@/components/ui/Spinner";
 import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
 import { getCurrentFiscalYear } from "@/utils/utils";
+import EvaluationPage from "./EvaluationPage";
+import { evalTableColumns } from "@/utils/TableColumns";
 
 const formatEvaluationsData = (
   evaluationsData,
@@ -47,6 +56,29 @@ const formatDate = (timestamp) => {
   return `${month}/${day}/${year}`;
 };
 
+const AddSheet = ({ open, onOpenChange, sheetProps }) => {
+  const closeSheet = () => onOpenChange(false);
+  return (
+    <Sheet open={open} onOpenChange={onOpenChange} className="z-20">
+      <SheetContent className="sm:max-w-1/3 w-1/3 overflow-y-scroll">
+        <SheetHeader>
+          <SheetTitle className="text-3xl">{sheetProps.title}</SheetTitle>
+          <SheetDescription className="hidden">
+            {"Add a new Evaluation"}
+          </SheetDescription>
+        </SheetHeader>
+        {!sheetProps.isContractsLoading && !sheetProps.isProgramsDataLoading && (
+          <EvaluationPage
+            contractData={sheetProps.contractData.data}
+            programData={sheetProps.programsData.data}
+            closeSheet={closeSheet}
+          />
+        )}
+      </SheetContent>
+    </Sheet>
+  );
+};
+
 const ArtistEvaluationsPage = () => {
   const {
     data: evaluationData,
@@ -68,6 +100,12 @@ const ArtistEvaluationsPage = () => {
     select: [1, 3, 8, 11, 16, 31, 32, 33],
     where: `{8.EX.${localStorage.getItem("artistRecordId")}}AND{16.EX.${getCurrentFiscalYear()}}`,
   });
+  const { data: contractData, isLoading: isContractsLoading } =
+  useQueryForDataQuery({
+    from: import.meta.env.VITE_QUICKBASE_CONTRACTS_TABLE_ID,
+    select: [1, 3, 8, 10, 12, 13, 15, 16],
+    where: `{9.EX.${localStorage.getItem("artistRecordId")}}AND{15.EX.${getCurrentFiscalYear()}}`,
+  });
 
   if (evaluationDataLoading) {
     return (
@@ -76,19 +114,24 @@ const ArtistEvaluationsPage = () => {
       </div>
     );
   }
-
+ 
   return (
     <div className="w-full">
-      <p className="font-bold text-4xl">Artist Evaluations</p>
-      <Separator className="my-4"/>
+      <p className="text-4xl font-bold">Artist Evaluations</p>
+      <Separator className="my-4" />
       {evaluationData && (
-        <EvaluationsDataTable
+        <Table
           data={formatEvaluationsData(
             evaluationData,
             isProgramsDataLoading,
             programsData,
           )}
+          columns={evalTableColumns}
+          CustomAddComponent={AddSheet}
+          addButtonText="Add Evaluation"
+          sheetProps={{title: "Add Evaluation", programsData, isProgramsDataLoading, contractData, isContractsLoading, loading: (isProgramsDataLoading || isContractsLoading)}}
           usePagination
+          allowExport
         />
       )}
     </div>
