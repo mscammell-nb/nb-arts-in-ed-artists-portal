@@ -557,6 +557,13 @@ const NewProgramPage = () => {
                   <Checkbox
                     id={category}
                     className="my-1 mr-1"
+                    disabled={
+                      formValues.categories.includes(
+                        "Exploratory Enrichment",
+                      ) &&
+                      category !== "Exploratory Enrichment" &&
+                      category !== "Virtual Programs"
+                    }
                     onCheckedChange={(checked) => {
                       const newCategories = checked
                         ? [...formValues.categories, category]
