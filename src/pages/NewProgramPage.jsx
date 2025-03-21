@@ -131,7 +131,6 @@ const NewProgramPage = () => {
   });
 
   useEffect(() => {
-    console.log("--------------------");
     const exploratoryChecked = formValues.categories.includes(
       "Exploratory Enrichment",
     );
@@ -159,9 +158,6 @@ const NewProgramPage = () => {
       setTempCategories([]);
     }
   }, [formValues.categories.includes("Exploratory Enrichment")]);
-
-  console.log("Temp: " + tempCategories);
-  console.log("Actual: " + formValues.categories);
 
   const [
     addProgram,
