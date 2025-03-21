@@ -1,4 +1,4 @@
-import Table from "@/components/ui/data-grid";
+import DataGrid from "@/components/ui/data-grid";
 import { Separator } from "@/components/ui/separator";
 import {
   Sheet,
@@ -120,7 +120,7 @@ const ArtistEvaluationsPage = () => {
       <p className="text-4xl font-bold">Artist Evaluations</p>
       <Separator className="my-4" />
       {evaluationData && (
-        <Table
+        <DataGrid
           data={formatEvaluationsData(
             evaluationData,
             isProgramsDataLoading,

@@ -11,7 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import Table from "@/components/ui/data-grid";
+import DataGrid from "@/components/ui/data-grid";
 import {
   Select,
   SelectItem,
@@ -279,7 +279,7 @@ const ArtistDocumentsPage = () => {
         </Dialog>
       </div>
       {documentsData && (
-        <Table
+        <DataGrid
           data={formatData(documentsData)}
           columns={documentColumns}
           />
