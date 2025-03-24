@@ -1,13 +1,5 @@
-import { Button } from "@/components/ui/button";
-import getSortIcon from "./getSortIcon";
-import { Check, DownloadIcon, FilePenLine, Loader2, X } from "lucide-react";
-import { capitalizeString, downloadFile } from "./utils";
 import { Badge } from "@/components/ui/badge";
-import {
-  TooltipTrigger,
-  Tooltip,
-  TooltipContent,
-} from "@/components/ui/tooltip";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -25,17 +17,24 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
 import { Input } from "@/components/ui/input";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { toast } from "@/components/ui/use-toast";
 import {
   useAddOrUpdateRecordMutation,
   useLazyQueryForDataQuery,
-  useQueryForDataQuery,
 } from "@/redux/api/quickbaseApi";
-import { toast } from "@/components/ui/use-toast";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { Check, DownloadIcon, FilePenLine, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import * as yup from "yup";
+import getSortIcon from "./getSortIcon";
+import { capitalizeString, downloadFile } from "./utils";
 
 const renderStatusIcon = (value) => {
   switch (value) {
@@ -54,7 +53,7 @@ export const evalTableColumns = [
     header: ({ column }) => (
       <Button
         variant="ghost"
-        className="px-6 py-3 text-xs font-semibold uppercase  text-gray-700"
+        className="text-xs font-semibold uppercase  text-gray-700"
         onClick={() => column.toggleSorting()}
       >
         Program
@@ -68,7 +67,7 @@ export const evalTableColumns = [
     header: ({ column }) => (
       <Button
         variant="ghost"
-        className="px-6 py-3 text-xs font-semibold uppercase  text-gray-700"
+        className="text-xs font-semibold uppercase  text-gray-700"
         onClick={() => column.toggleSorting()}
       >
         Evaluation Date
@@ -82,7 +81,7 @@ export const evalTableColumns = [
     header: ({ column }) => (
       <Button
         variant="ghost"
-        className="px-6 py-3 text-xs font-semibold uppercase  text-gray-700"
+        className="text-xs font-semibold uppercase  text-gray-700"
         onClick={() => column.toggleSorting()}
       >
         Service Performed
@@ -96,7 +95,7 @@ export const evalTableColumns = [
     header: ({ column }) => (
       <Button
         variant="ghost"
-        className="px-6 py-3 text-xs font-semibold uppercase  text-gray-700"
+        className="text-xs font-semibold uppercase  text-gray-700"
         onClick={() => column.toggleSorting()}
       >
         Approver Name
@@ -110,7 +109,7 @@ export const evalTableColumns = [
     header: ({ column }) => (
       <Button
         variant="ghost"
-        className="px-6 py-3 text-xs font-semibold uppercase  text-gray-700"
+        className="text-xs font-semibold uppercase  text-gray-700"
         onClick={() => column.toggleSorting()}
       >
         Guide Used
@@ -124,7 +123,7 @@ export const evalTableColumns = [
     header: ({ column }) => (
       <Button
         variant="ghost"
-        className="px-6 py-3 text-xs font-semibold uppercase  text-gray-700"
+        className="text-xs font-semibold uppercase  text-gray-700"
         onClick={() => column.toggleSorting()}
       >
         Attentive?
@@ -138,7 +137,7 @@ export const evalTableColumns = [
     header: ({ column }) => (
       <Button
         variant="ghost"
-        className="px-6 py-3 text-xs font-semibold uppercase  text-gray-700"
+        className="text-xs font-semibold uppercase  text-gray-700"
         onClick={() => column.toggleSorting()}
       >
         Conduct?
@@ -152,7 +151,7 @@ export const evalTableColumns = [
     header: ({ column }) => (
       <Button
         variant="ghost"
-        className="px-6 py-3 text-xs font-semibold uppercase  text-gray-700"
+        className="text-xs font-semibold uppercase  text-gray-700"
         onClick={() => column.toggleSorting()}
       >
         Teacher Remained?
@@ -166,7 +165,7 @@ export const evalTableColumns = [
     header: ({ column }) => (
       <Button
         variant="ghost"
-        className="px-6 py-3 text-xs font-semibold uppercase  text-gray-700"
+        className="text-xs font-semibold uppercase  text-gray-700"
         onClick={() => column.toggleSorting()}
       >
         Space Set Up?
@@ -180,7 +179,7 @@ export const evalTableColumns = [
     header: ({ column }) => (
       <Button
         variant="ghost"
-        className="px-6 py-3 text-xs font-semibold uppercase  text-gray-700"
+        className="text-xs font-semibold uppercase  text-gray-700"
         onClick={() => column.toggleSorting()}
       >
         Equipment
@@ -194,7 +193,7 @@ export const evalTableColumns = [
     header: ({ column }) => (
       <Button
         variant="ghost"
-        className="px-6 py-3 text-xs font-semibold uppercase  text-gray-700"
+        className="text-xs font-semibold uppercase  text-gray-700"
         onClick={() => column.toggleSorting()}
       >
         On Schedule
@@ -216,7 +215,7 @@ export const registrationColumns = [
     header: ({ column }) => (
       <Button
         variant="ghost"
-        className="px-6 py-3 text-xs font-semibold uppercase  text-gray-700"
+        className="text-xs font-semibold uppercase  text-gray-700"
         onClick={() => column.toggleSorting()}
       >
         Artist/Organization
@@ -230,7 +229,7 @@ export const registrationColumns = [
     header: ({ column }) => (
       <Button
         variant="ghost"
-        className="px-6 py-3 text-xs font-semibold uppercase  text-gray-700"
+        className="text-xs font-semibold uppercase  text-gray-700"
         onClick={() => column.toggleSorting()}
       >
         Fiscal Year
@@ -244,7 +243,7 @@ export const registrationColumns = [
     header: ({ column }) => (
       <Button
         variant="ghost"
-        className="px-6 py-3 text-xs font-semibold uppercase  text-gray-700"
+        className="text-xs font-semibold uppercase  text-gray-700"
         onClick={() => column.toggleSorting()}
       >
         Number of Performers
@@ -258,7 +257,7 @@ export const registrationColumns = [
     header: ({ column }) => (
       <Button
         variant="ghost"
-        className="px-6 py-3 text-xs font-semibold uppercase  text-gray-700"
+        className="text-xs font-semibold uppercase  text-gray-700"
         onClick={() => column.toggleSorting()}
       >
         Phone Number
@@ -272,7 +271,7 @@ export const registrationColumns = [
     header: ({ column }) => (
       <Button
         variant="ghost"
-        className="px-6 py-3 text-xs font-semibold uppercase  text-gray-700"
+        className="text-xs font-semibold uppercase  text-gray-700"
         onClick={() => column.toggleSorting()}
       >
         Alternate Phone Number
@@ -286,7 +285,7 @@ export const registrationColumns = [
     header: ({ column }) => (
       <Button
         variant="ghost"
-        className="px-6 py-3 text-xs font-semibold uppercase  text-gray-700"
+        className="text-xs font-semibold uppercase  text-gray-700"
         onClick={() => column.toggleSorting()}
       >
         Email
@@ -300,7 +299,7 @@ export const registrationColumns = [
     header: ({ column }) => (
       <Button
         variant="ghost"
-        className="px-6 py-3 text-xs font-semibold uppercase text-gray-700"
+        className="text-xs font-semibold uppercase text-gray-700"
         onClick={() => column.toggleSorting()}
       >
         Approved
@@ -323,7 +322,7 @@ export const documentColumns = [
     header: ({ column }) => (
       <Button
         variant="ghost"
-        className="px-6 py-3 text-xs font-semibold uppercase text-gray-700"
+        className="text-xs font-semibold uppercase text-gray-700"
         onClick={() => column.toggleSorting()}
       >
         Fiscal Year
@@ -336,7 +335,7 @@ export const documentColumns = [
     header: ({ column }) => (
       <Button
         variant="ghost"
-        className="px-6 py-3 text-xs font-semibold uppercase text-gray-700"
+        className="text-xs font-semibold uppercase text-gray-700"
         onClick={() => column.toggleSorting()}
       >
         Artist / Org
@@ -349,7 +348,7 @@ export const documentColumns = [
     header: ({ column }) => (
       <Button
         variant="ghost"
-        className="px-6 py-3 text-xs font-semibold uppercase text-gray-700"
+        className="text-xs font-semibold uppercase text-gray-700"
         onClick={() => column.toggleSorting()}
       >
         Document Name
@@ -362,7 +361,7 @@ export const documentColumns = [
     header: ({ column }) => (
       <Button
         variant="ghost"
-        className="px-6 py-3 text-xs font-semibold uppercase text-gray-700"
+        className="text-xs font-semibold uppercase text-gray-700"
         onClick={() => column.toggleSorting()}
       >
         Document Type
@@ -402,10 +401,23 @@ export const performersColumns = [
     header: ({ column }) => (
       <Button
         variant="ghost"
-        className="px-6 py-3 text-xs font-semibold uppercase text-gray-700"
+        className="text-xs font-semibold uppercase text-gray-700"
         onClick={() => column.toggleSorting()}
       >
         First Name
+        {getSortIcon(column)}
+      </Button>
+    ),
+  },
+  {
+    accessorKey: "middleInitial",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        className="text-xs font-semibold uppercase text-gray-700"
+        onClick={() => column.toggleSorting()}
+      >
+        Middle Initial
         {getSortIcon(column)}
       </Button>
     ),
@@ -415,7 +427,7 @@ export const performersColumns = [
     header: ({ column }) => (
       <Button
         variant="ghost"
-        className="px-6 py-3 text-xs font-semibold uppercase text-gray-700"
+        className="text-xs font-semibold uppercase text-gray-700"
         onClick={() => column.toggleSorting()}
       >
         Last Name
@@ -428,7 +440,7 @@ export const performersColumns = [
     header: ({ column }) => (
       <Button
         variant="ghost"
-        className="px-6 py-3 text-xs font-semibold uppercase text-gray-700"
+        className="text-xs font-semibold uppercase text-gray-700"
         onClick={() => column.toggleSorting()}
       >
         Stage Name
@@ -446,7 +458,7 @@ export const performersColumns = [
     header: ({ column }) => (
       <Button
         variant="ghost"
-        className="px-6 py-3 text-xs font-semibold uppercase text-gray-700"
+        className="text-xs font-semibold uppercase text-gray-700"
         onClick={() => column.toggleSorting()}
       >
         Printed
@@ -471,7 +483,7 @@ export const performersColumns = [
     header: ({ column }) => (
       <Button
         variant="ghost"
-        className="px-6 py-3 text-xs font-semibold uppercase text-gray-700"
+        className="text-xs font-semibold uppercase text-gray-700"
         onClick={() => column.toggleSorting()}
       >
         Cleared
@@ -496,7 +508,7 @@ export const performersColumns = [
     header: ({ column }) => (
       <Button
         variant="ghost"
-        className="px-6 py-3 text-xs font-semibold uppercase text-gray-700"
+        className="text-xs font-semibold uppercase text-gray-700"
         onClick={() => column.toggleSorting()}
       >
         Active
@@ -548,14 +560,18 @@ export const performersColumns = [
       ] = useAddOrUpdateRecordMutation();
       const performerSchema = yup.object({
         firstName: yup.string().required(),
+        middleInitial: yup.string(),
         lastName: yup.string().required(),
+        stageName: yup.string(),
       });
 
       const editPerformerForm = useForm({
         resolver: yupResolver(performerSchema),
         defaultValues: {
           firstName: "",
+          middleInitial: "",
           lastName: "",
+          stageName: "",
         },
       });
 
@@ -582,27 +598,33 @@ export const performersColumns = [
         editPerformerError,
         toast,
       ]);
-        const editPerformer = (performerId) => {
-          return async (data) => {
-            await editPerformerRecord({
-              to: import.meta.env.VITE_QUICKBASE_PERFORMERS_TABLE_ID,
-              data: [
-                {
-                  3: {
-                    value: performerId,
-                  },
-                  7: {
-                    value: capitalizeString(data.firstName.trim()),
-                  },
-                  8: {
-                    value: capitalizeString(data.lastName.trim()),
-                  },
+      const editPerformer = (performerId) => {
+        return async (data) => {
+          await editPerformerRecord({
+            to: import.meta.env.VITE_QUICKBASE_PERFORMERS_TABLE_ID,
+            data: [
+              {
+                3: {
+                  value: performerId,
                 },
-              ],
-            });
-            setIsEditPerformerDialogOpen(false);
-          };
+                7: {
+                  value: capitalizeString(data.firstName.trim()),
+                },
+                8: {
+                  value: capitalizeString(data.lastName.trim()),
+                },
+                22: {
+                  value: data.stageName?.trim() || "",
+                },
+                23: {
+                  value: capitalizeString(data.middleInitial?.trim()) || "",
+                },
+              },
+            ],
+          });
+          setIsEditPerformerDialogOpen(false);
         };
+      };
 
       return (
         <Dialog
@@ -617,7 +639,9 @@ export const performersColumns = [
                     onClick={() => {
                       editPerformerForm.reset({
                         firstName: row.original.firstName,
+                        middleInitial: row.original.middleInitial,
                         lastName: row.original.lastName,
+                        stageName: row.original.stageName,
                       });
                       trigger({
                         from: import.meta.env
@@ -674,10 +698,36 @@ export const performersColumns = [
                   />
                   <FormField
                     control={editPerformerForm.control}
+                    name="middleInitial"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Middle Initial</FormLabel>
+                        <FormControl>
+                          <Input maxLength={1} {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={editPerformerForm.control}
                     name="lastName"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Last name</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={editPerformerForm.control}
+                    name="stageName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Stage Name</FormLabel>
                         <FormControl>
                           <Input {...field} />
                         </FormControl>
@@ -730,10 +780,7 @@ export const programTableColumns = [
   {
     accessorKey: "fiscalYear",
     header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting()}
-      >
+      <Button variant="ghost" onClick={() => column.toggleSorting()}>
         Fiscal Year
         {getSortIcon(column)}
       </Button>
@@ -742,10 +789,7 @@ export const programTableColumns = [
   {
     accessorKey: "dateCreated",
     header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting()}
-      >
+      <Button variant="ghost" onClick={() => column.toggleSorting()}>
         Date Created
         {getSortIcon(column)}
       </Button>
@@ -754,10 +798,7 @@ export const programTableColumns = [
   {
     accessorKey: "program",
     header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting()}
-      >
+      <Button variant="ghost" onClick={() => column.toggleSorting()}>
         Program
         {getSortIcon(column)}
       </Button>
@@ -767,10 +808,7 @@ export const programTableColumns = [
   {
     accessorKey: "status",
     header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting()}
-      >
+      <Button variant="ghost" onClick={() => column.toggleSorting()}>
         Status
         {getSortIcon(column)}
       </Button>
@@ -779,10 +817,7 @@ export const programTableColumns = [
   {
     accessorKey: "paid",
     header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting()}
-      >
+      <Button variant="ghost" onClick={() => column.toggleSorting()}>
         Paid
         {getSortIcon(column)}
       </Button>
