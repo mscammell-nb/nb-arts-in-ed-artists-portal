@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import DataGrid from "@/components/ui/data-grid";
 import {
   Form,
   FormControl,
@@ -8,21 +9,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
-import { useEffect } from "react";
-import { Mail } from "lucide-react";
-import {
-  useAddOrUpdateRecordMutation,
-  useQueryForDataQuery,
-} from "@/redux/api/quickbaseApi";
-import { useToast } from "@/components/ui/use-toast";
-import { getCurrentFiscalYearKey } from "@/utils/utils";
-import { capitalizeString } from "@/utils/utils";
-import Spinner from "../components/ui/Spinner";
-import DataGrid from "@/components/ui/data-grid";
-import { performersColumns } from "@/utils/TableColumns";
+import { Separator } from "@/components/ui/separator";
 import {
   Sheet,
   SheetContent,
@@ -31,11 +18,25 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Separator } from "@/components/ui/separator";
+import { useToast } from "@/components/ui/use-toast";
+import {
+  useAddOrUpdateRecordMutation,
+  useQueryForDataQuery,
+} from "@/redux/api/quickbaseApi";
+import { performersColumns } from "@/utils/TableColumns";
+import { capitalizeString, getCurrentFiscalYearKey } from "@/utils/utils";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { Mail } from "lucide-react";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import * as yup from "yup";
+import Spinner from "../components/ui/Spinner";
 
 const schema = yup.object({
   firstName: yup.string().required(),
+  middleInitial: yup.string(),
   lastName: yup.string().required(),
+  stageName: yup.string(),
 });
 
 const AddSheet = ({ open, onOpenChange, sheetProps }) => {
@@ -46,7 +47,11 @@ const AddSheet = ({ open, onOpenChange, sheetProps }) => {
           <SheetTitle className="text-3xl">{sheetProps.title}</SheetTitle>
           <Separator className="my-2" />
           <SheetDescription>
-            <p>Enter the performer's first and last name and click submit</p>
+            <p>
+              Enter the performer's first name, middle initial (if they have
+              one), last name, and stage name (if they have one) and click
+              submit
+            </p>
             <p>
               <span className="font-bold uppercase text-red-500">
                 Important:
@@ -69,9 +74,24 @@ const AddSheet = ({ open, onOpenChange, sheetProps }) => {
                 name="firstName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>First name</FormLabel>
+                    <FormLabel>
+                      First Name<span className="text-red-500">*</span>
+                    </FormLabel>
                     <FormControl>
                       <Input placeholder="John" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={sheetProps.addPerformerForm.control}
+                name="middleInitial"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Middle Initial</FormLabel>
+                    <FormControl>
+                      <Input maxLength={1} placeholder="H" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -82,9 +102,24 @@ const AddSheet = ({ open, onOpenChange, sheetProps }) => {
                 name="lastName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Last name</FormLabel>
+                    <FormLabel>
+                      Last Name<span className="text-red-500">*</span>
+                    </FormLabel>
                     <FormControl>
                       <Input placeholder="Doe" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={sheetProps.addPerformerForm.control}
+                name="stageName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Stage Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Stage Name" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -115,7 +150,7 @@ const PerformersPage = () => {
     error: performersError,
   } = useQueryForDataQuery({
     from: import.meta.env.VITE_QUICKBASE_PERFORMERS_TABLE_ID,
-    select: [3, 7, 8, 9, 10, 11, 14, 18, 20, 22],
+    select: [3, 7, 8, 9, 10, 11, 14, 18, 20, 22, 23],
     where: `{14.EX.${artistRecordId}}`,
   });
   const [
@@ -203,6 +238,7 @@ const PerformersPage = () => {
       return {
         id: record[3].value,
         firstName: record[7].value,
+        middleInitial: record[23].value,
         lastName: record[8].value,
         stageName: record[22].value,
         printed: record[9].value,
@@ -228,6 +264,12 @@ const PerformersPage = () => {
           },
           14: {
             value: artistRecordId,
+          },
+          22: {
+            value: data.stageName?.trim() || "",
+          },
+          23: {
+            value: capitalizeString(data.middleInitial?.trim()) || "",
           },
         },
       ],
@@ -290,6 +332,4 @@ const PerformersPage = () => {
 
 export default PerformersPage;
 
-// TODO: figure out why the background of the edit dialog is black
-// TODO: add space bar listener to the edit buttons so that they follow the same logic of when they are clicked.
 // TODO: When the user doesn't have any performers (there's no data in the table) and I try to select a filter, I get a warning saying each item in a list should have a unique key. Probably fixable by stopping the filtering process if the data returned by the API has a length of 0 (early return).
