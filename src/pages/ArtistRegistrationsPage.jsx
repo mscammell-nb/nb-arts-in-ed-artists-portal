@@ -1,10 +1,15 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import Spinner from "@/components/ui/Spinner";
-import { getNextFiscalYear } from "@/utils/utils";
-import { useQueryForDataQuery } from "../redux/api/quickbaseApi";
-import { useSelector } from "react-redux";
 import DataGrid from "@/components/ui/data-grid";
+import Spinner from "@/components/ui/Spinner";
+import {
+  FISCAL_YEAR_FIRST_MONTH,
+  REGISTRATION_CUTOFF_DAY,
+  REGISTRATION_CUTOFF_MONTH,
+} from "@/utils/constants";
 import { registrationColumns } from "@/utils/TableColumns";
+import { getNextFiscalYear } from "@/utils/utils";
+import { useSelector } from "react-redux";
+import { useQueryForDataQuery } from "../redux/api/quickbaseApi";
 
 const formatData = (unformattedData) => {
   const { data } = unformattedData;
@@ -61,8 +66,9 @@ const ArtistRegistrationsPage = () => {
     const nextFiscalYear = getNextFiscalYear();
     const date = new Date();
     const currMonth = date.getMonth();
+    const currDay = date.getDate();
 
-    // Check if registered for next fiscal year
+    // Check if artist is already registered for next fiscal year
     const registeredNextYear = registrationData.data.forEach((registration) => {
       if (registration[25].value === nextFiscalYear) {
         return false;
@@ -71,8 +77,12 @@ const ArtistRegistrationsPage = () => {
 
     if (registeredNextYear) return false;
 
-    // Not registered for next fiscal year, check month
-    if (currMonth > 3 && currMonth < 6) {
+    // Not registered for next fiscal year, check month and day
+    if (
+      currMonth >= REGISTRATION_CUTOFF_MONTH &&
+      currDay >= REGISTRATION_CUTOFF_DAY &&
+      currMonth < FISCAL_YEAR_FIRST_MONTH
+    ) {
       return true;
     }
     return false;

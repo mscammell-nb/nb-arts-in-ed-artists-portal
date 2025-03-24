@@ -34,14 +34,15 @@ import {
   useAddOrUpdateRecordMutation,
   useQueryForDataQuery,
 } from "@/redux/api/quickbaseApi";
+import {
+  MAX_COST_LENGTH,
+  MIN_INPUT_LENGTH,
+  MIN_TEXTAREA_LENGTH,
+} from "@/utils/constants";
 import { getCurrentFiscalYearKey } from "@/utils/utils";
 import { ArrowLeftIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-
-const MIN_INPUT_LENGTH = 8;
-const MIN_TEXTAREA_LENGTH = 15;
-const MAX_COST_LENGTH = 100;
 
 const NewProgramPage = () => {
   const { toast } = useToast();
@@ -381,7 +382,7 @@ const NewProgramPage = () => {
       });
       const form = document.getElementById("mainform");
       form.reset();
-      
+
       setSelectedKeywords([]);
     }
 
