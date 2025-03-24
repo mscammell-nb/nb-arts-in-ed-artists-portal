@@ -1,7 +1,7 @@
-import DataTable from "@/components/DataTable";
 import { DropZone } from "@/components/DropZone";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import DataGrid from "@/components/ui/data-grid";
 import {
   Dialog,
   DialogClose,
@@ -11,11 +11,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import DataGrid from "@/components/ui/data-grid";
 import {
   Select,
-  SelectItem,
   SelectContent,
+  SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -26,39 +25,36 @@ import {
   useAddOrUpdateRecordMutation,
   useQueryForDataQuery,
 } from "@/redux/api/quickbaseApi";
-import getSortIcon from "@/utils/getSortIcon";
 import { documentColumns } from "@/utils/TableColumns";
-import { downloadFile, getCurrentFiscalYear, getCurrentFiscalYearKey } from "@/utils/utils";
-import { Label } from "@radix-ui/react-dropdown-menu";
 import {
-  DownloadIcon,
-} from "@radix-ui/react-icons";
+  downloadFile,
+  getCurrentFiscalYear,
+  getCurrentFiscalYearKey,
+} from "@/utils/utils";
+import { Label } from "@radix-ui/react-dropdown-menu";
+import { DownloadIcon } from "@radix-ui/react-icons";
 import { AlertCircleIcon, Loader2, UploadIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const ArtistDocumentsPage = () => {
   const [fileUploads, setFileUploads] = useState(null);
   const [open, setOpen] = useState(false);
-  const [selectedType, setSelectedType] = useState('');
+  const [selectedType, setSelectedType] = useState("");
   const [missingFiles, setMissingFiles] = useState([]);
   const artist = localStorage.getItem("artist/org");
 
-  const {
-    data: fileTypes,
-    isLoading: isFileTypesLoading,
-  } = useQueryForDataQuery({
-    from: import.meta.env.VITE_QUICKBASE_DOCUMENT_TYPES_TABLE_ID,
-    select: [3, 7, 31],
-  });
-  const {
-    data: documentsData,
-    isLoading: isDocumentsDataLoading,
-  } = useQueryForDataQuery({
-    from: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
-    select: [11, 9, 16, 7, 12, 6, 14, 3, 10],
-    where: `{9.EX.${artist}}`,
-    sortBy: [{ fieldId: 10 }, { order: "DESC" }],
-  });
+  const { data: fileTypes, isLoading: isFileTypesLoading } =
+    useQueryForDataQuery({
+      from: import.meta.env.VITE_QUICKBASE_DOCUMENT_TYPES_TABLE_ID,
+      select: [3, 7, 31],
+    });
+  const { data: documentsData, isLoading: isDocumentsDataLoading } =
+    useQueryForDataQuery({
+      from: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
+      select: [11, 9, 16, 7, 12, 6, 14, 3, 10],
+      where: `{9.EX.${artist}}`,
+      sortBy: [{ fieldId: 10 }, { order: "DESC" }],
+    });
 
   const [
     addDocument,
@@ -71,7 +67,7 @@ const ArtistDocumentsPage = () => {
 
   useEffect(() => {
     if (documentsData && !isDocumentsDataLoading) {
-      setMissingFiles([])
+      setMissingFiles([]);
       documentsData.data.forEach((doc) => {
         if (
           missingFiles.includes(doc[6].value) &&
@@ -118,6 +114,7 @@ const ArtistDocumentsPage = () => {
         description: "Your documents have been submitted.",
       });
       setOpen(false);
+      setSelectedType("");
     }
   }, [isAddDocumentError, isAddDocumentSuccess]);
 
@@ -147,7 +144,7 @@ const ArtistDocumentsPage = () => {
       });
       return;
     }
-    if (selectedType === '') {
+    if (selectedType === "") {
       toast({
         variant: "destructive",
         title: "Error submitting documents",
@@ -186,9 +183,14 @@ const ArtistDocumentsPage = () => {
   };
 
   const downloadTemplate = (file) => {
-    let versionNumber = [...file[7].value.versions]
-    versionNumber = versionNumber.pop().versionNumber
-    downloadFile(import.meta.env.VITE_QUICKBASE_DOCUMENT_TYPES_TABLE_ID,7, file[3].value, versionNumber)
+    let versionNumber = [...file[7].value.versions];
+    versionNumber = versionNumber.pop().versionNumber;
+    downloadFile(
+      import.meta.env.VITE_QUICKBASE_DOCUMENT_TYPES_TABLE_ID,
+      7,
+      file[3].value,
+      versionNumber,
+    );
   };
 
   if (isDocumentsDataLoading || isFileTypesLoading) {
@@ -199,7 +201,7 @@ const ArtistDocumentsPage = () => {
     );
   }
   return (
-    <div className="w-full flex flex-col gap-4 overflow-hidden">
+    <div className="flex w-full flex-col gap-4 overflow-hidden">
       <p className="text-2xl font-semibold">Artist Documents</p>
       {missingFiles.length > 0 && (
         <Alert variant="destructive" className="bg-red-50">
@@ -216,11 +218,12 @@ const ArtistDocumentsPage = () => {
           </AlertDescription>
         </Alert>
       )}
-      <div className="flex flex-col md:flex-row items-center gap-3">
-        {(!isFileTypesLoading && fileTypes) &&
+      <div className="flex flex-col items-center gap-3 md:flex-row">
+        {!isFileTypesLoading &&
+          fileTypes &&
           fileTypes.data.map((f) => (
             <Button
-              className="flex items-center gap-2 w-full md:w-auto"
+              className="flex w-full items-center gap-2 md:w-auto"
               key={f[31].value}
               onClick={() => downloadTemplate(f)}
             >
@@ -279,10 +282,7 @@ const ArtistDocumentsPage = () => {
         </Dialog>
       </div>
       {documentsData && (
-        <DataGrid
-          data={formatData(documentsData)}
-          columns={documentColumns}
-          />
+        <DataGrid data={formatData(documentsData)} columns={documentColumns} />
       )}
     </div>
   );
@@ -290,7 +290,7 @@ const ArtistDocumentsPage = () => {
 
 export default ArtistDocumentsPage;
 // TODO: Email all docs in welcome email when artist is created (from which email?)
-// TODO: For the missing files, separate required files from optional files. 
+// TODO: For the missing files, separate required files from optional files.
 /*
   - Vendor Application (Required)
   - w-9 (Required)
