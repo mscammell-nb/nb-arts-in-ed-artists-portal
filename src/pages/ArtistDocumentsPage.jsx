@@ -322,5 +322,4 @@ export default ArtistDocumentsPage;
   - OSPRA 102 (based on district)
   - OSPRA 104 (based on district)
   - Insurance Specification (artist information)
-  - Program Contracts Payments Required (artist information)
 */
