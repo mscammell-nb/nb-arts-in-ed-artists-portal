@@ -25,6 +25,10 @@ import {
   useAddOrUpdateRecordMutation,
   useQueryForDataQuery,
 } from "@/redux/api/quickbaseApi";
+import {
+  TICKET_VENDOR,
+  TICKET_VENDOR_EXCEPTION_FILES,
+} from "@/utils/constants";
 import { documentColumns } from "@/utils/TableColumns";
 import {
   downloadFile,
@@ -35,6 +39,7 @@ import { Label } from "@radix-ui/react-dropdown-menu";
 import { DownloadIcon } from "@radix-ui/react-icons";
 import { AlertCircleIcon, Loader2, UploadIcon } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
 const ArtistDocumentsPage = () => {
   const [fileUploads, setFileUploads] = useState(null);
@@ -42,6 +47,19 @@ const ArtistDocumentsPage = () => {
   const [selectedType, setSelectedType] = useState("");
   const [missingFiles, setMissingFiles] = useState([]);
   const artist = localStorage.getItem("artist/org");
+
+  const { user } = useSelector((state) => state.auth);
+
+  const { data: artistsData, isLoading: isArtistDataLoading } =
+    useQueryForDataQuery(
+      user
+        ? {
+            from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
+            select: [46],
+            where: `{10.EX.${user.uid}}`,
+          }
+        : { skip: !user, refetchOnMountOrArgChange: true },
+    );
 
   const { data: fileTypes, isLoading: isFileTypesLoading } =
     useQueryForDataQuery({
@@ -91,8 +109,15 @@ const ArtistDocumentsPage = () => {
           if (doc[10].value == getCurrentFiscalYearKey()) return doc[6].value;
         })
         .filter((n) => n);
+
+      const isTicketVendor = artistsData?.data[0][46].value === TICKET_VENDOR;
+
       for (let type of fileTypes.data) {
-        if (!userTypes.includes(type[31].value)) {
+        const inUserTypes = userTypes.includes(type[31].value);
+        const inTicketVendorException = TICKET_VENDOR_EXCEPTION_FILES.includes(
+          type[31].value,
+        );
+        if ((!inUserTypes && !isTicketVendor) || (!inUserTypes && !inTicketVendorException)) {
           setMissingFiles((curr) => [...curr, type[31].value]);
         }
       }
