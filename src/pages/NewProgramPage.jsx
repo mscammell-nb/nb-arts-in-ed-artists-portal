@@ -41,7 +41,7 @@ import {
 } from "@/utils/constants";
 import { getCurrentFiscalYearKey } from "@/utils/utils";
 import { ArrowLeftIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
 const NewProgramPage = () => {
@@ -49,8 +49,8 @@ const NewProgramPage = () => {
   const artistRecordId = localStorage.getItem("artistRecordId");
 
   const [selectedKeywords, setSelectedKeywords] = useState([]);
-  const [costLength, setCostLength] = useState(0);
   const [tempCategories, setTempCategories] = useState([]);
+  const myRef = useRef();
 
   const {
     data: performersData,
@@ -130,6 +130,10 @@ const NewProgramPage = () => {
       message: "",
     },
   });
+
+  const clearAllKeywords = () => {
+    myRef.current?.handleClear();
+  }
 
   useEffect(() => {
     const exploratoryChecked = formValues.categories.includes(
@@ -311,6 +315,9 @@ const NewProgramPage = () => {
 
     if (isError) return;
 
+    setTempCategories([]);
+    setSelectedKeywords([]);
+
     addProgram({
       to: import.meta.env.VITE_QUICKBASE_PROGRAMS_TABLE_ID,
       data: [
@@ -384,6 +391,7 @@ const NewProgramPage = () => {
       form.reset();
 
       setSelectedKeywords([]);
+      clearAllKeywords();
     }
 
     if (isAddProgramError) {
@@ -487,6 +495,7 @@ const NewProgramPage = () => {
             </div>
 
             <RadioGroup
+              value={formValues.location}
               onValueChange={(value) => {
                 setFormValues((prev) => ({ ...prev, location: value }));
                 setFormErrors((prev) => ({
@@ -648,9 +657,10 @@ const NewProgramPage = () => {
                 </Link>
               </div>
               <MultiSelect
+              ref={myRef}
                 options={KEYWORD_GROUPS}
                 onValueChange={setSelectedKeywords}
-                defaultValue={selectedKeywords}
+                defaultValue={[]}
                 placeholder="Select keywords"
                 variant="inverted"
                 animation={2}
@@ -700,6 +710,7 @@ const NewProgramPage = () => {
               </Label>
               <DefinitionsDialog definitions={SERVICE_TYPE_DEFINITIONS} />
               <Select
+                value={formValues.serviceType}
                 id="service-type"
                 onValueChange={(value) => {
                   setFormValues((prev) => ({ ...prev, serviceType: value }));
@@ -741,6 +752,7 @@ const NewProgramPage = () => {
               </Label>
               <Select
                 id="length"
+                value={formValues.length}
                 onValueChange={(value) => {
                   setFormValues((prev) => ({ ...prev, length: value }));
                   setFormErrors((prev) => ({
