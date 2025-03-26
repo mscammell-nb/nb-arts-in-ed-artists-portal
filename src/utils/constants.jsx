@@ -19,6 +19,10 @@ export const TICKET_VENDOR_EXCEPTION_FILES = [
   "Insurance Specifications",
 ];
 
+// app-sidebar
+export const TICKET_VENDOR_EXCEPTION_SIDEBAR = ["Artist Registrations", "Artist Evaluations"]
+
+// Performers Table
 export const PERFORMERS_EDITABLE_FIELDS = new Map([
   ["firstName", { field: 11, type: "string", options: [] }],
   ["middleInitial", { field: 23, type: "string", options: [] }],
@@ -90,6 +94,7 @@ export const PERFORMERS_EDITABLE_FIELDS = new Map([
   ],
 ]);
 
+// Programs Table
 export const PROGRAMS_EDITABLE_FIELDS = new Map([
   ["program", { field: 11, type: "string", options: [] }],
   [
@@ -109,6 +114,8 @@ export const PROGRAMS_EDITABLE_FIELDS = new Map([
   ],
 ]);
 
+
+// Evaluations Table
 export const EVALUATIONS_EDITABLE_FIELDS = new Map([
   [
     "servicePerformed",

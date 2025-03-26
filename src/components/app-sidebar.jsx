@@ -14,6 +14,11 @@ import {
 } from "@/components/ui/sidebar";
 import { VersionSwitcher } from "@/components/version-switcher";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
+import {
+  TICKET_VENDOR,
+  TICKET_VENDOR_EXCEPTION_SIDEBAR,
+} from "@/utils/constants";
 import { HamburgerMenuIcon } from "@radix-ui/react-icons";
 import {
   BookText,
@@ -25,6 +30,7 @@ import {
   MonitorCog,
   UserRoundCog,
 } from "lucide-react";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { Button } from "./ui/button";
 import { Sheet, SheetClose, SheetContent, SheetTrigger } from "./ui/sheet";
@@ -82,6 +88,21 @@ const data = {
 export function AppSidebar({ ...props }) {
   const { open, setOpen } = useSidebar();
 
+  const { user } = useSelector((state) => state.auth);
+
+  const { data: artistsData, isLoading: isArtistDataLoading } =
+    useQueryForDataQuery(
+      user
+        ? {
+            from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
+            select: [46],
+            where: `{10.EX.${user.uid}}`,
+          }
+        : { skip: !user, refetchOnMountOrArgChange: true },
+    );
+
+  const isTicketVendor = artistsData?.data[0][46].value === TICKET_VENDOR;
+
   if (useIsMobile()) {
     return (
       <Sheet>
@@ -98,21 +119,28 @@ export function AppSidebar({ ...props }) {
               <SidebarGroupLabel>{item.title}</SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
-                  {item.items.map((item) => (
-                    <SidebarMenuItem key={item.title}>
-                      <SidebarMenuButton asChild isActive={item.isActive}>
-                        <SheetClose asChild>
-                          <Link
-                            to={item.url}
-                            className="transition-all hover:bg-white hover:bg-opacity-20"
-                          >
-                            {item.icon}
-                            <span>{item.title}</span>
-                          </Link>
-                        </SheetClose>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  ))}
+                  {item.items.map((item) => {
+                    if (
+                      isTicketVendor &&
+                      TICKET_VENDOR_EXCEPTION_SIDEBAR.includes(item.title)
+                    )
+                      return <></>;
+                    return (
+                      <SidebarMenuItem key={item.title}>
+                        <SidebarMenuButton asChild isActive={item.isActive}>
+                          <SheetClose asChild>
+                            <Link
+                              to={item.url}
+                              className="transition-all hover:bg-white hover:bg-opacity-20"
+                            >
+                              {item.icon}
+                              <span>{item.title}</span>
+                            </Link>
+                          </SheetClose>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    );
+                  })}
                 </SidebarMenu>
               </SidebarGroupContent>
             </SidebarGroup>
@@ -135,19 +163,26 @@ export function AppSidebar({ ...props }) {
             <SidebarGroupLabel>{item.title}</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                {item.items.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild isActive={item.isActive}>
-                      <Link
-                        to={item.url}
-                        className="transition-all hover:bg-white hover:bg-opacity-20"
-                      >
-                        {item.icon}
-                        <span>{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
+                {item.items.map((item) => {
+                  if (
+                    isTicketVendor &&
+                    TICKET_VENDOR_EXCEPTION_SIDEBAR.includes(item.title)
+                  )
+                    return null;
+                  return (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton asChild isActive={item.isActive}>
+                        <Link
+                          to={item.url}
+                          className="transition-all hover:bg-white hover:bg-opacity-20"
+                        >
+                          {item.icon}
+                          <span>{item.title}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })}
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
