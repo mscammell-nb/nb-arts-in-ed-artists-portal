@@ -243,33 +243,31 @@ function Table({
 
   const handleCellChange = (columnId, value, setValue, recordId, fieldData) => {
     const copy = form;
-    if (fieldData.options.length > 0 && fieldData.type === "boolean") {
-      copy[recordId] = {
-        ...copy[recordId],
-        [columnId]: value === true ? "Yes" : "No",
-        recordId,
-      };
-      setForm(copy);
-      setValue(value);
-    } else {
-      copy[recordId] = { ...copy[recordId], [columnId]: value, recordId };
-      setForm(copy);
-      setValue(value);
-    }
+    copy[recordId] = { ...copy[recordId], [columnId]: value, recordId };
+    setForm(copy);
+    setValue(value);
   };
 
   const editableColumns = columns.map((column) => {
-    if(editing && column.id && column.id === "edit") return {...column, cell: () => null};
+    if (editing && column.id && column.id === "edit")
+      return { ...column, cell: () => null };
     return editing && editableFields.has(column.accessorKey)
       ? {
           ...column,
           cell: ({ row, column, getValue }) => {
-
-            const originalValue = getValue();
+            const originalValue =
+              editableFields.get(column.id).type === "boolean"
+                ? getValue() === "Yes"
+                  ? true
+                  : false
+                : getValue();
             const [inputValue, setInputValue] = useState(originalValue);
 
             // Handle boolean type fields
-            if (editableFields.get(column.id).type === "boolean") {
+            if (
+              editableFields.get(column.id).type === "boolean" ||
+              editableFields.get(column.id).type === "yes/no"
+            ) {
               return (
                 <Select
                   value={inputValue}
@@ -282,15 +280,19 @@ function Table({
                       editableFields.get(column.id),
                     );
                   }}
-                  className={`w-full rounded border border-gray-200 p-1 ${inputValue === originalValue ? "bg-white" : "bg-yellow-200"}`}
+                  className={`w-full rounded border border-gray-200 p-1`}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger
+                    className={` ${inputValue === originalValue ? "bg-white" : "bg-yellow-200"}`}
+                  >
                     <SelectValue placeholder="Select a value" />
                   </SelectTrigger>
                   <SelectContent>
-                    {editableFields.get(column.id).options.map((option) => (
-                      <React.Fragment>{option}</React.Fragment>
-                    ))}
+                    {editableFields
+                      .get(column.id)
+                      .options.map((option, idx) => (
+                        <React.Fragment key={idx}>{option}</React.Fragment>
+                      ))}
                   </SelectContent>
                 </Select>
               );
@@ -303,14 +305,14 @@ function Table({
                 value={inputValue}
                 onChange={(e) => {
                   handleCellChange(
-                    row.index,
                     column.id,
                     e.target.value,
                     setInputValue,
                     row.original.id,
+                    editableFields.get(column.id),
                   );
                 }}
-                className={`w-full rounded border text-gray-600 placeholder:text-gray-400 border-gray-200 p-1 ${inputValue === originalValue ? "bg-white" : "bg-yellow-200"}`}
+                className={`w-full rounded border border-gray-200 p-1 text-gray-600 placeholder:text-gray-400 ${inputValue === originalValue ? "bg-white" : "bg-yellow-200"}`}
               />
             );
           },

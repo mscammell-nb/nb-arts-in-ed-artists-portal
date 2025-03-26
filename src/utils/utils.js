@@ -99,3 +99,25 @@ export const downloadFile = async (tableId, fieldId, id, versionNumber) => {
       console.error(err);
     });
 };
+
+export const groupByIdAndField = (arr) => {
+  const res = [];
+  const grouped = {};
+  arr.forEach((item) => {
+    if (!grouped[item.id]) {
+      grouped[item.id] = {};
+    }
+    grouped[item.id][item.field] = { value: item.value };
+  });
+
+  for (const id in grouped) {
+    const group = grouped[id];
+    const formattedGroup = { 3: { value: id } };
+
+    for (const field in group) {
+      formattedGroup[field] = group[field];
+    }
+    res.push(formattedGroup);
+  }
+  return res;
+};

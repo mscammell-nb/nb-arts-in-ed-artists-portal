@@ -8,8 +8,11 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import Spinner from "@/components/ui/Spinner";
-import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
-import { getCurrentFiscalYear } from "@/utils/utils";
+import {
+  useAddOrUpdateRecordMutation,
+  useQueryForDataQuery,
+} from "@/redux/api/quickbaseApi";
+import { getCurrentFiscalYear, groupByIdAndField } from "@/utils/utils";
 import EvaluationPage from "./EvaluationPage";
 import { evalTableColumns } from "@/utils/TableColumns";
 import { EVALUATIONS_EDITABLE_FIELDS } from "@/utils/constants";
@@ -68,13 +71,14 @@ const AddSheet = ({ open, onOpenChange, sheetProps }) => {
             {"Add a new Evaluation"}
           </SheetDescription>
         </SheetHeader>
-        {!sheetProps.isContractsLoading && !sheetProps.isProgramsDataLoading && (
-          <EvaluationPage
-            contractData={sheetProps.contractData.data}
-            programData={sheetProps.programsData.data}
-            closeSheet={closeSheet}
-          />
-        )}
+        {!sheetProps.isContractsLoading &&
+          !sheetProps.isProgramsDataLoading && (
+            <EvaluationPage
+              contractData={sheetProps.contractData.data}
+              programData={sheetProps.programsData.data}
+              closeSheet={closeSheet}
+            />
+          )}
       </SheetContent>
     </Sheet>
   );
@@ -102,20 +106,53 @@ const ArtistEvaluationsPage = () => {
     where: `{8.EX.${localStorage.getItem("artistRecordId")}}AND{16.EX.${getCurrentFiscalYear()}}`,
   });
   const { data: contractData, isLoading: isContractsLoading } =
-  useQueryForDataQuery({
-    from: import.meta.env.VITE_QUICKBASE_CONTRACTS_TABLE_ID,
-    select: [1, 3, 8, 10, 12, 13, 15, 16],
-    where: `{9.EX.${localStorage.getItem("artistRecordId")}}AND{15.EX.${getCurrentFiscalYear()}}`,
-  });
+    useQueryForDataQuery({
+      from: import.meta.env.VITE_QUICKBASE_CONTRACTS_TABLE_ID,
+      select: [1, 3, 8, 10, 12, 13, 15, 16],
+      where: `{9.EX.${localStorage.getItem("artistRecordId")}}AND{15.EX.${getCurrentFiscalYear()}}`,
+    });
 
-  if (evaluationDataLoading) {
+  const [
+    updateRecord,
+    {
+      data: editArtistEvaluation,
+      isLoading: isEditArtistEvaluationLoading,
+      isSuccess: isEditArtistEvaluationSuccess,
+      isError: isEditArtistEvaluationError,
+      error: editArtistEvaluationError,
+    },
+  ] = useAddOrUpdateRecordMutation();
+
+  const updateFunction = (records) => {
+    const editableFields = EVALUATIONS_EDITABLE_FIELDS;
+    const acceptedChanges = [];
+    Object.keys(records).forEach((recordKey) => {
+      const id = recordKey;
+      Object.keys(records[recordKey]).forEach((key) => {
+        if (editableFields.has(key)) {
+          acceptedChanges.push({
+            id,
+            field: editableFields.get(key).field,
+            value: records[id][key],
+          });
+        }
+      });
+    });
+    const updatedFields = groupByIdAndField(acceptedChanges);
+    updateRecord({
+      to: import.meta.env.VITE_QUICKBASE_EVALUATIONS_TABLE_ID,
+      data: updatedFields,
+    });
+  };
+
+  if (evaluationDataLoading || isEditArtistEvaluationLoading) {
     return (
       <div className="flex h-full w-full justify-center pt-24">
         <Spinner />
       </div>
     );
   }
- 
+
   return (
     <div className="w-full">
       <p className="text-4xl font-bold">Artist Evaluations</p>
@@ -130,9 +167,17 @@ const ArtistEvaluationsPage = () => {
           columns={evalTableColumns}
           CustomAddComponent={AddSheet}
           addButtonText="Add Evaluation"
-          sheetProps={{title: "Add Evaluation", programsData, isProgramsDataLoading, contractData, isContractsLoading, loading: (isProgramsDataLoading || isContractsLoading)}}
+          sheetProps={{
+            title: "Add Evaluation",
+            programsData,
+            isProgramsDataLoading,
+            contractData,
+            isContractsLoading,
+            loading: isProgramsDataLoading || isContractsLoading,
+          }}
           usePagination
           allowExport
+          updateFunction={updateFunction}
           editableFields={EVALUATIONS_EDITABLE_FIELDS}
         />
       )}

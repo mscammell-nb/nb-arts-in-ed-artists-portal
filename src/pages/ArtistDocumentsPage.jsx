@@ -26,7 +26,6 @@ import {
   useQueryForDataQuery,
 } from "@/redux/api/quickbaseApi";
 import {
-  DOCUMENTS_EDITABLE_FIELDS,
   TICKET_VENDOR,
   TICKET_VENDOR_EXCEPTION_FILES,
 } from "@/utils/constants";
@@ -308,7 +307,7 @@ const ArtistDocumentsPage = () => {
         </Dialog>
       </div>
       {documentsData && (
-        <DataGrid data={formatData(documentsData)} columns={documentColumns} editableFields={DOCUMENTS_EDITABLE_FIELDS} />
+        <DataGrid data={formatData(documentsData)} columns={documentColumns} readOnly />
       )}
     </div>
   );
