@@ -24,7 +24,11 @@ import {
   useQueryForDataQuery,
 } from "@/redux/api/quickbaseApi";
 import { performersColumns } from "@/utils/TableColumns";
-import { capitalizeString, getCurrentFiscalYearKey, groupByIdAndField } from "@/utils/utils";
+import {
+  capitalizeString,
+  getCurrentFiscalYearKey,
+  groupByIdAndField,
+} from "@/utils/utils";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Mail } from "lucide-react";
 import { useEffect } from "react";
@@ -41,6 +45,7 @@ const schema = yup.object({
 });
 
 const AddSheet = ({ open, onOpenChange, sheetProps }) => {
+  const closeSheet = () => onOpenChange(false);
   return (
     <Sheet open={open} onOpenChange={onOpenChange} className="z-20">
       <SheetContent className="sm:max-w-1/3 w-1/3 overflow-y-scroll">
@@ -48,25 +53,25 @@ const AddSheet = ({ open, onOpenChange, sheetProps }) => {
           <SheetTitle className="text-3xl">{sheetProps.title}</SheetTitle>
           <Separator className="my-2" />
           <SheetDescription>
-            <p>
               Enter the performer's first name, middle initial (if they have
               one), last name, and stage name (if they have one) and click
               submit
-            </p>
-            <p>
+              <br />
+              <br />
               <span className="font-bold uppercase text-red-500">
                 Important:
               </span>{" "}
               Performers can be edited only within 30 minutes of being added
-            </p>
             <br />
+            <br />
+
           </SheetDescription>
         </SheetHeader>
         <div>
           <Form {...sheetProps.addPerformerForm}>
             <form
-              onSubmit={sheetProps.addPerformerForm.handleSubmit(
-                sheetProps.addPerformer,
+              onSubmit={sheetProps.addPerformerForm.handleSubmit((data) =>
+                sheetProps.addPerformer(data, closeSheet),
               )}
               className="space-y-4"
             >
@@ -249,7 +254,7 @@ const PerformersPage = () => {
     });
   };
 
-  const addPerformer = async (data) => {
+  const addPerformer = async (data, closeSheet) => {
     await addPerformerRecord({
       to: import.meta.env.VITE_QUICKBASE_PERFORMERS_TABLE_ID,
       data: [
@@ -274,33 +279,32 @@ const PerformersPage = () => {
           },
         },
       ],
-    });
-    setIsAddPerformerDialogOpen(false);
+    }).then(()=>closeSheet());
   };
 
   const updateFunction = (records) => {
-      const editableFields = PERFORMERS_EDITABLE_FIELDS;
-      const acceptedChanges = [];
-      Object.keys(records).forEach((recordKey) => {
-        const id = recordKey;
-        Object.keys(records[recordKey]).forEach((key) => {
-          if (editableFields.has(key)) {
-            acceptedChanges.push({
-              id,
-              field: editableFields.get(key).field,
-              value: records[id][key],
-            });
-          }
-        });
+    const editableFields = PERFORMERS_EDITABLE_FIELDS;
+    const acceptedChanges = [];
+    Object.keys(records).forEach((recordKey) => {
+      const id = recordKey;
+      Object.keys(records[recordKey]).forEach((key) => {
+        if (editableFields.has(key)) {
+          acceptedChanges.push({
+            id,
+            field: editableFields.get(key).field,
+            value: records[id][key],
+          });
+        }
       });
-      const updatedFields = groupByIdAndField(acceptedChanges);
-      updateRecord({
-        to: import.meta.env.VITE_QUICKBASE_PERFORMERS_TABLE_ID,
-        data: updatedFields,
-      })
-    };
+    });
+    const updatedFields = groupByIdAndField(acceptedChanges);
+    updateRecord({
+      to: import.meta.env.VITE_QUICKBASE_PERFORMERS_TABLE_ID,
+      data: updatedFields,
+    });
+  };
 
-  if (isPerformersLoading, isEditPerformerLoading) {
+  if (isPerformersLoading || isEditPerformerLoading) {
     return (
       <div className="flex h-full w-full justify-center pt-24">
         <Spinner />
@@ -340,7 +344,10 @@ const PerformersPage = () => {
             addPerformer,
           }}
           customButtons={[
-            <a href={performersData.data[0][20].value} key={performersData.data[0][20].value}>
+            <a
+              href={performersData.data[0][20].value}
+              key={performersData.data[0][20].value}
+            >
               <Button variant="outline">
                 <Mail className="mr-1 h-4 w-4" size={20} strokeWidth={2.5} />
                 Email support
