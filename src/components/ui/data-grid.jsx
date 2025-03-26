@@ -21,7 +21,13 @@ import { Button } from "./button";
 import { FilterIcon, Loader2, Pencil, Save, X } from "lucide-react";
 import { Separator } from "./separator";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip";
-import { set } from "react-hook-form";
+import {
+  Select,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+} from "./select";
 
 const FilterMenu = ({ column, table }) => {
   const firstValue = table.getFilteredRowModel().rows[0]?.getValue(column.id);
@@ -225,6 +231,7 @@ function Table({
   customButtons = [],
   readOnly = false,
   updateFunction = (e) => {},
+  editableFields = new Map(),
 }) {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
@@ -234,41 +241,84 @@ function Table({
   const [editableData, setEditableData] = useState([...data]);
   const [form, setForm] = useState({});
 
-  const handleCellChange = (rowIndex, columnId, value, setValue, recordId) => {
+  const handleCellChange = (columnId, value, setValue, recordId, fieldData) => {
     const copy = form;
     copy[recordId] = { ...copy[recordId], [columnId]: value, recordId };
     setForm(copy);
     setValue(value);
   };
 
-  const editableColumns = columns.map((column) => ({
-    ...column,
-    cell: editing
-      ? ({ row, column, getValue }) => {
-          const originalValue = getValue();
-          const [inputValue, setInputValue] = useState(getValue());
-          const rowIndex = row.index;
-          const columnId = column.id;
+  const editableColumns = columns.map((column) => {
+    if (editing && column.id && column.id === "edit")
+      return { ...column, cell: () => null };
+    return editing && editableFields.has(column.accessorKey)
+      ? {
+          ...column,
+          cell: ({ row, column, getValue }) => {
+            const originalValue =
+              editableFields.get(column.id).type === "boolean"
+                ? getValue() === "Yes"
+                  ? true
+                  : false
+                : getValue();
+            const [inputValue, setInputValue] = useState(originalValue);
 
-          return (
-            <Input
-              value={inputValue}
-              onChange={(e) => {
-                handleCellChange(
-                  rowIndex,
-                  columnId,
-                  e.target.value,
-                  setInputValue,
-                  row.original.id,
-                );
-              }}
-              className={`w-full rounded border border-gray-200 p-1 ${inputValue === originalValue ? "bg-white" : "bg-yellow-200"}`}
-            />
-          );
+            // Handle boolean type fields
+            if (
+              editableFields.get(column.id).type === "boolean" ||
+              editableFields.get(column.id).type === "yes/no"
+            ) {
+              return (
+                <Select
+                  value={inputValue}
+                  onValueChange={(e) => {
+                    handleCellChange(
+                      column.id,
+                      e,
+                      setInputValue,
+                      row.original.id,
+                      editableFields.get(column.id),
+                    );
+                  }}
+                  className={`w-full rounded border border-gray-200 p-1`}
+                >
+                  <SelectTrigger
+                    className={` ${inputValue === originalValue ? "bg-white" : "bg-yellow-200"}`}
+                  >
+                    <SelectValue placeholder="Select a value" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {editableFields
+                      .get(column.id)
+                      .options.map((option, idx) => (
+                        <React.Fragment key={idx}>{option}</React.Fragment>
+                      ))}
+                  </SelectContent>
+                </Select>
+              );
+            }
+
+            // Handle other editable field types
+            return (
+              <Input
+                placeholder="Enter value..."
+                value={inputValue}
+                onChange={(e) => {
+                  handleCellChange(
+                    column.id,
+                    e.target.value,
+                    setInputValue,
+                    row.original.id,
+                    editableFields.get(column.id),
+                  );
+                }}
+                className={`w-full rounded border border-gray-200 p-1 text-gray-600 placeholder:text-gray-400 ${inputValue === originalValue ? "bg-white" : "bg-yellow-200"}`}
+              />
+            );
+          },
         }
-      : column.cell,
-  }));
-
+      : column;
+  });
   const table = useReactTable({
     data,
     columns: editableColumns,
