@@ -12,6 +12,7 @@ import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
 import { getCurrentFiscalYear } from "@/utils/utils";
 import EvaluationPage from "./EvaluationPage";
 import { evalTableColumns } from "@/utils/TableColumns";
+import { EVALUATIONS_EDITABLE_FIELDS } from "@/utils/constants";
 
 const formatEvaluationsData = (
   evaluationsData,
@@ -132,6 +133,7 @@ const ArtistEvaluationsPage = () => {
           sheetProps={{title: "Add Evaluation", programsData, isProgramsDataLoading, contractData, isContractsLoading, loading: (isProgramsDataLoading || isContractsLoading)}}
           usePagination
           allowExport
+          editableFields={EVALUATIONS_EDITABLE_FIELDS}
         />
       )}
     </div>

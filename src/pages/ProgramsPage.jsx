@@ -8,6 +8,7 @@ import { getCurrentFiscalYear } from "@/utils/utils";
 import Spinner from "@/components/ui/Spinner";
 import { programTableColumns } from "@/utils/TableColumns";
 import DataGrid from "@/components/ui/data-grid";
+import { PROGRAMS_EDITABLE_FIELDS } from "@/utils/constants";
 
 const BUTTON_LINKS = [
   { label: "New Program", url: "/new-program", isTargetBlank: false },
@@ -15,15 +16,6 @@ const BUTTON_LINKS = [
   { label: "View Contracts", url: "/program-contracts", isTargetBlank: false },
   { label: "Step-by-Step Help", url: "#", isTargetBlank: true },
 ];
-
-// TODO: Add fields that are editable
-const map = new Map([
-  // ["fiscalYear", 3],
-  ["program", 11],
-  // ["status", 32],
-  ["paid", 31],
-]);
-
 const formatDate = (timestamp) => {
   const date = new Date(timestamp);
 
@@ -90,10 +82,10 @@ const ProgramsPage = () => {
     Object.keys(records).forEach((recordKey) => {
       const id = recordKey;
       Object.keys(records[recordKey]).forEach((key) => {
-        if (map.has(key)) {
+        if (editableFields.has(key)) {
           acceptedChanges.push({
             id,
-            field: map.get(key),
+            field: editableFields.get(key).field,
             value: records[id][key],
           });
         }
@@ -146,6 +138,7 @@ const ProgramsPage = () => {
             ),
         )}
         updateFunction={updateFunction}
+        editableFields = {PROGRAMS_EDITABLE_FIELDS}
       />
     </div>
   );

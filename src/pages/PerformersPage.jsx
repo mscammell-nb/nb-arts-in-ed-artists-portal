@@ -31,6 +31,7 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import Spinner from "../components/ui/Spinner";
+import { PERFORMERS_EDITABLE_FIELDS } from "@/utils/constants";
 
 const schema = yup.object({
   firstName: yup.string().required(),
@@ -173,6 +174,17 @@ const PerformersPage = () => {
       error: editPerformerError,
     },
   ] = useAddOrUpdateRecordMutation();
+  // TODO: Add fields that are editable 
+  console.log(performersData)
+  const editableFields = new Map([
+    ["firstName", {field:11, type: "string", options:[]}],
+    ["middleInitial", {field: 23, type: "string", options: []}],
+    ["lastName", {field: 8, type: "string", options: []}],
+    ["stageName", {field: 22, type: "string", options: []}],
+    ["printed", {field: 9, type: "boolean", options: ["Yes", "No"]}],
+    ["cleared", {field: 10, type: "boolean", options: ["Yes", "No"]}],
+    // ["active", {field: 11, type: "boolean", options: ["Yes", "No"]}],
+  ]);
 
   const { toast } = useToast();
 
@@ -324,6 +336,7 @@ const PerformersPage = () => {
               </Button>
             </a>,
           ]}
+          editableFields={PERFORMERS_EDITABLE_FIELDS}
         />
       </div>
     )
