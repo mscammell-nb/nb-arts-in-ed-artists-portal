@@ -317,7 +317,7 @@ const PerformersPage = () => {
             addPerformer,
           }}
           customButtons={[
-            <a href={performersData.data[0][20].value}>
+            <a href={performersData.data[0][20].value} key={performersData.data[0][20].value}>
               <Button variant="outline">
                 <Mail className="mr-1 h-4 w-4" size={20} strokeWidth={2.5} />
                 Email support

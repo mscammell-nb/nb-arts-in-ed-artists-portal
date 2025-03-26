@@ -329,6 +329,7 @@ export const documentColumns = [
         {getSortIcon(column)}
       </Button>
     ),
+    cell: (info) => <p className="text-nowrap">{info.getValue()}</p>
   },
   {
     accessorKey: "artist",
@@ -342,6 +343,7 @@ export const documentColumns = [
         {getSortIcon(column)}
       </Button>
     ),
+    cell: (info) => <p className="text-nowrap">{info.getValue()}</p>
   },
   {
     accessorKey: "documentName",
@@ -355,6 +357,7 @@ export const documentColumns = [
         {getSortIcon(column)}
       </Button>
     ),
+    cell: (info) => <p className="text-nowrap">{info.getValue()}</p>
   },
   {
     accessorKey: "documentType",
@@ -368,6 +371,7 @@ export const documentColumns = [
         {getSortIcon(column)}
       </Button>
     ),
+    cell: (info) => <p className="text-nowrap">{info.getValue()}</p>
   },
   {
     header: ({ column }) => (
@@ -408,6 +412,7 @@ export const performersColumns = [
         {getSortIcon(column)}
       </Button>
     ),
+    cell: (info) => <p className="text-nowrap">{info.getValue()}</p>
   },
   {
     accessorKey: "middleInitial",
@@ -434,6 +439,7 @@ export const performersColumns = [
         {getSortIcon(column)}
       </Button>
     ),
+    cell: (info) => <p className="text-nowrap">{info.getValue()}</p>
   },
   {
     accessorKey: "stageName",
@@ -785,6 +791,7 @@ export const programTableColumns = [
         {getSortIcon(column)}
       </Button>
     ),
+    cell: (info) => <p className="text-nowrap">{info.getValue()}</p>
   },
   {
     accessorKey: "dateCreated",
@@ -794,6 +801,7 @@ export const programTableColumns = [
         {getSortIcon(column)}
       </Button>
     ),
+    cell: (info) => <p className="text-nowrap">{info.getValue()}</p>
   },
   {
     accessorKey: "program",
@@ -813,6 +821,7 @@ export const programTableColumns = [
         {getSortIcon(column)}
       </Button>
     ),
+    cell: (info) => <p className="text-nowrap">{info.getValue()}</p>
   },
   {
     accessorKey: "paid",
@@ -822,5 +831,6 @@ export const programTableColumns = [
         {getSortIcon(column)}
       </Button>
     ),
+    cell: (info) => <p className="text-nowrap">{info.getValue()}</p>
   },
 ];

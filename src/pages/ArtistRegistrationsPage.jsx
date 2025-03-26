@@ -13,7 +13,6 @@ import { useQueryForDataQuery } from "../redux/api/quickbaseApi";
 
 const formatData = (unformattedData) => {
   const { data } = unformattedData;
-  console.log(data);
   return data.map((record) => {
     return {
       id: record[3].value,

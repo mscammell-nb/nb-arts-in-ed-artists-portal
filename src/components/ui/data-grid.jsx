@@ -1,4 +1,4 @@
-import { CaretDownIcon, CaretSortIcon } from "@radix-ui/react-icons";
+import { CaretDownIcon } from "@radix-ui/react-icons";
 import { Input } from "./input";
 import {
   DropdownMenu,
@@ -6,7 +6,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
-  DropdownMenuSubContent,
   DropdownMenuTrigger,
 } from "./dropdown-menu";
 import {
@@ -19,8 +18,10 @@ import {
 } from "@tanstack/react-table";
 import React, { useMemo, useState } from "react";
 import { Button } from "./button";
-import { FilterIcon, Loader2 } from "lucide-react";
+import { FilterIcon, Loader2, Pencil, Save, X } from "lucide-react";
 import { Separator } from "./separator";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip";
+import { set } from "react-hook-form";
 
 const FilterMenu = ({ column, table }) => {
   const firstValue = table.getFilteredRowModel().rows[0]?.getValue(column.id);
@@ -222,14 +223,55 @@ function Table({
   allowExport = null,
   tableTitle = null,
   customButtons = [],
+  readOnly = false,
+  updateFunction = (e) => {},
 }) {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [globalFilter, setGlobalFilter] = useState("");
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [editableData, setEditableData] = useState([...data]);
+  const [form, setForm] = useState({});
+
+  const handleCellChange = (rowIndex, columnId, value, setValue, recordId) => {
+    const copy = form;
+    copy[recordId] = { ...copy[recordId], [columnId]: value, recordId };
+    setForm(copy);
+    setValue(value);
+  };
+
+  const editableColumns = columns.map((column) => ({
+    ...column,
+    cell: editing
+      ? ({ row, column, getValue }) => {
+          const originalValue = getValue();
+          const [inputValue, setInputValue] = useState(getValue());
+          const rowIndex = row.index;
+          const columnId = column.id;
+
+          return (
+            <Input
+              value={inputValue}
+              onChange={(e) => {
+                handleCellChange(
+                  rowIndex,
+                  columnId,
+                  e.target.value,
+                  setInputValue,
+                  row.original.id,
+                );
+              }}
+              className={`w-full rounded border border-gray-200 p-1 ${inputValue === originalValue ? "bg-white" : "bg-yellow-200"}`}
+            />
+          );
+        }
+      : column.cell,
+  }));
 
   const table = useReactTable({
     data,
-    columns,
+    columns: editableColumns,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -244,7 +286,6 @@ function Table({
       globalFilter,
     },
   });
-  const [sheetOpen, setSheetOpen] = useState(false);
 
   const handleAddNew = () => {
     setSheetOpen(true);
@@ -257,6 +298,14 @@ function Table({
 
   const hasFilters =
     table.getState().columnFilters.length > 0 || !!globalFilter;
+
+  const handleSaveChanges = () => {
+    updateFunction(form);
+    setEditing(false);
+  };
+  const handleCancelChanges = () => {
+    setEditing(false);
+  };
 
   return (
     <div className="w-full overflow-hidden rounded bg-white p-3">
@@ -311,8 +360,37 @@ function Table({
               <span>{addButtonText}</span>
             </Button>
           )}
+          {!readOnly && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div
+                  className="cursor-pointer rounded border border-gray-300 p-2 text-gray-400 transition-all hover:border-gray-600 hover:text-gray-600"
+                  onClick={() => {
+                    setEditing(true);
+                  }}
+                >
+                  <Pencil size={16} />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Enable Editing</p>
+              </TooltipContent>
+            </Tooltip>
+          )}
         </div>
       </div>
+      {editing && (
+        <div className="flex items-center gap-3 pb-3">
+          <Button onClick={handleSaveChanges}>
+            <Save className="mr-2 h-4 w-4" />
+            <span>Save</span>
+          </Button>
+          <Button variant="secondary" onClick={handleCancelChanges}>
+            <X className="mr-2 h-4 w-4" />
+            <span>Cancel</span>
+          </Button>
+        </div>
+      )}
 
       <div className="relative overflow-x-auto">
         <table className="w-full text-left text-sm text-gray-500 dark:text-gray-400 rtl:text-right">

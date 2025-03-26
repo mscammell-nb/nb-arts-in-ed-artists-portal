@@ -1,6 +1,9 @@
 import { Link } from "react-router-dom";
 import { buttonVariants } from "@/components/ui/button";
-import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
+import {
+  useAddOrUpdateRecordMutation,
+  useQueryForDataQuery,
+} from "@/redux/api/quickbaseApi";
 import { getCurrentFiscalYear } from "@/utils/utils";
 import Spinner from "@/components/ui/Spinner";
 import { programTableColumns } from "@/utils/TableColumns";
@@ -12,6 +15,14 @@ const BUTTON_LINKS = [
   { label: "View Contracts", url: "/program-contracts", isTargetBlank: false },
   { label: "Step-by-Step Help", url: "#", isTargetBlank: true },
 ];
+
+// TODO: Add fields that are editable
+const map = new Map([
+  // ["fiscalYear", 3],
+  ["program", 11],
+  // ["status", 32],
+  ["paid", 31],
+]);
 
 const formatDate = (timestamp) => {
   const date = new Date(timestamp);
@@ -44,13 +55,15 @@ const ProgramsPage = () => {
     isLoading: isProgramsDataLoading,
     isError: isProgramsDataError,
     error: programsDataError,
-  } = useQueryForDataQuery(
-    {
-      from: import.meta.env.VITE_QUICKBASE_PROGRAMS_TABLE_ID,
-      select: [1, 3, 8, 11, 16, 31, 32, 33],
-      where: `{8.EX.${localStorage.getItem("artistRecordId")}}`,
-    },
-  );
+  } = useQueryForDataQuery({
+    from: import.meta.env.VITE_QUICKBASE_PROGRAMS_TABLE_ID,
+    select: [1, 3, 8, 11, 16, 31, 32, 33],
+    where: `{8.EX.${localStorage.getItem("artistRecordId")}}`,
+  });
+  const [
+    updateRecord,
+    { isLoading: isUpdateLoading, isError: isUpdateError, error: updateError },
+  ] = useAddOrUpdateRecordMutation();
 
   if (isProgramsDataLoading) {
     return (
@@ -72,8 +85,46 @@ const ProgramsPage = () => {
     );
   }
 
+  const updateFunction = (records) => {
+    const acceptedChanges = [];
+    Object.keys(records).forEach((recordKey) => {
+      const id = recordKey;
+      Object.keys(records[recordKey]).forEach((key) => {
+        if (map.has(key)) {
+          acceptedChanges.push({
+            id,
+            field: map.get(key),
+            value: records[id][key],
+          });
+        }
+      })
+    })
+    console.log(groupByIdAndField(acceptedChanges));
+  };
+  const groupByIdAndField = (arr) => {
+    const res = [];
+    const grouped = {};
+    arr.forEach((item) => {
+      if (!grouped[item.id]) {
+        grouped[item.id] = {};
+      }
+      grouped[item.id][item.field] = {value: item.value};
+    });
+
+    for (const id in grouped){
+      const group = grouped[id];
+      const formattedGroup = {"3": {value: id}};
+
+      for (const field in group){
+        formattedGroup[field] = group[field];
+      }
+      res.push(formattedGroup);
+    }
+    return res;
+  }
+
   return (
-    <div className="flex flex-col gap-5 w-full justify-center pb-10">
+    <div className="flex w-full flex-col justify-center gap-5 pb-10">
       <DataGrid
         columns={programTableColumns}
         data={formatProgramsData(programsData)}
@@ -94,6 +145,7 @@ const ProgramsPage = () => {
               </Link>
             ),
         )}
+        updateFunction={updateFunction}
       />
     </div>
   );

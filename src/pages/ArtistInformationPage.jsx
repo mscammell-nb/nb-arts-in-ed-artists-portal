@@ -23,7 +23,6 @@ import {
   useQueryForDataQuery,
 } from "@/redux/api/quickbaseApi";
 import { getCurrentFiscalYear } from "@/utils/utils";
-import { Pencil1Icon } from "@radix-ui/react-icons";
 import { CircleAlert, Pencil } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -152,7 +151,6 @@ const ArtistInformationPage = () => {
   });
   useEffect(() => {
     if (artistsData) {
-      console.log(artistsData);
       resetInformation();
     }
   }, [artistsData]);
