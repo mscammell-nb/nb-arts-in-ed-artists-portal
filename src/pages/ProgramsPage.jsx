@@ -4,10 +4,11 @@ import {
   useAddOrUpdateRecordMutation,
   useQueryForDataQuery,
 } from "@/redux/api/quickbaseApi";
-import { getCurrentFiscalYear } from "@/utils/utils";
+import { getCurrentFiscalYear, groupByIdAndField } from "@/utils/utils";
 import Spinner from "@/components/ui/Spinner";
 import { programTableColumns } from "@/utils/TableColumns";
 import DataGrid from "@/components/ui/data-grid";
+import { PROGRAMS_EDITABLE_FIELDS } from "@/utils/constants";
 
 const BUTTON_LINKS = [
   { label: "New Program", url: "/new-program", isTargetBlank: false },
@@ -15,15 +16,6 @@ const BUTTON_LINKS = [
   { label: "View Contracts", url: "/program-contracts", isTargetBlank: false },
   { label: "Step-by-Step Help", url: "#", isTargetBlank: true },
 ];
-
-// TODO: Add fields that are editable
-const map = new Map([
-  // ["fiscalYear", 3],
-  ["program", 11],
-  // ["status", 32],
-  ["paid", 31],
-]);
-
 const formatDate = (timestamp) => {
   const date = new Date(timestamp);
 
@@ -65,7 +57,7 @@ const ProgramsPage = () => {
     { isLoading: isUpdateLoading, isError: isUpdateError, error: updateError },
   ] = useAddOrUpdateRecordMutation();
 
-  if (isProgramsDataLoading) {
+  if (isProgramsDataLoading || isUpdateLoading) {
     return (
       <div className="flex h-full w-full justify-center pt-24">
         <Spinner />
@@ -86,42 +78,26 @@ const ProgramsPage = () => {
   }
 
   const updateFunction = (records) => {
+    const editableFields = PROGRAMS_EDITABLE_FIELDS;
     const acceptedChanges = [];
     Object.keys(records).forEach((recordKey) => {
       const id = recordKey;
       Object.keys(records[recordKey]).forEach((key) => {
-        if (map.has(key)) {
+        if (editableFields.has(key)) {
           acceptedChanges.push({
             id,
-            field: map.get(key),
+            field: editableFields.get(key).field,
             value: records[id][key],
           });
         }
-      })
-    })
-    console.log(groupByIdAndField(acceptedChanges));
-  };
-  const groupByIdAndField = (arr) => {
-    const res = [];
-    const grouped = {};
-    arr.forEach((item) => {
-      if (!grouped[item.id]) {
-        grouped[item.id] = {};
-      }
-      grouped[item.id][item.field] = {value: item.value};
+      });
     });
-
-    for (const id in grouped){
-      const group = grouped[id];
-      const formattedGroup = {"3": {value: id}};
-
-      for (const field in group){
-        formattedGroup[field] = group[field];
-      }
-      res.push(formattedGroup);
-    }
-    return res;
-  }
+    const updatedFields = groupByIdAndField(acceptedChanges);
+    updateRecord({
+      to: import.meta.env.VITE_QUICKBASE_PROGRAMS_TABLE_ID,
+      data: updatedFields,
+    })
+  };
 
   return (
     <div className="flex w-full flex-col justify-center gap-5 pb-10">
@@ -146,6 +122,7 @@ const ProgramsPage = () => {
             ),
         )}
         updateFunction={updateFunction}
+        editableFields={PROGRAMS_EDITABLE_FIELDS}
       />
     </div>
   );

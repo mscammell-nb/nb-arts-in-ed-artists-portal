@@ -24,13 +24,14 @@ import {
   useQueryForDataQuery,
 } from "@/redux/api/quickbaseApi";
 import { performersColumns } from "@/utils/TableColumns";
-import { capitalizeString, getCurrentFiscalYearKey } from "@/utils/utils";
+import { capitalizeString, getCurrentFiscalYearKey, groupByIdAndField } from "@/utils/utils";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Mail } from "lucide-react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import Spinner from "../components/ui/Spinner";
+import { PERFORMERS_EDITABLE_FIELDS } from "@/utils/constants";
 
 const schema = yup.object({
   firstName: yup.string().required(),
@@ -164,7 +165,7 @@ const PerformersPage = () => {
     },
   ] = useAddOrUpdateRecordMutation();
   const [
-    editPerformerRecord,
+    updateRecord,
     {
       data: editPerformerData,
       isLoading: isEditPerformerLoading,
@@ -277,7 +278,29 @@ const PerformersPage = () => {
     setIsAddPerformerDialogOpen(false);
   };
 
-  if (isPerformersLoading) {
+  const updateFunction = (records) => {
+      const editableFields = PERFORMERS_EDITABLE_FIELDS;
+      const acceptedChanges = [];
+      Object.keys(records).forEach((recordKey) => {
+        const id = recordKey;
+        Object.keys(records[recordKey]).forEach((key) => {
+          if (editableFields.has(key)) {
+            acceptedChanges.push({
+              id,
+              field: editableFields.get(key).field,
+              value: records[id][key],
+            });
+          }
+        });
+      });
+      const updatedFields = groupByIdAndField(acceptedChanges);
+      updateRecord({
+        to: import.meta.env.VITE_QUICKBASE_PERFORMERS_TABLE_ID,
+        data: updatedFields,
+      })
+    };
+
+  if (isPerformersLoading, isEditPerformerLoading) {
     return (
       <div className="flex h-full w-full justify-center pt-24">
         <Spinner />
@@ -324,6 +347,8 @@ const PerformersPage = () => {
               </Button>
             </a>,
           ]}
+          updateFunction={updateFunction}
+          editableFields={PERFORMERS_EDITABLE_FIELDS}
         />
       </div>
     )

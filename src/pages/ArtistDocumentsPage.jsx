@@ -307,7 +307,7 @@ const ArtistDocumentsPage = () => {
         </Dialog>
       </div>
       {documentsData && (
-        <DataGrid data={formatData(documentsData)} columns={documentColumns} />
+        <DataGrid data={formatData(documentsData)} columns={documentColumns} readOnly />
       )}
     </div>
   );

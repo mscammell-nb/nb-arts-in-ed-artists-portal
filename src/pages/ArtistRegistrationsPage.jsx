@@ -115,6 +115,7 @@ const ArtistRegistrationsPage = () => {
         data={formatData(registrationData)}
         columns={registrationColumns}
         tableTitle={"Artist Registrations"}
+        readOnly
       />
     </div>
   );
