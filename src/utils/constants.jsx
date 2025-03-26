@@ -14,3 +14,6 @@ export const TICKET_VENDOR_EXCEPTION_FILES = [
   "Fingerprinting Document",
   "Insurance Specifications",
 ];
+
+// app-sidebar
+export const TICKET_VENDOR_EXCEPTION_SIDEBAR = ["Artist Registrations", "Artist Evaluations"]
