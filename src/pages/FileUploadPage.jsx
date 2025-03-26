@@ -1,8 +1,11 @@
-import { useState } from "react";
-import { useGetFieldQuery } from "@/redux/api/quickbaseApi";
-import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
-import Spinner from "@/components/ui/Spinner";
 import FileUploadForm from "@/components/FileUploadForm";
+import { Button } from "@/components/ui/button";
+import Spinner from "@/components/ui/Spinner";
+import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
+import { signOut } from "@/redux/slices/authSlice";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const INSTRUCTIONS = [
   "To upload a file, click or drop the file into the dropzone.",
@@ -15,6 +18,15 @@ const INSTRUCTIONS = [
 const FileUploadPage = () => {
   const [documentTypes, setDocumentTypes] = useState(null);
   const [fileInputState, setFileInputState] = useState(null);
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const handleSignOut = async () => {
+    await dispatch(signOut());
+    localStorage.clear();
+    navigate("/login");
+  };
 
   const {
     data: documentTypesData,
@@ -82,6 +94,9 @@ const FileUploadPage = () => {
           setFileInputState={setFileInputState}
         />
       </section>
+      <Button variant="outline" onClick={() => handleSignOut()}>
+        Sign Out
+      </Button>
     </div>
   );
 };
