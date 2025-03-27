@@ -8,12 +8,16 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { isRegistrationExpiring } from "@/utils/isRegistrationExpiring";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
 const RenewRegistrationModal = (openProp) => {
   const [open, setOpen] = React.useState(openProp);
   const navigate = useNavigate();
+  const isRegistrationExpired = isRegistrationExpiring();
+
+  if (!isRegistrationExpired) return <></>;
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
