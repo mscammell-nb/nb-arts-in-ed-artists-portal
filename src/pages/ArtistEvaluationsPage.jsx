@@ -15,7 +15,7 @@ import {
 import { getCurrentFiscalYear, groupByIdAndField } from "@/utils/utils";
 import EvaluationPage from "./EvaluationPage";
 import { evalTableColumns } from "@/utils/TableColumns";
-import { EVALUATIONS_EDITABLE_FIELDS } from "@/utils/constants";
+import { EVALUATIONS_EDITABLE_FIELDS } from "@/constants/constants";
 
 const formatEvaluationsData = (
   evaluationsData,

@@ -38,7 +38,7 @@ import {
   MAX_COST_LENGTH,
   MIN_INPUT_LENGTH,
   MIN_TEXTAREA_LENGTH,
-} from "@/utils/constants";
+} from "@/constants/constants";
 import { getCurrentFiscalYearKey } from "@/utils/utils";
 import { ArrowLeftIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";

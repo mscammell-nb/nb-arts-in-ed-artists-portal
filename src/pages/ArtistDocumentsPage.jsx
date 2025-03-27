@@ -28,7 +28,7 @@ import {
 import {
   TICKET_VENDOR,
   TICKET_VENDOR_EXCEPTION_FILES,
-} from "@/utils/constants";
+} from "@/constants/constants";
 import { documentColumns } from "@/utils/TableColumns";
 import {
   downloadFile,

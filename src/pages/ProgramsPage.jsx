@@ -8,7 +8,7 @@ import { getCurrentFiscalYear, groupByIdAndField } from "@/utils/utils";
 import Spinner from "@/components/ui/Spinner";
 import { programTableColumns } from "@/utils/TableColumns";
 import DataGrid from "@/components/ui/data-grid";
-import { PROGRAMS_EDITABLE_FIELDS } from "@/utils/constants";
+import { PROGRAMS_EDITABLE_FIELDS } from "@/constants/constants";
 
 const BUTTON_LINKS = [
   { label: "New Program", url: "/new-program", isTargetBlank: false },

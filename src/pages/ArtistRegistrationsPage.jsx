@@ -5,7 +5,7 @@ import {
   FISCAL_YEAR_FIRST_MONTH,
   REGISTRATION_CUTOFF_DAY,
   REGISTRATION_CUTOFF_MONTH,
-} from "@/utils/constants";
+} from "@/constants/constants";
 import { registrationColumns } from "@/utils/TableColumns";
 import { getNextFiscalYear } from "@/utils/utils";
 import { useSelector } from "react-redux";

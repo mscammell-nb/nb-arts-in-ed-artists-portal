@@ -18,7 +18,7 @@ import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
 import {
   TICKET_VENDOR,
   TICKET_VENDOR_EXCEPTION_SIDEBAR,
-} from "@/utils/constants";
+} from "@/constants/constants";
 import { HamburgerMenuIcon } from "@radix-ui/react-icons";
 import {
   BookText,

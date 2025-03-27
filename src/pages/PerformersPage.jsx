@@ -31,7 +31,7 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import Spinner from "../components/ui/Spinner";
-import { PERFORMERS_EDITABLE_FIELDS } from "@/utils/constants";
+import { PERFORMERS_EDITABLE_FIELDS } from "@/constants/constants";
 
 const schema = yup.object({
   firstName: yup.string().required(),
