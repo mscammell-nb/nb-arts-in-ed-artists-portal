@@ -467,7 +467,7 @@ export const performersColumns = [
         className="text-xs font-semibold uppercase text-gray-700"
         onClick={() => column.toggleSorting()}
       >
-        Printed
+        Fingerprinted
         {getSortIcon(column)}
       </Button>
     ),
