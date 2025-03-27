@@ -1,6 +1,4 @@
-import { Badge } from "@/components/ui/badge";
 import { SelectItem } from "@/components/ui/select";
-import { Check, X } from "lucide-react";
 
 export const REGISTRATION_CUTOFF_MONTH = 4; // Starts at 0 with January, so 4 is April
 export const REGISTRATION_CUTOFF_DAY = 1; // 1st of the month
@@ -12,11 +10,15 @@ export const MAX_COST_LENGTH = 100;
 
 export const TICKET_VENDOR = "Ticket Vendor";
 export const TICKET_VENDOR_EXCEPTION_FILES = [
-  "Fingerprinting Document",
+  "OSPRA 102",
+  "OSPRA 104",
   "Insurance Specifications",
 ];
 
-export const TICKET_VENDOR_EXCEPTION_SIDEBAR = ["Artist Registrations", "Artist Evaluations"]
+export const TICKET_VENDOR_EXCEPTION_SIDEBAR = [
+  "Artist Registrations",
+  "Artist Evaluations",
+];
 
 export const PERFORMERS_EDITABLE_FIELDS = new Map([
   ["firstName", { field: 11, type: "string", options: [] }],
