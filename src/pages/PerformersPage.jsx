@@ -48,23 +48,21 @@ const AddSheet = ({ open, onOpenChange, sheetProps }) => {
   const closeSheet = () => onOpenChange(false);
   return (
     <Sheet open={open} onOpenChange={onOpenChange} className="z-20">
-      <SheetContent className="sm:max-w-1/3 w-1/3 overflow-y-scroll">
+      <SheetContent className="w-full overflow-y-auto sm:w-1/3">
         <SheetHeader>
           <SheetTitle className="text-3xl">{sheetProps.title}</SheetTitle>
           <Separator className="my-2" />
           <SheetDescription>
-              Enter the performer's first name, middle initial (if they have
-              one), last name, and stage name (if they have one) and click
-              submit
-              <br />
-              <br />
-              <span className="font-bold uppercase text-red-500">
-                Important:
-              </span>{" "}
-              Performers can be edited only within 30 minutes of being added
+            Enter the performer's first name, middle initial (if they have one),
+            last name, and stage name (if they have one) and click submit
             <br />
             <br />
-
+            <span className="font-bold uppercase text-red-500">
+              Important:
+            </span>{" "}
+            Performers can be edited only within 30 minutes of being added
+            <br />
+            <br />
           </SheetDescription>
         </SheetHeader>
         <div>
@@ -279,7 +277,7 @@ const PerformersPage = () => {
           },
         },
       ],
-    }).then(()=>closeSheet());
+    }).then(() => closeSheet());
   };
 
   const updateFunction = (records) => {

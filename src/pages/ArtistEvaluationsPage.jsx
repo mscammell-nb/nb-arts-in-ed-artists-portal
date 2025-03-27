@@ -64,21 +64,21 @@ const AddSheet = ({ open, onOpenChange, sheetProps }) => {
   const closeSheet = () => onOpenChange(false);
   return (
     <Sheet open={open} onOpenChange={onOpenChange} className="z-20">
-      <SheetContent className="sm:max-w-1/3 w-1/3 overflow-y-scroll">
-        <SheetHeader>
-          <SheetTitle className="text-3xl">{sheetProps.title}</SheetTitle>
-          <SheetDescription className="hidden">
-            {"Add a new Evaluation"}
-          </SheetDescription>
-        </SheetHeader>
-        {!sheetProps.isContractsLoading &&
-          !sheetProps.isProgramsDataLoading && (
-            <EvaluationPage
-              contractData={sheetProps.contractData.data}
-              programData={sheetProps.programsData.data}
-              closeSheet={closeSheet}
-            />
-          )}
+      <SheetContent className="overflow-y-auto w-full sm:w-1/3">
+          <SheetHeader>
+            <SheetTitle className="text-3xl">{sheetProps.title}</SheetTitle>
+            <SheetDescription className="hidden">
+              {"Add a new Evaluation"}
+            </SheetDescription>
+          </SheetHeader>
+          {!sheetProps.isContractsLoading &&
+            !sheetProps.isProgramsDataLoading && (
+              <EvaluationPage
+                contractData={sheetProps.contractData.data}
+                programData={sheetProps.programsData.data}
+                closeSheet={closeSheet}
+              />
+            )}
       </SheetContent>
     </Sheet>
   );

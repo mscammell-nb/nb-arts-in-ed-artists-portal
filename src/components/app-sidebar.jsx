@@ -33,7 +33,7 @@ import {
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { Button } from "./ui/button";
-import { Sheet, SheetClose, SheetContent, SheetTrigger } from "./ui/sheet";
+import { Sheet, SheetClose, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "./ui/sheet";
 
 const data = {
   versions: ["Email Help", "Sign Out"],
@@ -109,7 +109,9 @@ export function AppSidebar({ ...props }) {
         <SheetTrigger className="ml-5 mt-5 w-fit cursor-pointer text-xl">
           <HamburgerMenuIcon className="h-7 w-7" />
         </SheetTrigger>
+        <SheetTitle className="hidden">Sidebar</SheetTitle>
         <SheetContent side="left" className="side-bar max-w-[66%] border-0">
+          <SheetDescription className="hidden">Arts in Education Sidebar</SheetDescription>
           <SidebarHeader>
             <VersionSwitcher className={"side-bar"} />
             {/*<SearchForm />*/}

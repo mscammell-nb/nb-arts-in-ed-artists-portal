@@ -9,7 +9,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Separator } from "@/components/ui/separator";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Tooltip,
@@ -232,7 +240,7 @@ const ArtistInformationPage = () => {
 
   return (
     <div className="flex w-full max-w-[1200px] flex-col gap-3">
-      {(artistsData && !artistsData.data[0][6]) && (
+      {artistsData && !artistsData.data[0][6] && (
         <div className="flex w-full items-center justify-start gap-3 border border-yellow-500 bg-yellow-100 p-2 text-yellow-700">
           <CircleAlert size={20} />
           <p>
@@ -315,15 +323,14 @@ const ArtistInformationPage = () => {
               Change Password
             </SheetTrigger>
             <SheetContent>
+              <SheetHeader className={"mb-4"}>
+                <SheetTitle className="text-3xl text-left mb-1">Change Password</SheetTitle>
+                <SheetDescription className="text-left mb-3">
+                  Ensure your account is using a long, random password to stay
+                  secure.
+                </SheetDescription>
+              </SheetHeader>
               <div className="flex w-full flex-col gap-3">
-                <div>
-                  <p className="text-2xl font-bold">Change Password</p>
-                  <p className="text-gray-500">
-                    {" "}
-                    Ensure your account is using a long, random password to stay
-                    secure.
-                  </p>
-                </div>
                 <div>
                   <Label className="font-semibold">Current Password</Label>
                   <PasswordInput />

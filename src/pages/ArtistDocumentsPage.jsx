@@ -266,7 +266,7 @@ const ArtistDocumentsPage = () => {
               <UploadIcon className="size-4" />
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="max-w-sm sm:max-w-lg">
             <DialogHeader>
               <DialogTitle className="mb-1">Upload a file</DialogTitle>
             </DialogHeader>
