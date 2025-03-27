@@ -52,8 +52,14 @@ const RegistrationGate = () => {
     );
   }
 
+
   if (!isApproved) {
-    return <div>Your registration request is pending</div>;
+    return (
+      <div className="flex flex-col gap-4 items-start">
+        <div>Your registration request is pending</div>
+        <Button onClick={()=>handleSignOut()}>Sign out</Button>
+      </div>
+    );
   }
 
   if (isRegistrationExpired) {
