@@ -1,3 +1,7 @@
+import { signOut } from "@/redux/slices/authSlice";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+
 export const capitalizeString = (str) => {
   if (!str) return "";
   return str.charAt(0).toUpperCase() + str.slice(1);
@@ -120,4 +124,10 @@ export const groupByIdAndField = (arr) => {
     res.push(formattedGroup);
   }
   return res;
+};
+
+export const handleSignout = async (dispatch, navigate) => {
+  await dispatch(signOut());
+  localStorage.clear();
+  navigate("/login");
 };

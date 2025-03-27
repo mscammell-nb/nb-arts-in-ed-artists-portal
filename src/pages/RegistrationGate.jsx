@@ -5,18 +5,13 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import Spinner from "../components/ui/Spinner";
+import { handleSignout } from "@/utils/utils";
 
 const RegistrationGate = () => {
   const { user } = useSelector((state) => state.auth);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-  const handleSignOut = async () => {
-    await dispatch(signOut());
-    localStorage.clear();
-    navigate("/login");
-  };
 
   const {
     data: artistData,
@@ -57,7 +52,7 @@ const RegistrationGate = () => {
     return (
       <div className="flex flex-col gap-4 items-start">
         <div>Your registration request is pending</div>
-        <Button onClick={()=>handleSignOut()}>Sign out</Button>
+        <Button onClick={()=>handleSignOut(dispatch, navigate)}>Sign out</Button>
       </div>
     );
   }
@@ -76,7 +71,7 @@ const RegistrationGate = () => {
           <Button>
             <Link to={"/registration-renewal"}>Registration Renewal</Link>
           </Button>
-          <Button variant="outline" onClick={() => handleSignOut()}>
+          <Button variant="outline" onClick={() => handleSignout()}>
             Sign Out
           </Button>
         </div>

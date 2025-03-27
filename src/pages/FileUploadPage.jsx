@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import Spinner from "@/components/ui/Spinner";
 import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
 import { signOut } from "@/redux/slices/authSlice";
+import { handleSignout } from "@/utils/utils";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -21,12 +22,6 @@ const FileUploadPage = () => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-  const handleSignOut = async () => {
-    await dispatch(signOut());
-    localStorage.clear();
-    navigate("/login");
-  };
 
   const {
     data: documentTypesData,
@@ -94,7 +89,7 @@ const FileUploadPage = () => {
           setFileInputState={setFileInputState}
         />
       </section>
-      <Button variant="outline" onClick={() => handleSignOut()}>
+      <Button variant="outline" onClick={() => handleSignout(dispatch, navigate)}>
         Sign Out
       </Button>
     </div>

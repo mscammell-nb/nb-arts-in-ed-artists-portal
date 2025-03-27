@@ -16,16 +16,11 @@ import { CaretSortIcon } from "@radix-ui/react-icons";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { signOut } from "@/redux/slices/authSlice";
+import { handleSignout } from "@/utils/utils";
 
 export function VersionSwitcher({ versions, defaultVersion }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const signUserOut = async() => {
-    await dispatch(signOut()).then(res=>{
-      localStorage.clear();
-      navigate("/login");
-    });
-  };
 
   const {user} = useSelector(state => state.auth);
 
@@ -76,7 +71,7 @@ export function VersionSwitcher({ versions, defaultVersion }) {
             <DropdownMenuItem
               className="cursor-pointer"
               onClick={() => {
-                signUserOut();
+                handleSignout(dispatch, navigate);
               }}
             >
               Sign out
