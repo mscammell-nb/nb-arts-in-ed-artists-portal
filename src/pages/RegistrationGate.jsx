@@ -1,11 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
-import { signOut } from "@/redux/slices/authSlice";
+import { handleSignout } from "@/utils/utils";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import Spinner from "../components/ui/Spinner";
-import { handleSignout } from "@/utils/utils";
 
 const RegistrationGate = () => {
   const { user } = useSelector((state) => state.auth);

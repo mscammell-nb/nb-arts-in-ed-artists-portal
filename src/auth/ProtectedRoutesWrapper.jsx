@@ -29,7 +29,9 @@ const ProtectedRoutesWrapper = () => {
     if (authReady) {
       if (!user) {
         navigate("/login");
-      } else if (expired == true || approved == false) {
+      } else if (approved == false) {
+        navigate("/file-upload");
+      } else if (expired == true) {
         navigate("/registration-gate");
       }
     }
