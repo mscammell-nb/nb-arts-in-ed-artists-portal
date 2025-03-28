@@ -36,11 +36,9 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 const INSTRUCTIONS = [
-  "To upload a file, click or drop the file into the dropzone.",
-  "You can attach multiple files to each dropzone if needed.",
-  "Hover over an attached file to reveal the remove file button. Click this button to remove a file.",
-  'Click the "Clear Files" button to remove all files attached to a dropzone.',
-  'When you are done, click the "Submit Files" button at the bottom of the page.',
+  "To upload a file, click the 'Upload a file' button below.",
+  "Pick what file you are uploading from the dropdown menu",
+  "Either select the file from your computer or drop the file into the page and click Submit.",
 ];
 
 const FileUploadPage = () => {
@@ -250,10 +248,17 @@ const FileUploadPage = () => {
             </li>
           ))}
         </ul>
+        <Button
+        className="mt-4"
+          variant="destructive"
+          onClick={() => handleSignout(dispatch, navigate)}
+        >
+          Sign Out
+        </Button>
       </section>
       <section>
-        <div className="flex items-center gap-3">
-          <p className="text-sm text-gray-600">Upload a file: </p>
+        <div className="flex items-center gap-3 pb-4">
+          <p className="text-sm text-gray-600">Upload a file:</p>
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
               <Button variant="outline" className="rounded-full">
@@ -307,19 +312,15 @@ const FileUploadPage = () => {
           </Dialog>
         </div>
       </section>
-      <Button
-        variant="outline"
-        onClick={() => handleSignout(dispatch, navigate)}
-      >
-        Sign Out
-      </Button>
-      {documentsData && (
-        <DataGrid
-          data={formatData(documentsData)}
-          columns={documentColumns}
-          readOnly
-        />
-      )}
+      <section>
+        {documentsData && (
+          <DataGrid
+            data={formatData(documentsData)}
+            columns={documentColumns}
+            readOnly
+          />
+        )}
+      </section>
     </div>
   );
 };
