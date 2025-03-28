@@ -27,7 +27,7 @@ import {
 import { documentColumns } from "@/utils/TableColumns";
 import { downloadFile, getCurrentFiscalYearKey } from "@/utils/utils";
 import { Label } from "@radix-ui/react-dropdown-menu";
-import { Loader2, UploadIcon } from "lucide-react";
+import { DownloadIcon, Loader2, UploadIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
@@ -249,7 +249,7 @@ const FileUploadPage = () => {
           ))}
         </ul>
         <Button
-        className="mt-4"
+          className="mt-4"
           variant="destructive"
           onClick={() => handleSignout(dispatch, navigate)}
         >
@@ -310,6 +310,24 @@ const FileUploadPage = () => {
               </div>
             </DialogContent>
           </Dialog>
+          <div className="ml-6 flex flex-row gap-2">
+            {!isFileTypesLoading &&
+              fileTypes &&
+              fileTypes.data.map(
+                (f) =>
+                  (f[31].value == "Vendor Application" ||
+                    f[31].value == "W-9") && (
+                    <Button
+                      className="flex w-full items-center gap-2 md:w-auto"
+                      key={f[31].value}
+                      onClick={() => downloadTemplate(f)}
+                    >
+                      <DownloadIcon />
+                      {f[31].value}
+                    </Button>
+                  ),
+              )}
+          </div>
         </div>
       </section>
       <section>
