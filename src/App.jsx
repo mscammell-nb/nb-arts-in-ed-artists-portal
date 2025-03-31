@@ -18,8 +18,12 @@ import ArtistRegistrationsPage from "./pages/ArtistRegistrationsPage";
 import store from "./redux/store";
 import { Provider } from "react-redux";
 import FirebaseAuthListener from "./auth/FirebaseAuthListener";
+import NotFoundPage from "./pages/NotFoundPage";
 
 function App() {
+  const title = "Arts in Education: Artists";
+  document.title = import.meta.env.VITE_MODE ? "Dev - " +  title : title;
+
   return (
     <Provider store={store}>
       <FirebaseAuthListener/>
@@ -59,6 +63,7 @@ function App() {
             <Route path="/registration-gate" element={<RegistrationGate />} />
           </Route>
         </Route>
+        <Route path="*" element={<NotFoundPage/>}/>
       </Routes>
     </Provider>
   );
