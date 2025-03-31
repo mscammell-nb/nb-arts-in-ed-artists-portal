@@ -1,11 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Link } from "react-router-dom";
-import { PasswordInput } from "../components/ui/password-input";
-import { useEffect } from "react";
-import { useToast } from "../components/ui/use-toast";
-import { useNavigate } from "react-router-dom";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -14,11 +17,18 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
-import { useDispatch, useSelector } from "react-redux";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { signIn } from "@/redux/slices/authSlice";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import * as yup from "yup";
+import { PasswordInput } from "../components/ui/password-input";
+import { useToast } from "../components/ui/use-toast";
+import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 
 const schema = yup.object({
   email: yup.string().email().required(),
@@ -27,7 +37,11 @@ const schema = yup.object({
 
 const LoginPage = () => {
   const dispatch = useDispatch();
-  const {user, loading, error: authError} = useSelector ((state)=> state.auth);
+  const {
+    user,
+    loading,
+    error: authError,
+  } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -62,7 +76,30 @@ const LoginPage = () => {
   }, [authError]);
 
   const onSubmit = async (data) => {
-    await dispatch(signIn({email:data.email, password:data.password}));
+    await dispatch(signIn({ email: data.email, password: data.password }));
+  };
+
+  const onForgotPassword = () => {
+    const email = document.getElementById("resetPasswordEmail").value
+    const auth = getAuth();
+    if (email) {
+      sendPasswordResetEmail(auth, email)
+        .then(() => {
+          toast({
+            variant: "success",
+            title: "Password Reset Email Sent",
+            description:
+              "You were emailed a password reset email. Check your spam folder incase you did not receive it.",
+          });
+        })
+        .catch((error) => {
+          toast({
+            variant: "destructive",
+            title: "Password Reset Email Failed",
+            description: "Failed to send the password reset email.",
+          });
+        });
+    }
   };
 
   return (
@@ -100,18 +137,49 @@ const LoginPage = () => {
                   </FormItem>
                 )}
               />
-              <Button
-                type="submit"
-                className="mt-7 w-full"
-                isLoading={loading}
-              >
+
+              <Dialog onSubmit={onForgotPassword}>
+                <DialogTrigger asChild>
+                  <span className="cursor-pointer text-sm text-blue-600 underline">
+                    Forgot your password?
+                  </span>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle>Reset Your Password</DialogTitle>
+                    <DialogDescription>
+                      Enter your email and you will be emailed a password reset
+                      link. If you don't receive it check your spam folder.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-4">
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label
+                        htmlFor="resetPasswordEmail"
+                        className="text-right"
+                      >
+                        Email
+                      </Label>
+                      <Input
+                        id="resetPasswordEmail"
+                        placeholder="email"
+                        className="col-span-3"
+                      />
+                    </div>
+                  </div>
+                  <DialogFooter className="sm:justify-center">
+                    <Button onClick={onForgotPassword}>Send password reset</Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+              <Button type="submit" className="mt-7 w-full" isLoading={loading}>
                 Sign in
               </Button>
             </form>
           </Form>
           <div className="pt-2 text-center text-sm">
             Don't have an account?{" "}
-            <Link to="/registration" className="underline">
+            <Link to="/registration" className="text-blue-600 underline">
               Register
             </Link>
           </div>
