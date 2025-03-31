@@ -1,4 +1,12 @@
 import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PasswordInput } from "@/components/ui/password-input";
@@ -9,15 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Tooltip,
@@ -26,23 +26,19 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { toast } from "@/components/ui/use-toast";
+import { auth } from "@/firebaseConfig";
 import {
   useAddOrUpdateRecordMutation,
   useQueryForDataQuery,
 } from "@/redux/api/quickbaseApi";
+import { listFirebaseErrors } from "@/utils/listFirebaseErrors";
 import { getCurrentFiscalYear } from "@/utils/utils";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { signInWithEmailAndPassword, updatePassword } from "firebase/auth";
 import { CircleAlert, Pencil } from "lucide-react";
 import { useEffect, useState } from "react";
-
-// TODO: Reset Password Functionality
-/* NOTE: update password on firebase first
-          - once accepted change it on quickbase
-          - if an error occurs do not change on quickbase
-
-   NOTE: PASSWORD WORRY, firebase does not allow direct retrieval of user passwords bc of security risks,
-         we can work around this by accessing the user's current password via quickbase, then updating it on firebase
-         We need to get the user's password becaus we need to verify the user knows the current password to change it
-*/
+import { useForm } from "react-hook-form";
+import * as yup from "yup";
 
 const ArtistItem = ({
   label,
@@ -137,8 +133,77 @@ const ArtistInformationPage = () => {
   const [addressObject, setAddressObject] = useState({});
   const [paymentType, setPaymentType] = useState("");
   const [payeeName, setPayeeName] = useState("");
+  const [changePasswordOpen, setChangePasswordOpen] = useState(false);
 
   const artistRecordId = localStorage.getItem("artistRecordId");
+
+  const schema = yup.object({
+    currentPassword: yup.string().required("Missing current password"),
+    newPassword: yup.string().required("Missing new password"),
+    confirmNewPassword: yup
+      .string()
+      .oneOf([yup.ref("newPassword"), null], "The new password don't match")
+      .required("Missing confirmation of new password"),
+  });
+
+  const form = useForm({
+    resolver: yupResolver(schema),
+    defaultValues: {
+      currentPassword: "",
+      newPassword: "",
+      confirmNewPassword: "",
+    },
+  });
+
+  const onSubmit = async (data) => {
+    const user = auth.currentUser;
+    if (user) {
+      try {
+        await signInWithEmailAndPassword(
+          auth,
+          user.email,
+          data.currentPassword,
+        ).then(() => {
+          updatePassword(user, data.newPassword)
+            .then(() => {
+              toast({
+                variant: "success",
+                title: "Password Updated",
+                description: "Your password has been successfully updated.",
+              });
+              setChangePasswordOpen(false);
+              reset();
+            })
+            .catch((error) => {
+              toast({
+                variant: "destructive",
+                title:
+                  error.code === "auth/invalid-credential"
+                    ? "Incorrect Password"
+                    : error.code === "auth/password-does-not-meet-requirements"
+                      ? "Password Requirements Not Met"
+                      : "Failed Update",
+                description:
+                  error.code === "auth/invalid-credential"
+                    ? "The current password is incorrect."
+                    : error.code === "auth/password-does-not-meet-requirements"
+                      ? listFirebaseErrors(error.message).map((m) => {
+                          return <li>{m}</li>;
+                        })
+                      : error.message,
+              });
+            });
+        });
+      } catch (error) {
+        toast({
+          variant: "destructive",
+          title: "Failed Update",
+          description: error.message,
+        });
+      }
+    }
+  };
+
   const [
     updateArtist,
     {
@@ -332,39 +397,83 @@ const ArtistInformationPage = () => {
               setValue={setWebsiteVal}
               editing={editing}
             />
-            <Sheet>
-              <SheetTrigger className="mt-3 w-fit cursor-pointer text-sm text-blue-500 hover:underline">
+            <Sheet
+              open={changePasswordOpen}
+              onOpenChange={setChangePasswordOpen}
+            >
+              <SheetTrigger
+                onClick={() => setChangePasswordOpen(true)}
+                className="mt-3 w-fit cursor-pointer text-sm text-blue-500 hover:underline"
+              >
                 Change Password
               </SheetTrigger>
               <SheetContent>
-                <div className="flex w-full flex-col gap-3">
-                  <div>
-                    <p className="text-2xl font-bold">Change Password</p>
-                    <p className="text-gray-500">
-                      {" "}
-                      Ensure your account is using a long, random password to
-                      stay secure.
-                    </p>
-                  </div>
-                  <div>
-                    <Label className="font-semibold">Current Password</Label>
-                    <PasswordInput />
-                  </div>
-
-                  <div>
-                    <Label className="font-semibold">New Password</Label>
-                    <PasswordInput />
-                  </div>
-
-                  <div>
-                    <Label className="font-semibold">Confirm Password</Label>
-                    <PasswordInput />
-                  </div>
-
-                  <Button disabled className="w-fit">
-                    Save
-                  </Button>
-                </div>
+                <Form {...form}>
+                  <form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="flex w-full flex-col gap-3"
+                  >
+                    <div>
+                      <p className="text-2xl font-bold">Change Password</p>
+                      <p className="text-gray-500">
+                        {" "}
+                        Ensure your account is using a long, random password to
+                        stay secure.
+                      </p>
+                    </div>
+                    <FormField
+                      control={form.control}
+                      name="currentPassword"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Current Password</FormLabel>
+                          <FormControl>
+                            <PasswordInput
+                              placeholder="Current Password"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="newPassword"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>New Password</FormLabel>
+                          <FormControl>
+                            <PasswordInput
+                              placeholder="New Password"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="confirmNewPassword"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Confirm Password</FormLabel>
+                          <FormControl>
+                            <PasswordInput
+                              placeholder="Confirm Password"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Button type="submit" className="w-fit">
+                      Save
+                    </Button>
+                  </form>
+                </Form>
               </SheetContent>
             </Sheet>
             {editing && (
