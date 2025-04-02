@@ -39,6 +39,7 @@ const INSTRUCTIONS = [
   "To upload a file, click the 'Upload a file' button below.",
   "Pick what file you are uploading from the dropdown menu",
   "Either select the file from your computer or drop the file into the page and click Submit.",
+  "Once you are approved you will be able to log into your dashboard."
 ];
 
 const FileUploadPage = () => {
