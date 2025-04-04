@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import DataGrid from "@/components/ui/data-grid";
+import DataGrid from "@/components/data-grid/data-grid";
 import {
   Form,
   FormControl,
