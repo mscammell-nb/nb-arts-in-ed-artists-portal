@@ -51,12 +51,12 @@ export const EVALUATIONS_EDITABLE_FIELDS = new Map([
     "servicePerformed",
     {
       field: 13,
-      type: "yes/no",
+      type: "boolean",
       options: [
-        <SelectItem value={"Yes"} key={"active"}>
+        <SelectItem value={true} key={"active"}>
           Yes
         </SelectItem>,
-        <SelectItem value={"No"} key={"inactive"}>
+        <SelectItem value={false} key={"inactive"}>
           No
         </SelectItem>,
       ],
@@ -67,12 +67,12 @@ export const EVALUATIONS_EDITABLE_FIELDS = new Map([
     "guideUsed",
     {
       field: 15,
-      type: "yes/no",
+      type: "boolean",
       options: [
-        <SelectItem value={"Yes"} key={"active"}>
+        <SelectItem value={true} key={"active"}>
           Yes
         </SelectItem>,
-        <SelectItem value={"No"} key={"inactive"}>
+        <SelectItem value={false} key={"inactive"}>
           No
         </SelectItem>,
       ],
@@ -82,12 +82,12 @@ export const EVALUATIONS_EDITABLE_FIELDS = new Map([
     "studentsAttentive",
     {
       field: 16,
-      type: "yes/no",
+      type: "boolean",
       options: [
-        <SelectItem value={"Yes"} key={"active"}>
+        <SelectItem value={true} key={"active"}>
           Yes
         </SelectItem>,
-        <SelectItem value={"No"} key={"inactive"}>
+        <SelectItem value={false} key={"inactive"}>
           No
         </SelectItem>,
       ],
@@ -97,12 +97,12 @@ export const EVALUATIONS_EDITABLE_FIELDS = new Map([
     "equipmentUsed",
     {
       field: 20,
-      type: "yes/no",
+      type: "boolean",
       options: [
-        <SelectItem value={"Yes"} key={"active"}>
+        <SelectItem value={true} key={"active"}>
           Yes
         </SelectItem>,
-        <SelectItem value={"No"} key={"inactive"}>
+        <SelectItem value={false} key={"inactive"}>
           No
         </SelectItem>,
       ],
@@ -112,12 +112,12 @@ export const EVALUATIONS_EDITABLE_FIELDS = new Map([
     "onSchedule",
     {
       field: 21,
-      type: "yes/no",
+      type: "boolean",
       options: [
-        <SelectItem value={"Yes"} key={"active"}>
+        <SelectItem value={true} key={"active"}>
           Yes
         </SelectItem>,
-        <SelectItem value={"No"} key={"inactive"}>
+        <SelectItem value={false} key={"inactive"}>
           No
         </SelectItem>,
       ],
@@ -127,12 +127,12 @@ export const EVALUATIONS_EDITABLE_FIELDS = new Map([
     "studentConduct",
     {
       field: 17,
-      type: "yes/no",
+      type: "boolean",
       options: [
-        <SelectItem value={"Yes"} key={"active"}>
+        <SelectItem value={true} key={"active"}>
           Yes
         </SelectItem>,
-        <SelectItem value={"No"} key={"inactive"}>
+        <SelectItem value={false} key={"inactive"}>
           No
         </SelectItem>,
       ],
@@ -142,12 +142,12 @@ export const EVALUATIONS_EDITABLE_FIELDS = new Map([
     "teacherRemained",
     {
       field: 18,
-      type: "yes/no",
+      type: "boolean",
       options: [
-        <SelectItem value={"Yes"} key={"active"}>
+        <SelectItem value={true} key={"active"}>
           Yes
         </SelectItem>,
-        <SelectItem value={"No"} key={"inactive"}>
+        <SelectItem value={false} key={"inactive"}>
           No
         </SelectItem>,
       ],
@@ -157,12 +157,12 @@ export const EVALUATIONS_EDITABLE_FIELDS = new Map([
     "spaceSetUp",
     {
       field: 19,
-      type: "yes/no",
+      type: "boolean",
       options: [
-        <SelectItem value={"Yes"} key={"active"}>
+        <SelectItem value={true} key={"active"}>
           Yes
         </SelectItem>,
-        <SelectItem value={"No"} key={"inactive"}>
+        <SelectItem value={false} key={"inactive"}>
           No
         </SelectItem>,
       ],
