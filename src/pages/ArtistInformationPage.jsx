@@ -497,14 +497,14 @@ const ArtistInformationPage = () => {
               label="Payment Type"
               value={paymentType}
               setValue={setPaymentType}
-              editing={editing}
+              editing={false}
             />
             {paymentType === "Check" && (
               <ArtistItem
                 label="Payee Name"
                 value={payeeName}
                 setValue={setPayeeName}
-                editing={editing}
+                editing={false}
               />
             )}
           </div>
