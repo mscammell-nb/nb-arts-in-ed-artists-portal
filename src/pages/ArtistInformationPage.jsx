@@ -138,8 +138,16 @@ const ArtistInformationPage = () => {
   const artistRecordId = localStorage.getItem("artistRecordId");
 
   const schema = yup.object({
-    currentPassword: yup.string().required("Missing current password"),
-    newPassword: yup.string().required("Missing new password"),
+    currentPassword: yup
+      .string()
+      .required("Missing current password")
+      .min(8, "Current Password must be at least 8 characters")
+      .max(32, "Current Password must be at most 32 characters"),
+    newPassword: yup
+      .string()
+      .required("Missing new password")
+      .min(8, "Current Password must be at least 8 characters")
+      .max(32, "Current Password must be at most 32 characters"),
     confirmNewPassword: yup
       .string()
       .oneOf([yup.ref("newPassword"), null], "The new password don't match")
@@ -172,7 +180,7 @@ const ArtistInformationPage = () => {
                 description: "Your password has been successfully updated.",
               });
               setChangePasswordOpen(false);
-              reset();
+              form.reset();
             })
             .catch((error) => {
               toast({
