@@ -415,7 +415,7 @@ const ArtistInformationPage = () => {
               >
                 Change Password
               </SheetTrigger>
-              <SheetContent>
+              <SheetContent className="min-w-[30%]">
                 <Form {...form}>
                   <form
                     onSubmit={form.handleSubmit(onSubmit)}
