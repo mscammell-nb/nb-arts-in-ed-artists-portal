@@ -1,6 +1,6 @@
 import { DropZone } from "@/components/DropZone";
 import { Button } from "@/components/ui/button";
-import DataGrid from "@/components/ui/data-grid";
+import DataGrid from "@/components/data-grid/data-grid";
 import {
   Dialog,
   DialogClose,

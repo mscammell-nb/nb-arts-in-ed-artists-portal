@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import DataGrid from "@/components/ui/data-grid";
+import DataGrid from "@/components/data-grid/data-grid";
 import Spinner from "@/components/ui/Spinner";
 import {
   FISCAL_YEAR_FIRST_MONTH,
