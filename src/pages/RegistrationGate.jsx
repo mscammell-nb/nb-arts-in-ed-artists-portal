@@ -56,7 +56,7 @@ const RegistrationGate = () => {
     );
   }
 
-  if (!registrationData.data[0][6].value) {
+  if (registrationData?.data[0] && !registrationData.data[0][6].value) {
     return (
       <div className="flex flex-col items-start gap-4">
         <div>Your registration request is pending</div>
