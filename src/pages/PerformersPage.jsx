@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button";
 import DataGrid from "@/components/data-grid/data-grid";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -19,6 +19,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { useToast } from "@/components/ui/use-toast";
+import { PERFORMERS_EDITABLE_FIELDS } from "@/constants/constants";
 import {
   useAddOrUpdateRecordMutation,
   useQueryForDataQuery,
@@ -35,7 +36,6 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import Spinner from "../components/ui/Spinner";
-import { PERFORMERS_EDITABLE_FIELDS } from "@/constants/constants";
 
 const schema = yup.object({
   firstName: yup.string().required(),
@@ -361,5 +361,3 @@ const PerformersPage = () => {
 };
 
 export default PerformersPage;
-
-// TODO: When the user doesn't have any performers (there's no data in the table) and I try to select a filter, I get a warning saying each item in a list should have a unique key. Probably fixable by stopping the filtering process if the data returned by the API has a length of 0 (early return).
