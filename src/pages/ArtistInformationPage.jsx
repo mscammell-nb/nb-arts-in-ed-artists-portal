@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
+import Spinner from "@/components/ui/Spinner";
 import {
   Tooltip,
   TooltipContent,
@@ -232,8 +233,9 @@ const ArtistInformationPage = () => {
     select: [
       3, 6, 7, 8, 9, 11, 12, 14, 15, 16, 17, 18, 19, 21, 23, 24, 25, 30, 31,
     ],
-    where: `{7.EX.${artistRecordId}.and.25.EX.${getCurrentFiscalYear()}}`,
+    where: `{7.EX.${artistRecordId}} AND {25.EX.${getCurrentFiscalYear()}}`,
   });
+  console.log(artistsData);
   useEffect(() => {
     if (artistsData) {
       resetInformation();
@@ -289,12 +291,6 @@ const ArtistInformationPage = () => {
           23: {
             value: websiteVal,
           },
-          30: {
-            value: paymentType,
-          },
-          31: {
-            value: payeeName,
-          },
         },
       ],
     });
@@ -322,6 +318,14 @@ const ArtistInformationPage = () => {
     setPaymentType(artistsData.data[0][30].value);
     setPayeeName(artistsData.data[0][31].value);
   };
+
+  if (isArtistsLoading) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center">
+        <Spinner />
+      </div>
+    );
+  }
 
   return (
     <div className="flex w-full max-w-[1200px] flex-col gap-3">
