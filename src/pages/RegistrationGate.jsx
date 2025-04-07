@@ -55,7 +55,6 @@ const RegistrationGate = () => {
       </div>
     );
   }
-  console.log(registrationData.data);
 
   if (!registrationData.data[0][6].value) {
     return (
