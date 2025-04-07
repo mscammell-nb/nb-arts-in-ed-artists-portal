@@ -214,7 +214,7 @@ const FileUploadPage = () => {
       data.map((record) => ({
         recordId: record[3].value,
         documentName: record[6].value,
-        docoumentDescription: record[12].value,
+        documentDescription: record[12].value,
       })),
     );
 
