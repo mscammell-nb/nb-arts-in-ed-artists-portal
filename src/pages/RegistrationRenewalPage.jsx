@@ -23,18 +23,38 @@ import {
   useQueryForDataQuery,
 } from "@/redux/api/quickbaseApi";
 import {
+  downloadFile,
   getCurrentFiscalYear,
   getCurrentFiscalYearKey,
   parsePhoneNumber,
 } from "@/utils/utils";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { ReloadIcon } from "@radix-ui/react-icons";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import Spinner from "../components/ui/Spinner";
-import { useSelector } from "react-redux";
+
+import { DropZone } from "@/components/DropZone";
+import { documentColumns } from "@/utils/TableColumns";
+
+import DataGrid from "@/components/data-grid/data-grid";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Separator } from "@/components/ui/separator";
+import { formatDocData } from "@/utils/formatDocData";
+import { toBase64 } from "@/utils/toBase64";
+import { Label } from "@radix-ui/react-dropdown-menu";
+import { DownloadIcon, Loader2, UploadIcon } from "lucide-react";
 
 const schema = yup.object({
   artistOrg: yup.string().required(),
@@ -79,15 +99,27 @@ const RegistrationRenewalPage = () => {
   const { user } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [fileUploads, setFileUploads] = useState(null);
+  const [documentTypes, setDocumentTypes] = useState(null);
+  const [fileInputState, setFileInputState] = useState(null);
+  const [selectedType, setSelectedType] = useState("");
+  const [open, setOpen] = useState(false);
+  const [missingFiles, setMissingFiles] = useState([]);
+  const artist = localStorage.getItem("artist/org");
+
   const {
     data: artistData,
     isError: isArtistDataError,
     error: artistDataError,
-  } = useQueryForDataQuery(user ?{
-    from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
-    select: [3, 6, 7, 8, 9, 11, 13, 14, 15, 16, 17, 31],
-    where: `{10.EX.${user.uid}}`,
-  } : {skip: !user, refetchOnMountOrArgChange: true});
+  } = useQueryForDataQuery(
+    user
+      ? {
+          from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
+          select: [3, 6, 7, 8, 9, 11, 13, 14, 15, 16, 17, 31],
+          where: `{10.EX.${user.uid}}`,
+        }
+      : { skip: !user, refetchOnMountOrArgChange: true },
+  );
   const [
     addOrUpdateRecord,
     {
@@ -226,6 +258,128 @@ const RegistrationRenewalPage = () => {
     addOrUpdateRecord(formatDataForQuickbase(data));
   };
 
+  const uploadFile = async () => {
+    if (fileUploads === null) {
+      toast({
+        variant: "destructive",
+        title: "Error submitting documents",
+        description: "Please upload a file.",
+      });
+      return;
+    }
+    if (selectedType === "") {
+      toast({
+        variant: "destructive",
+        title: "Error submitting documents",
+        description: "Please select a file type",
+      });
+      return;
+    }
+    const fiscalYear = getCurrentFiscalYearKey();
+    const artist = localStorage.getItem("artist/org");
+    let base64 = await toBase64(fileUploads);
+    base64 = base64.split("base64,")[1];
+    addDocument({
+      to: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
+      data: [
+        {
+          10: { value: fiscalYear },
+          9: { value: artist },
+          7: {
+            value: {
+              fileName: fileUploads.name,
+              data: base64,
+            },
+          },
+          6: { value: selectedType },
+        },
+      ],
+    });
+  };
+
+  const [
+    addDocument,
+    {
+      isLoading: isAddDocumentLoading,
+      isSuccess: isAddDocumentSuccess,
+      isError: isAddDocumentError,
+    },
+  ] = useAddOrUpdateRecordMutation();
+
+  useEffect(() => {
+    if (isAddDocumentError) {
+      toast({
+        variant: "destructive",
+        title: "Error submitting documents",
+        description: addArtistDocumentRecordError.data.message,
+      });
+      setOpen(false);
+    } else if (isAddDocumentSuccess) {
+      toast({
+        variant: "success",
+        title: "Operation successful!",
+        description: "Your documents have been submitted.",
+      });
+      setOpen(false);
+      setSelectedType("");
+    }
+  }, [isAddDocumentError, isAddDocumentSuccess]);
+
+  const downloadTemplate = (file) => {
+    let versionNumber = [...file[7].value.versions];
+    versionNumber = versionNumber.pop().versionNumber;
+    downloadFile(
+      import.meta.env.VITE_QUICKBASE_DOCUMENT_TYPES_TABLE_ID,
+      7,
+      file[3].value,
+      versionNumber,
+    );
+  };
+
+  const {
+    data: documentTypesData,
+    isLoading: isDocumentTypesLoading,
+    isSuccess: isDocumentTypesSuccess,
+    isError: isDocumentTypesError,
+    error: documentTypesError,
+  } = useQueryForDataQuery({
+    from: import.meta.env.VITE_QUICKBASE_DOCUMENT_TYPES_TABLE_ID,
+    select: [3, 6, 12],
+    where: "{'13'.EX.'true'}",
+  });
+
+  const { data: fileTypes, isLoading: isFileTypesLoading } =
+    useQueryForDataQuery({
+      from: import.meta.env.VITE_QUICKBASE_DOCUMENT_TYPES_TABLE_ID,
+      select: [3, 7, 31],
+    });
+  const { data: documentsData, isLoading: isDocumentsDataLoading } =
+    useQueryForDataQuery({
+      from: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
+      select: [11, 9, 7, 12, 6, 14, 3, 10],
+      where: `{9.EX.${artist}}`,
+      sortBy: [{ fieldId: 10 }, { order: "DESC" }],
+    });
+
+  if (isDocumentTypesLoading || isDocumentsDataLoading || isFileTypesLoading) {
+    return (
+      <div className="pt-20">
+        <Spinner />
+      </div>
+    );
+  }
+
+  if (isDocumentTypesSuccess && documentTypes === null) {
+    const data = documentTypesData.data;
+    setDocumentTypes(
+      data.map((record) => ({
+        recordId: record[3].value,
+        documentName: record[6].value,
+        documentDescription: record[12].value,
+      })),
+    );
+  }
+
   if (!artistData && !isArtistDataError)
     return (
       <div className="flex h-full w-full justify-center pt-24">
@@ -246,7 +400,7 @@ const RegistrationRenewalPage = () => {
 
   return (
     <div className="flex w-full justify-center py-16">
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-xl">
         <CardHeader>
           <CardTitle className="text-2xl">Registration Renewal</CardTitle>
         </CardHeader>
@@ -433,6 +587,95 @@ const RegistrationRenewalPage = () => {
                 )}
               />
 
+              <div className="items-left flex flex-col gap-3 pb-4">
+                <p className="text-sm font-semibold">Upload Files</p>
+                <Dialog open={open} onOpenChange={setOpen}>
+                  <DialogTrigger asChild>
+                    <Button variant="outline" className="gap-2 rounded-full">
+                      <UploadIcon className="size-4" />
+                      <p>Upload File</p>
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-sm sm:max-w-lg">
+                    <DialogHeader>
+                      <DialogTitle className="mb-1">Upload a file</DialogTitle>
+                      <p>
+                        Please reupload your Vendor Application and W-9 files
+                        along with any changes you have for the new fiscal year.
+                      </p>
+                    </DialogHeader>
+                    <Separator />
+                    <div className="flex flex-col gap-2">
+                      <Label>File Type</Label>
+                      <Select
+                        value={selectedType}
+                        onValueChange={(e) => setSelectedType(e)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a file type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {fileTypes.data.map(
+                            (f) =>
+                              (f[31].value == "Vendor Application" ||
+                                f[31].value == "W-9") && (
+                                <SelectItem
+                                  value={f[31].value}
+                                  key={f[31].value}
+                                >
+                                  {f[31].value}
+                                </SelectItem>
+                              ),
+                          )}
+                        </SelectContent>
+                      </Select>
+                      <DropZone setUploadedFile={setFileUploads} />
+                      <DialogFooter>
+                        <DialogClose asChild>
+                          <Button variant="outline">Close</Button>
+                        </DialogClose>
+                        <Button
+                          onClick={() => uploadFile()}
+                          disabled={isAddDocumentLoading}
+                        >
+                          {isAddDocumentLoading && (
+                            <Loader2 className="animate-spin" />
+                          )}
+                          Submit
+                        </Button>
+                      </DialogFooter>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+                <div className="flex flex-row gap-4">
+                  {!isFileTypesLoading &&
+                    fileTypes &&
+                    fileTypes.data.map(
+                      (f) =>
+                        (f[31].value == "Vendor Application" ||
+                          f[31].value == "W-9") && (
+                          <Button
+                            className="flex w-full items-center gap-2 md:w-auto"
+                            key={f[31].value}
+                            type="button"
+                            onClick={() => downloadTemplate(f)}
+                          >
+                            <DownloadIcon />
+                            {f[31].value}
+                          </Button>
+                        ),
+                    )}
+                </div>
+              </div>
+              <p className="text-sm font-semibold">Submitted Files</p>
+              {documentsData && (
+                <DataGrid
+                  data={formatDocData(documentsData)}
+                  columns={documentColumns}
+                  readOnly
+                />
+              )}
+
               <Button
                 type="submit"
                 className="mt-7 w-full"
@@ -452,5 +695,3 @@ const RegistrationRenewalPage = () => {
 };
 
 export default RegistrationRenewalPage;
-
-// TODO Right now the Fiscal Year is decided based on the current Fiscal Year. Once Matt finds out the cutoff date for registering for the current year we need to replace it with that.
