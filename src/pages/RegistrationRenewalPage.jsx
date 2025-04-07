@@ -158,7 +158,7 @@ const RegistrationRenewalPage = () => {
             value: data.phone,
           },
           13: {
-            value: userUid,
+            value: user.uid,
           },
           15: {
             value: data.street1,

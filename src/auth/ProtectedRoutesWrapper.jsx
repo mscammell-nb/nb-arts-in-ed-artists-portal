@@ -8,11 +8,14 @@ const ProtectedRoutesWrapper = () => {
   const { user, authReady } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   let { data: artistsData, isLoading: isArtistLoading } = useQueryForDataQuery(
-    user ? {
-    from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
-    select: [3, 6, 29, 30],
-    where: `{10.EX.${user.uid}}`,
-  } : {skip:true, refetchOnMountOrArgChange: true});
+    user
+      ? {
+          from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
+          select: [3, 6, 29, 30],
+          where: `{10.EX.${user.uid}}`,
+        }
+      : { skip: true, refetchOnMountOrArgChange: true },
+  );
   const [expired, setExpired] = useState(null);
   const [approved, setApproved] = useState(null);
 
@@ -24,14 +27,16 @@ const ProtectedRoutesWrapper = () => {
       setExpired(artistsData.data[0][30].value);
     }
   }, [isArtistLoading, artistsData]);
-
   useEffect(() => {
     if (authReady) {
       if (!user) {
         navigate("/login");
       } else if (approved == false) {
         navigate("/file-upload");
-      } else if (expired == true) {
+      } else if (
+        expired == true &&
+        location.pathname !== "/registration-renewal"
+      ) {
         navigate("/registration-gate");
       }
     }

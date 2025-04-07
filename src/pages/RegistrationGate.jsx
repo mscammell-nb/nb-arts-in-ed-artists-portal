@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
-import { handleSignout } from "@/utils/utils";
-import { useEffect, useState } from "react";
+import { getCurrentFiscalYear, handleSignout } from "@/utils/utils";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import Spinner from "../components/ui/Spinner";
@@ -26,37 +26,49 @@ const RegistrationGate = () => {
       : { skip: !user, refetchOnMountOrArgChange: true },
   );
 
-  const [isApproved, setIsApproved] = useState(false);
-  const [isRegistrationExpired, setIsRegistrationExpired] = useState(false);
+  const {
+    data: registrationData,
+    isLoading: isRegistrationDataLoading,
+    isError: isRegistrationDataError,
+    error: registrationDataError,
+  } = useQueryForDataQuery(
+    user
+      ? {
+          from: import.meta.env.VITE_QUICKBASE_ARTIST_REGISTRATIONS_TABLE_ID,
+          select: [3, 6, 25],
+          where: `{13.EX.${user.uid}} AND {25.EX.${getCurrentFiscalYear()}}`,
+        }
+      : { skip: !user, refetchOnMountOrArgChange: true },
+  );
 
   useEffect(() => {
     if (artistData?.data && !isArtistDataLoading) {
-      setIsApproved(artistData.data[0][29].value);
-      setIsRegistrationExpired(artistData.data[0][30].value);
       localStorage.setItem("artistRecordId", artistData.data[0][3].value);
       localStorage.setItem("artist/org", artistData.data[0][6].value);
     }
   }, [artistData, isArtistDataLoading]);
 
-  if (isArtistDataLoading) {
+  if (isArtistDataLoading || isRegistrationDataLoading) {
     return (
       <div className="flex h-full w-full justify-center pt-24">
         <Spinner />
       </div>
     );
   }
+  console.log(registrationData.data);
 
-
-  if (!isApproved) {
+  if (!registrationData.data[0][6].value) {
     return (
-      <div className="flex flex-col gap-4 items-start">
+      <div className="flex flex-col items-start gap-4">
         <div>Your registration request is pending</div>
-        <Button onClick={()=>handleSignOut(dispatch, navigate)}>Sign out</Button>
+        <Button onClick={() => handleSignOut(dispatch, navigate)}>
+          Sign out
+        </Button>
       </div>
     );
   }
 
-  if (isRegistrationExpired) {
+  if (artistData.data[0][30].value) {
     return (
       <div className="space-y-6">
         <div>
@@ -79,7 +91,7 @@ const RegistrationGate = () => {
   }
 
   if (isArtistDataSuccess) {
-    return <Navigate to="/performers" />;
+    return <Navigate to="/programs" />;
   }
 };
 
