@@ -235,7 +235,6 @@ const ArtistInformationPage = () => {
     ],
     where: `{7.EX.${artistRecordId}} AND {25.EX.${getCurrentFiscalYear()}}`,
   });
-  console.log(artistsData);
   useEffect(() => {
     if (artistsData) {
       resetInformation();
