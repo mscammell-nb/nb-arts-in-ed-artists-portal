@@ -632,10 +632,6 @@ export const performersColumns = [
         };
       };
 
-      if (!canEditPerformerData) {
-        return <></>;
-      }
-
       return (
         <Dialog
           open={isEditPerformerDialogOpen}
