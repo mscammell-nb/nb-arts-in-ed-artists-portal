@@ -45,6 +45,19 @@ export const quickbaseApi = createApi({
       }),
       invalidatesTags: ["QuickbaseRecords"],
     }),
+    deleteRecord: build.mutation({
+      query: (body) => ({
+        url: "/records",
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          "QB-Realm-Hostname": import.meta.env.VITE_QB_REALM_HOSTNAME,
+          Authorization: `QB-USER-TOKEN ${import.meta.env.VITE_QUICKBASE_AUTHORIZATION_TOKEN}`,
+        },
+        body,
+      }),
+      invalidatesTags: ["QuickbaseRecords"],
+    }),
   }),
 });
 
@@ -52,5 +65,6 @@ export const {
   useAddOrUpdateRecordMutation,
   useQueryForDataQuery,
   useGetFieldQuery,
+  useDeleteRecordMutation,
   useLazyQueryForDataQuery,
 } = quickbaseApi;
