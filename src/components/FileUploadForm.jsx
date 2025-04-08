@@ -1,10 +1,10 @@
-import { useEffect } from "react";
+import FileUpload from "@/components/FileUpload";
 import { Button } from "@/components/ui/button";
-import { getCurrentFiscalYearKey } from "@/utils/utils";
-import { toBase64 } from "@/utils/toBase64";
 import { useToast } from "@/components/ui/use-toast";
 import { useAddOrUpdateRecordMutation } from "@/redux/api/quickbaseApi";
-import FileUpload from "@/components/FileUpload";
+import { toBase64 } from "@/utils/toBase64";
+import { getCurrentFiscalYearKey } from "@/utils/utils";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const FileUploadForm = ({
@@ -107,6 +107,7 @@ const FileUploadForm = ({
               15: {
                 value: documentType.recordId,
               },
+              17: { value: false },
             },
           ],
         });

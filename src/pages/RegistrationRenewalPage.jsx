@@ -360,8 +360,8 @@ const RegistrationRenewalPage = () => {
     refetch,
   } = useQueryForDataQuery({
     from: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
-    select: [11, 9, 7, 12, 6, 14, 3, 10],
-    where: `{9.EX.${artist}}`,
+    select: [3, 6, 7, 9, 10, 11, 12, 14, 17],
+    where: `{9.EX.${artist}} AND {10.EX.${fiscalYear}}`,
     sortBy: [{ fieldId: 10 }, { order: "DESC" }],
   });
 

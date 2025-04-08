@@ -1,6 +1,6 @@
+import DataGrid from "@/components/data-grid/data-grid";
 import { DropZone } from "@/components/DropZone";
 import { Button } from "@/components/ui/button";
-import DataGrid from "@/components/data-grid/data-grid";
 import {
   Dialog,
   DialogClose,
@@ -39,7 +39,7 @@ const INSTRUCTIONS = [
   "To upload a file, click the 'Upload a file' button below.",
   "Pick what file you are uploading from the dropdown menu",
   "Either select the file from your computer or drop the file into the page and click Submit.",
-  "Once you are approved you will be able to log into your dashboard."
+  "Once you are approved you will be able to log into your dashboard.",
 ];
 
 const FileUploadPage = () => {
@@ -75,7 +75,7 @@ const FileUploadPage = () => {
   const { data: documentsData, isLoading: isDocumentsDataLoading } =
     useQueryForDataQuery({
       from: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
-      select: [11, 9, 7, 12, 6, 14, 3, 10],
+      select: [3, 6, 7, 9, 10, 11, 12, 14],
       where: `{9.EX.${artist}}`,
       sortBy: [{ fieldId: 10 }, { order: "DESC" }],
     });
@@ -159,6 +159,7 @@ const FileUploadPage = () => {
             },
           },
           6: { value: selectedType },
+          17: { value: false },
         },
       ],
     });
