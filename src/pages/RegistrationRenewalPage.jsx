@@ -29,7 +29,7 @@ import {
   parsePhoneNumber,
 } from "@/utils/utils";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { ReloadIcon } from "@radix-ui/react-icons";
+import { ArrowLeftIcon, ReloadIcon } from "@radix-ui/react-icons";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
@@ -399,7 +399,18 @@ const RegistrationRenewalPage = () => {
   }
 
   return (
-    <div className="flex w-full justify-center py-16">
+    <div className="mx-auto flex w-full flex-col items-center justify-center gap-4 py-16">
+      <div className="mx-auto flex w-full max-w-xl flex-grow">
+        <Button
+          variant="secondary"
+          onClick={() => navigate("/registration-gate")}
+          className="flex items-center justify-start space-x-2 justify-self-start rounded-md bg-slate-500 px-4 py-2 text-white hover:bg-slate-600"
+        >
+          <ArrowLeftIcon className="h-5 w-5" />
+          <span>Back</span>
+        </Button>
+      </div>
+
       <Card className="w-full max-w-xl">
         <CardHeader>
           <CardTitle className="text-2xl">Registration Renewal</CardTitle>
@@ -673,6 +684,9 @@ const RegistrationRenewalPage = () => {
                   data={formatDocData(documentsData)}
                   columns={documentColumns}
                   readOnly
+                  noSearch
+                  noFilter
+                  noSort
                 />
               )}
 
