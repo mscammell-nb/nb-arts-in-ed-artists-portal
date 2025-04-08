@@ -214,7 +214,7 @@ function DataGrid({
   );
   return (
     <div className="w-full overflow-hidden rounded-lg border bg-white p-3 shadow">
-      {(tableTitle || (noSearch && extraButtons)) && (
+      {(tableTitle || (!noSearch && extraButtons)) && (
         <>
           <div className="flex w-full items-center justify-between">
             {tableTitle && (
