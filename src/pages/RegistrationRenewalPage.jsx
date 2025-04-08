@@ -698,7 +698,6 @@ const RegistrationRenewalPage = () => {
                   columns={documentColumns(
                     false,
                     true,
-                    refetch,
                     removeDocument,
                     isRemoveDocumentLoading,
                   )}

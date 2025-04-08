@@ -307,37 +307,10 @@ export const registrationColumns = [
 export const documentColumns = (
   allowDownload = true,
   allowDelete = false,
-  refetch,
   removeDocument,
   isRemoveDocumentLoading,
 ) => {
   const cols = [
-    {
-      accessorKey: "fiscalYear",
-      header: ({ column }) => (
-        <div
-          variant="ghost"
-          className="text-nowrap text-xs font-semibold uppercase text-gray-700"
-          onClick={() => column.toggleSorting()}
-        >
-          Fiscal Year
-        </div>
-      ),
-      cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
-    },
-    {
-      accessorKey: "artist",
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          className="text-xs font-semibold uppercase text-gray-700"
-          onClick={() => column.toggleSorting()}
-        >
-          Artist / Org
-        </Button>
-      ),
-      cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
-    },
     {
       accessorKey: "documentName",
       header: ({ column }) => (
@@ -411,7 +384,7 @@ export const documentColumns = (
               })
             }
             variant="outline"
-            disabled={isRemoveDocumentLoading}
+            isLoading={isRemoveDocumentLoading}
           >
             <Trash size={14} />
           </Button>
