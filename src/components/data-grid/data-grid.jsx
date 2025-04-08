@@ -1,10 +1,5 @@
+import { cn } from "@/lib/utils";
 import { CaretDownIcon } from "@radix-ui/react-icons";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
 import {
   flexRender,
   getCoreRowModel,
@@ -13,16 +8,21 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import React, { useState, useCallback } from "react";
-import { Button } from "../ui/button";
 import { Braces, FileText, Loader2, Pencil, Save, X } from "lucide-react";
+import { useCallback, useState } from "react";
+import { Button } from "../ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 import { Separator } from "../ui/separator";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import ColumnHeader from "./addons/ColumnHeader";
+import DataGridToolbar from "./addons/DataGridToolbar";
 import editableColumns from "./addons/EditableCell";
 import Pagination from "./addons/Pagination";
-import DataGridToolbar from "./addons/DataGridToolbar";
-import { cn } from "@/lib/utils";
-import ColumnHeader from "./addons/ColumnHeader";
 
 /**
  * DataGrid component - table component with sorting, filtering, pagination, and editing
@@ -43,6 +43,8 @@ function DataGrid({
   editableFields = new Map(),
   noSearch = false,
   legend = null,
+  noFilter = false,
+  noSort = false,
 }) {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
@@ -255,7 +257,12 @@ function DataGrid({
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <th key={header.id} colSpan={header.colSpan} scope="col">
-                    <ColumnHeader header={header} table={table} />
+                    <ColumnHeader
+                      header={header}
+                      table={table}
+                      noFilter={noFilter}
+                      noSort={noSort}
+                    />
                   </th>
                 ))}
               </tr>

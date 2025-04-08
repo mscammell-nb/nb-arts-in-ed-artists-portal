@@ -29,11 +29,17 @@ import {
   useLazyQueryForDataQuery,
 } from "@/redux/api/quickbaseApi";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Check, DownloadIcon, FilePenLine, Loader2, X } from "lucide-react";
+import {
+  Check,
+  DownloadIcon,
+  FilePenLine,
+  Loader2,
+  Trash,
+  X,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
-import getSortIcon from "./getSortIcon";
 import { capitalizeString, downloadFile } from "./utils";
 
 const renderStatusIcon = (value) => {
@@ -57,7 +63,6 @@ export const evalTableColumns = [
         onClick={() => column.toggleSorting()}
       >
         Program
-        {getSortIcon(column)}
       </Button>
     ),
     cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
@@ -71,7 +76,6 @@ export const evalTableColumns = [
         onClick={() => column.toggleSorting()}
       >
         Evaluation Date
-        {getSortIcon(column)}
       </Button>
     ),
     cell: (info) => <p className="text-center">{info.getValue()}</p>,
@@ -85,7 +89,6 @@ export const evalTableColumns = [
         onClick={() => column.toggleSorting()}
       >
         Service Performed
-        {getSortIcon(column)}
       </Button>
     ),
     cell: (info) => <p className="text-center">{info.getValue()}</p>,
@@ -99,7 +102,6 @@ export const evalTableColumns = [
         onClick={() => column.toggleSorting()}
       >
         Approver Name
-        {getSortIcon(column)}
       </Button>
     ),
     cell: (info) => <p className="text-center">{info.getValue()}</p>,
@@ -113,7 +115,6 @@ export const evalTableColumns = [
         onClick={() => column.toggleSorting()}
       >
         Guide Used
-        {getSortIcon(column)}
       </Button>
     ),
     cell: (info) => <p className="text-center">{info.getValue()}</p>,
@@ -127,7 +128,6 @@ export const evalTableColumns = [
         onClick={() => column.toggleSorting()}
       >
         Attentive?
-        {getSortIcon(column)}
       </Button>
     ),
     cell: (info) => <p className="text-center">{info.getValue()}</p>,
@@ -141,7 +141,6 @@ export const evalTableColumns = [
         onClick={() => column.toggleSorting()}
       >
         Conduct?
-        {getSortIcon(column)}
       </Button>
     ),
     cell: (info) => <p className="text-center">{info.getValue()}</p>,
@@ -155,7 +154,6 @@ export const evalTableColumns = [
         onClick={() => column.toggleSorting()}
       >
         Teacher Remained?
-        {getSortIcon(column)}
       </Button>
     ),
     cell: (info) => <p className="text-center">{info.getValue()}</p>,
@@ -169,7 +167,6 @@ export const evalTableColumns = [
         onClick={() => column.toggleSorting()}
       >
         Space Set Up?
-        {getSortIcon(column)}
       </Button>
     ),
     cell: (info) => <p className="text-center">{info.getValue()}</p>,
@@ -183,7 +180,6 @@ export const evalTableColumns = [
         onClick={() => column.toggleSorting()}
       >
         Equipment
-        {getSortIcon(column)}
       </Button>
     ),
     cell: (info) => <p className="text-center">{info.getValue()}</p>,
@@ -197,7 +193,6 @@ export const evalTableColumns = [
         onClick={() => column.toggleSorting()}
       >
         On Schedule
-        {getSortIcon(column)}
       </Button>
     ),
     cell: (info) => <p className="text-center">{info.getValue()}</p>,
@@ -219,7 +214,6 @@ export const registrationColumns = [
         onClick={() => column.toggleSorting()}
       >
         Artist/Organization
-        {getSortIcon(column)}
       </Button>
     ),
     cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
@@ -233,7 +227,6 @@ export const registrationColumns = [
         onClick={() => column.toggleSorting()}
       >
         Fiscal Year
-        {getSortIcon(column)}
       </Button>
     ),
     cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
@@ -247,7 +240,6 @@ export const registrationColumns = [
         onClick={() => column.toggleSorting()}
       >
         Number of Performers
-        {getSortIcon(column)}
       </Button>
     ),
     cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
@@ -261,7 +253,6 @@ export const registrationColumns = [
         onClick={() => column.toggleSorting()}
       >
         Phone Number
-        {getSortIcon(column)}
       </Button>
     ),
     cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
@@ -275,7 +266,6 @@ export const registrationColumns = [
         onClick={() => column.toggleSorting()}
       >
         Alternate Phone Number
-        {getSortIcon(column)}
       </Button>
     ),
     cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
@@ -289,7 +279,6 @@ export const registrationColumns = [
         onClick={() => column.toggleSorting()}
       >
         Email
-        {getSortIcon(column)}
       </Button>
     ),
     cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
@@ -303,7 +292,6 @@ export const registrationColumns = [
         onClick={() => column.toggleSorting()}
       >
         Approved
-        {getSortIcon(column)}
       </Button>
     ),
     cell: (info) => {
@@ -316,88 +304,123 @@ export const registrationColumns = [
   },
 ];
 
-export const documentColumns = [
-  {
-    accessorKey: "fiscalYear",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        className="text-xs font-semibold uppercase text-gray-700"
-        onClick={() => column.toggleSorting()}
-      >
-        Fiscal Year
-        {getSortIcon(column)}
-      </Button>
-    ),
-    cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
-  },
-  {
-    accessorKey: "artist",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        className="text-xs font-semibold uppercase text-gray-700"
-        onClick={() => column.toggleSorting()}
-      >
-        Artist / Org
-        {getSortIcon(column)}
-      </Button>
-    ),
-    cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
-  },
-  {
-    accessorKey: "documentName",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        className="text-xs font-semibold uppercase text-gray-700"
-        onClick={() => column.toggleSorting()}
-      >
-        Document Name
-        {getSortIcon(column)}
-      </Button>
-    ),
-    cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
-  },
-  {
-    accessorKey: "documentType",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        className="text-xs font-semibold uppercase text-gray-700"
-        onClick={() => column.toggleSorting()}
-      >
-        Document Type
-        {getSortIcon(column)}
-      </Button>
-    ),
-    cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
-  },
-  {
-    header: ({ column }) => (
-      <p className="text-center font-semibold">Download</p>
-    ),
-    id: "download",
-    cell: ({ row }) => (
-      <div className="grid w-full place-items-center">
-        <Button
-          className={"bg-white text-sm text-black "}
-          onClick={() =>
-            downloadFile(
-              import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
-              7,
-              row.original.id,
-              row.original.versionNumber,
-            )
-          }
-          variant="outline"
+export const documentColumns = (
+  allowDownload = true,
+  allowDelete = false,
+  refetch,
+  removeDocument,
+  isRemoveDocumentLoading,
+) => {
+  const cols = [
+    {
+      accessorKey: "fiscalYear",
+      header: ({ column }) => (
+        <div
+          variant="ghost"
+          className="text-nowrap text-xs font-semibold uppercase text-gray-700"
+          onClick={() => column.toggleSorting()}
         >
-          <DownloadIcon size={14} />
+          Fiscal Year
+        </div>
+      ),
+      cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
+    },
+    {
+      accessorKey: "artist",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          className="text-xs font-semibold uppercase text-gray-700"
+          onClick={() => column.toggleSorting()}
+        >
+          Artist / Org
         </Button>
-      </div>
-    ),
-  },
-];
+      ),
+      cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
+    },
+    {
+      accessorKey: "documentName",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          className="text-xs font-semibold uppercase text-gray-700"
+          onClick={() => column.toggleSorting()}
+        >
+          Document Name
+        </Button>
+      ),
+      cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
+    },
+    {
+      accessorKey: "documentType",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          className="text-xs font-semibold uppercase text-gray-700"
+          onClick={() => column.toggleSorting()}
+        >
+          Document Type
+        </Button>
+      ),
+      cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
+    },
+  ];
+  if (allowDownload)
+    cols.push({
+      header: ({ column }) => (
+        <p className="text-center font-semibold">Download</p>
+      ),
+      id: "download",
+      cell: ({ row }) => (
+        <div className="grid w-full place-items-center">
+          <Button
+            className={"bg-white text-sm text-black "}
+            onClick={() =>
+              downloadFile(
+                import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
+                7,
+                row.original.id,
+                row.original.versionNumber,
+              )
+            }
+            variant="outline"
+          >
+            <DownloadIcon size={14} />
+          </Button>
+        </div>
+      ),
+    });
+
+  if (allowDelete)
+    cols.push({
+      header: ({ column }) => (
+        <p className="text-center font-semibold">Delete</p>
+      ),
+      id: "delete",
+      cell: ({ row }) => (
+        <div className="grid w-full place-items-center">
+          <Button
+            type="button"
+            className={
+              "border-red-700 bg-red-500 text-sm text-white hover:border-red-400 hover:bg-red-300 hover:text-white"
+            }
+            onClick={() =>
+              removeDocument({
+                from: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
+                where: `{3.EX.${row.original.id}}`,
+              })
+            }
+            variant="outline"
+            disabled={isRemoveDocumentLoading}
+          >
+            <Trash size={14} />
+          </Button>
+        </div>
+      ),
+    });
+
+  return cols;
+};
 
 export const performersColumns = [
   {
@@ -409,7 +432,6 @@ export const performersColumns = [
         onClick={() => column.toggleSorting()}
       >
         First Name
-        {getSortIcon(column)}
       </Button>
     ),
     cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
@@ -423,7 +445,6 @@ export const performersColumns = [
         onClick={() => column.toggleSorting()}
       >
         Middle Initial
-        {getSortIcon(column)}
       </Button>
     ),
   },
@@ -436,7 +457,6 @@ export const performersColumns = [
         onClick={() => column.toggleSorting()}
       >
         Last Name
-        {getSortIcon(column)}
       </Button>
     ),
     cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
@@ -450,7 +470,6 @@ export const performersColumns = [
         onClick={() => column.toggleSorting()}
       >
         Stage Name
-        {getSortIcon(column)}
       </Button>
     ),
     cell: ({ row }) => {
@@ -468,7 +487,6 @@ export const performersColumns = [
         onClick={() => column.toggleSorting()}
       >
         Fingerprinted
-        {getSortIcon(column)}
       </Button>
     ),
     cell: ({ row }) => {
@@ -493,7 +511,6 @@ export const performersColumns = [
         onClick={() => column.toggleSorting()}
       >
         Cleared
-        {getSortIcon(column)}
       </Button>
     ),
     cell: ({ row }) => {
@@ -518,7 +535,6 @@ export const performersColumns = [
         onClick={() => column.toggleSorting()}
       >
         Active
-        {getSortIcon(column)}
       </Button>
     ),
     cell: ({ row }) => {
@@ -792,7 +808,6 @@ export const programTableColumns = [
     header: ({ column }) => (
       <Button variant="ghost" onClick={() => column.toggleSorting()}>
         Fiscal Year
-        {getSortIcon(column)}
       </Button>
     ),
     cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
@@ -802,7 +817,6 @@ export const programTableColumns = [
     header: ({ column }) => (
       <Button variant="ghost" onClick={() => column.toggleSorting()}>
         Date Created
-        {getSortIcon(column)}
       </Button>
     ),
     cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
@@ -812,7 +826,6 @@ export const programTableColumns = [
     header: ({ column }) => (
       <Button variant="ghost" onClick={() => column.toggleSorting()}>
         Program
-        {getSortIcon(column)}
       </Button>
     ),
     cell: (info) => <p className="font-semibold">{info.getValue()}</p>,
@@ -822,7 +835,6 @@ export const programTableColumns = [
     header: ({ column }) => (
       <Button variant="ghost" onClick={() => column.toggleSorting()}>
         Status
-        {getSortIcon(column)}
       </Button>
     ),
     cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
@@ -832,7 +844,6 @@ export const programTableColumns = [
     header: ({ column }) => (
       <Button variant="ghost" onClick={() => column.toggleSorting()}>
         Paid
-        {getSortIcon(column)}
       </Button>
     ),
     cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,

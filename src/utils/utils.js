@@ -1,6 +1,4 @@
 import { signOut } from "@/redux/slices/authSlice";
-import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
 
 export const capitalizeString = (str) => {
   if (!str) return "";
@@ -98,6 +96,29 @@ export const downloadFile = async (tableId, fieldId, id, versionNumber) => {
         downloadLink.click();
         return;
       }
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+};
+export const deleteRow = async (tableId, fieldId, rowId, refetch) => {
+  let headers = {
+    "QB-Realm-Hostname": import.meta.env.VITE_QB_REALM_HOSTNAME,
+    "User-Agent": "{User-Agent}",
+    Authorization: `QB-USER-TOKEN ${import.meta.env.VITE_QUICKBASE_AUTHORIZATION_TOKEN}`,
+    "Content-Type": "application/json",
+  };
+  const body = {
+    from: tableId,
+    where: `{${fieldId}.EX.${rowId}}`,
+  };
+  fetch(`https://api.quickbase.com/v1/records`, {
+    method: "DELETE",
+    headers: headers,
+    body: JSON.stringify(body),
+  })
+    .then((res) => {
+      return res.json().then((res) => refetch());
     })
     .catch((err) => {
       console.error(err);

@@ -335,7 +335,7 @@ const FileUploadPage = () => {
         {documentsData && (
           <DataGrid
             data={formatData(documentsData)}
-            columns={documentColumns}
+            columns={documentColumns()}
             readOnly
           />
         )}

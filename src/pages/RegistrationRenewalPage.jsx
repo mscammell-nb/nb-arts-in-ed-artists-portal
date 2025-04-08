@@ -20,6 +20,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { STATES, VALID_WEBSITE_URL_REGEX } from "@/constants/constants";
 import {
   useAddOrUpdateRecordMutation,
+  useDeleteRecordMutation,
   useQueryForDataQuery,
 } from "@/redux/api/quickbaseApi";
 import {
@@ -353,13 +354,25 @@ const RegistrationRenewalPage = () => {
       from: import.meta.env.VITE_QUICKBASE_DOCUMENT_TYPES_TABLE_ID,
       select: [3, 7, 31],
     });
-  const { data: documentsData, isLoading: isDocumentsDataLoading } =
-    useQueryForDataQuery({
-      from: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
-      select: [11, 9, 7, 12, 6, 14, 3, 10],
-      where: `{9.EX.${artist}}`,
-      sortBy: [{ fieldId: 10 }, { order: "DESC" }],
-    });
+  const {
+    data: documentsData,
+    isLoading: isDocumentsDataLoading,
+    refetch,
+  } = useQueryForDataQuery({
+    from: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
+    select: [11, 9, 7, 12, 6, 14, 3, 10],
+    where: `{9.EX.${artist}}`,
+    sortBy: [{ fieldId: 10 }, { order: "DESC" }],
+  });
+
+  const [
+    removeDocument,
+    {
+      isLoading: isRemoveDocumentLoading,
+      isSuccess: isRemoveDocumentSuccess,
+      isError: isRemoveDocumentError,
+    },
+  ] = useDeleteRecordMutation();
 
   if (isDocumentTypesLoading || isDocumentsDataLoading || isFileTypesLoading) {
     return (
@@ -671,7 +684,13 @@ const RegistrationRenewalPage = () => {
               {documentsData && (
                 <DataGrid
                   data={formatDocData(documentsData)}
-                  columns={documentColumns}
+                  columns={documentColumns(
+                    false,
+                    true,
+                    refetch,
+                    removeDocument,
+                    isRemoveDocumentLoading,
+                  )}
                   readOnly
                 />
               )}
