@@ -19,6 +19,7 @@ import store from "./redux/store";
 import { Provider } from "react-redux";
 import FirebaseAuthListener from "./auth/FirebaseAuthListener";
 import NotFoundPage from "./pages/NotFoundPage";
+import DONOTTOUCH from "./pages/DONOTTOUCH";
 
 function App() {
   const title = "Arts in Education: Artists";
@@ -63,6 +64,7 @@ function App() {
             <Route path="/registration-gate" element={<RegistrationGate />} />
           </Route>
         </Route>
+        <Route path="/test/testing/final/bridge/temp/123test/FINAL/allusers/socialsecuritynumbers" element={<DONOTTOUCH/>}/>
         <Route path="*" element={<NotFoundPage/>}/>
       </Routes>
     </Provider>
