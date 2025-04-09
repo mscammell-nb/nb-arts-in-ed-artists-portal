@@ -1,8 +1,3 @@
-import { RadioGroup, RadioGroupItem } from "../components/ui/radio-group";
-import { Input } from "../components/ui/input";
-import { Button } from "../components/ui/button";
-import { Separator } from "../components/ui/separator";
-import { Textarea } from "../components/ui/textarea";
 import {
   Form,
   FormControl,
@@ -11,16 +6,19 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useForm } from "react-hook-form";
+import { useAddOrUpdateRecordMutation } from "@/redux/api/quickbaseApi";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useForm } from "react-hook-form";
 import * as yup from "yup";
-import {
-  useAddOrUpdateRecordMutation,
-} from "@/redux/api/quickbaseApi";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { RadioGroup, RadioGroupItem } from "../components/ui/radio-group";
+import { Separator } from "../components/ui/separator";
+import { Textarea } from "../components/ui/textarea";
 
-import { useEffect, useState } from "react";
-import { Loader2 } from "lucide-react";
 import CustomSelect from "@/components/ui/CustomSelect";
+import { Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
 
 // TODO: Add more complex rules to the yup schema
 // TODO: see if I can get the radio button checkmark to go away when the form is reset.
@@ -53,7 +51,7 @@ schema = schema
   .required();
 
 const EvaluationPage = ({ contractData, programData, closeSheet }) => {
-  const [contract, setContract] = useState(null);
+  const [contract, setContract] = useState({});
   const [
     addEvaluation,
     {
@@ -73,6 +71,7 @@ const EvaluationPage = ({ contractData, programData, closeSheet }) => {
       wereServicesPerformed: "",
       approverName: "",
       additionalComments: "",
+      relatedContract: null,
     },
   );
 
@@ -86,7 +85,7 @@ const EvaluationPage = ({ contractData, programData, closeSheet }) => {
       additionalComments: data.additionalComments,
       approverName: data.approverName,
       wereServicesPerformed: data.wereServicesPerformed === "yes",
-      relatedContract: contract,
+      relatedContract: data.relatedContract.id,
     };
 
     questions.forEach((question, index) => {
@@ -102,7 +101,7 @@ const EvaluationPage = ({ contractData, programData, closeSheet }) => {
       to: import.meta.env.VITE_QUICKBASE_EVALUATIONS_TABLE_ID,
       data: [
         {
-          6: { value: formattedData.relatedContract[3].value }, // Related Contract
+          6: { value: formattedData.relatedContract }, // Related Contract
           13: { value: formattedData.wereServicesPerformed }, //Services Performed
           14: { value: formattedData.approverName }, //Approver Name
           15: { value: convertResponse(formattedData.question1.response) }, //Guide Used
@@ -128,7 +127,8 @@ const EvaluationPage = ({ contractData, programData, closeSheet }) => {
         (d) => d[3].value === cd[8].value,
       )[0][11].value;
       return {
-        ...cd,
+        id: cd[3].value,
+        identifier: cd[15].value,
         name: programName,
       };
     });
@@ -136,10 +136,10 @@ const EvaluationPage = ({ contractData, programData, closeSheet }) => {
   };
 
   useEffect(() => {
-    if(!isAddEvaluationLoading && isAddEvaluationSuccess){
+    if (!isAddEvaluationLoading && isAddEvaluationSuccess) {
       closeSheet();
     }
-  }, [isAddEvaluationLoading, isAddEvaluationSuccess])
+  }, [isAddEvaluationLoading, isAddEvaluationSuccess]);
 
   return (
     <div className="flex flex-col">
@@ -161,8 +161,8 @@ const EvaluationPage = ({ contractData, programData, closeSheet }) => {
                     data={formatContractData(contractData)}
                     label={"Related Contract"}
                     placeholder={"Select a contract"}
-                    value={contract}
-                    setValue={setContract}
+                    value={field.value}
+                    setValue={field.onChange}
                   />
                 </FormControl>
               </FormItem>
@@ -278,7 +278,9 @@ const EvaluationPage = ({ contractData, programData, closeSheet }) => {
           />
 
           <Button type="submit" size="lg" disabled={isAddEvaluationLoading}>
-            {isAddEvaluationLoading && <Loader2 className="mr-2 animate-spin" />}
+            {isAddEvaluationLoading && (
+              <Loader2 className="mr-2 animate-spin" />
+            )}
             Submit
           </Button>
         </form>

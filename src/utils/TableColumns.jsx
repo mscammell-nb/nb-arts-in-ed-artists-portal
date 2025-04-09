@@ -822,3 +822,50 @@ export const programTableColumns = [
     cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
   },
 ];
+export const referencesColumns = [
+  {
+    accessorKey: "firstName",
+    header: ({ column }) => (
+      <Button variant="ghost" onClick={() => column.toggleSorting()}>
+        First Name
+      </Button>
+    ),
+    cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
+  },
+  {
+    accessorKey: "lastName",
+    header: ({ column }) => (
+      <Button variant="ghost" onClick={() => column.toggleSorting()}>
+        Last Name
+      </Button>
+    ),
+    cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
+  },
+  {
+    accessorKey: "email",
+    header: ({ column }) => (
+      <Button variant="ghost" onClick={() => column.toggleSorting()}>
+        Email
+      </Button>
+    ),
+    cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
+  },
+  {
+    accessorKey: "phone",
+    header: ({ column }) => (
+      <Button variant="ghost" onClick={() => column.toggleSorting()}>
+        Phone
+      </Button>
+    ),
+    cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
+  },
+  {
+    accessorKey: "district",
+    header: ({ column }) => (
+      <Button variant="ghost" onClick={() => column.toggleSorting()}>
+        District
+      </Button>
+    ),
+    cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
+  },
+];

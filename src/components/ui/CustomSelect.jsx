@@ -9,35 +9,29 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { Label } from "@/components/ui/label";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-  Blocks,
-  Brain,
-  ChevronDown,
-  Cpu,
-  Database,
-  Globe,
-  Layout,
-  LineChart,
-  Network,
-  Search,
-  Server,
-} from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { useId, useState } from "react";
 import { FormLabel } from "./form";
 
-function CustomSelect({ data, label, placeholder, value, setValue }) {
+function CustomSelect({
+  data,
+  label,
+  placeholder,
+  value,
+  setValue,
+  nameOnly = false,
+}) {
   const id = useId();
   const [open, setOpen] = useState(false);
   return (
     <div className="min-w-[300px] space-y-2">
       <FormLabel>{label}</FormLabel>
-      <Popover open={open} onOpenChange={setOpen}>
+      <Popover open={open} onOpenChange={setOpen} modal={true}>
         <PopoverTrigger asChild>
           <Button
             type="button"
@@ -48,12 +42,13 @@ function CustomSelect({ data, label, placeholder, value, setValue }) {
           >
             {value ? (
               <span className="flex min-w-0 items-center gap-2">
-                <span className="truncate">{value[15].value}{" - "}{value["name"]}</span>
+                <span className="truncate">
+                  {!nameOnly && value["identifier"] + " - "}
+                  {value["name"]}
+                </span>
               </span>
             ) : (
-              <span className="text-muted-foreground">
-                {placeholder}
-              </span>
+              <span className="text-muted-foreground">{placeholder}</span>
             )}
             <ChevronDown
               size={16}
@@ -67,14 +62,14 @@ function CustomSelect({ data, label, placeholder, value, setValue }) {
           className="w-full min-w-[var(--radix-popper-anchor-width)] border-input p-0"
           align="start"
         >
-          <Command className="z-50">
+          <Command>
             <CommandInput placeholder="Search contracts..." />
-            <CommandList className="z-50">
-              <CommandEmpty>No service found.</CommandEmpty>
-              <CommandGroup className="z-50">
+            <CommandList>
+              <CommandEmpty>No items found.</CommandEmpty>
+              <CommandGroup>
                 {data.map((d) => (
                   <CommandItem
-                    key={d[3].value}
+                    key={d["id"]}
                     value={d}
                     onSelect={(currentValue) => {
                       setValue(currentValue === value ? "" : d);
@@ -82,9 +77,12 @@ function CustomSelect({ data, label, placeholder, value, setValue }) {
                     }}
                     className="z-50 flex items-center justify-between"
                   >
-                    <div className="flex items-center gap-2">{d[15].value}{" - "}{d["name"]}</div>
+                    <div className="flex items-center gap-2">
+                      {!nameOnly && d["identifier"] + " - "}
+                      {d["name"]}
+                    </div>
                     <span className="text-xs text-muted-foreground">
-                      #{d[3].value}
+                      #{d["id"]}
                     </span>
                   </CommandItem>
                 ))}

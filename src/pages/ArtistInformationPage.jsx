@@ -1,4 +1,13 @@
+import DataGrid from "@/components/data-grid/data-grid";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import CustomSelect from "@/components/ui/CustomSelect";
 import {
   Form,
   FormControl,
@@ -17,7 +26,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import Spinner from "@/components/ui/Spinner";
 import {
@@ -27,12 +43,14 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { toast } from "@/components/ui/use-toast";
+import { ALL_DISTRICTS } from "@/constants/districts";
 import { auth } from "@/firebaseConfig";
 import {
   useAddOrUpdateRecordMutation,
   useQueryForDataQuery,
 } from "@/redux/api/quickbaseApi";
 import { listFirebaseErrors } from "@/utils/listFirebaseErrors";
+import { referencesColumns } from "@/utils/TableColumns";
 import { getCurrentFiscalYear } from "@/utils/utils";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { signInWithEmailAndPassword, updatePassword } from "firebase/auth";
@@ -40,6 +58,7 @@ import { CircleAlert, Pencil } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
+import "yup-phone-lite";
 
 const ArtistItem = ({
   label,
@@ -120,6 +139,163 @@ const ArtistItem = ({
       <Label className="font-semibold">{label}</Label>
       {editing ? <>{item}</> : <p>{value || "-"}</p>}
     </div>
+  );
+};
+const AddReference = ({ open, onOpenChange, sheetProps }) => {
+  return (
+    <Sheet open={open} onOpenChange={onOpenChange} {...sheetProps}>
+      <SheetContent className="min-w-[30%]">
+        <SheetHeader>
+          <SheetTitle>{sheetProps.title}</SheetTitle>
+          <SheetDescription>
+            Please fill out the form to add a new reference
+          </SheetDescription>
+          <AddReferenceForm
+            sheetProps={sheetProps}
+            onOpenChange={onOpenChange}
+          />
+        </SheetHeader>
+      </SheetContent>
+    </Sheet>
+  );
+};
+const referenceSchema = yup.object({
+  firstName: yup.string().required("Reference name is required"),
+  lastName: yup.string().required("Reference name is required"),
+  referenceEmail: yup.string().email().required("Reference email is required"),
+  referencePhone: yup
+    .string()
+    .phone("US", "Please enter a valid phone number")
+    .required("A Phone number is required"),
+  district: yup.object().required("District is required"),
+});
+const AddReferenceForm = ({ sheetProps, onOpenChange }) => {
+  const [addReference, { isLoading }] = useAddOrUpdateRecordMutation();
+  const referenceForm = useForm({
+    resolver: yupResolver(referenceSchema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      referenceEmail: "",
+      referencePhone: "",
+      district: "",
+    },
+  });
+  const addReferenceSubmit = async (data) => {
+    try {
+      await addReference({
+        to: import.meta.env.VITE_QUICKBASE_REFERENCES_TABLE_ID,
+        data: [
+          {
+            6: {
+              value: data.firstName,
+            },
+            7: {
+              value: data.lastName,
+            },
+            8: {
+              value: data.referenceEmail,
+            },
+            9: {
+              value: data.referencePhone,
+            },
+            10: {
+              value: data.district.identifier,
+            },
+            12: {
+              value: sheetProps.artistRecordId,
+            },
+          },
+        ],
+      }).then((res) => {
+        onOpenChange(false);
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  return (
+    <Form {...referenceForm}>
+      <form
+        onSubmit={referenceForm.handleSubmit(addReferenceSubmit)}
+        className="flex w-full flex-col gap-3"
+      >
+        <FormField
+          control={referenceForm.control}
+          name="firstName"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>First Name</FormLabel>
+              <FormControl>
+                <Input placeholder="First Name" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={referenceForm.control}
+          name="lastName"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Last Name</FormLabel>
+              <FormControl>
+                <Input placeholder="Last Name" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={referenceForm.control}
+          name="referenceEmail"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input placeholder="Email" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={referenceForm.control}
+          name="referencePhone"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Phone</FormLabel>
+              <FormControl>
+                <Input placeholder="Phone" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={referenceForm.control}
+          name="district"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <CustomSelect
+                  data={ALL_DISTRICTS}
+                  label={"District"}
+                  placeholder="District"
+                  value={field.value}
+                  setValue={field.onChange}
+                  nameOnly
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button type="submit" isLoading={isLoading}>
+          Submit
+        </Button>
+      </form>
+    </Form>
   );
 };
 
@@ -235,6 +411,12 @@ const ArtistInformationPage = () => {
     ],
     where: `{7.EX.${artistRecordId}} AND {25.EX.${getCurrentFiscalYear()}}`,
   });
+  const { data: referencesData, isLoading: isReferencesLoading } =
+    useQueryForDataQuery({
+      from: import.meta.env.VITE_QUICKBASE_REFERENCES_TABLE_ID,
+      select: [3, 6, 7, 8, 9, 10, 11, 12],
+      where: `{12.EX.${artistRecordId}}`,
+    });
   useEffect(() => {
     if (artistsData) {
       resetInformation();
@@ -317,6 +499,19 @@ const ArtistInformationPage = () => {
     setPaymentType(artistsData.data[0][30].value);
     setPayeeName(artistsData.data[0][31].value);
   };
+  const formatData = (d) => {
+    const { data } = d;
+    return data.map((record) => {
+      return {
+        id: record[3].value,
+        firstName: record[6].value,
+        lastName: record[7].value,
+        email: record[8].value,
+        phone: record[9].value,
+        district: record[11].value,
+      };
+    });
+  };
 
   if (isArtistsLoading) {
     return (
@@ -367,158 +562,190 @@ const ArtistInformationPage = () => {
           <Skeleton className="h-[20px] w-[200px] rounded-full" />
         </div>
       ) : (
-        <div className="flex flex-row gap-4">
-          <div className="flex w-[50%] flex-col gap-3 rounded border border-gray-200 bg-white p-2.5">
-            <h1 className="text-xl font-semibold">General Information</h1>
-            <ArtistItem
-              label="Artist / Org"
-              value={artistVal}
-              setValue={setArtistVal}
-              editing={editing}
-            />
-            <ArtistItem
-              label="Number of Performers"
-              value={performersVal}
-              setValue={setPerformersVal}
-              editing={editing}
-              dropdown={true}
-            />
-            <ArtistItem
-              label="Email"
-              value={emailVal}
-              setValue={setEmailVal}
-              editing={editing}
-            />
-            <ArtistItem
-              label="Phone"
-              value={phoneVal}
-              setValue={setPhoneVal}
-              editing={editing}
-            />
-            <ArtistItem
-              label="Address"
-              value={addressVal}
-              setValue={setAddressObject}
-              editing={editing}
-              address={addressObject}
-            />
-            <ArtistItem
-              label="Website"
-              value={websiteVal}
-              setValue={setWebsiteVal}
-              editing={editing}
-            />
-            <Sheet
-              open={changePasswordOpen}
-              onOpenChange={setChangePasswordOpen}
-            >
-              <SheetTrigger
-                onClick={() => setChangePasswordOpen(true)}
-                className="mt-3 w-fit cursor-pointer text-sm text-blue-500 hover:underline"
-              >
-                Change Password
-              </SheetTrigger>
-              <SheetContent className="min-w-[30%]">
-                <Form {...form}>
-                  <form
-                    onSubmit={form.handleSubmit(onSubmit)}
-                    className="flex w-full flex-col gap-3"
-                  >
-                    <div>
-                      <p className="text-2xl font-bold">Change Password</p>
-                      <p className="text-gray-500">
-                        {" "}
-                        Ensure your account is using a long, random password to
-                        stay secure.
-                      </p>
-                    </div>
-                    <FormField
-                      control={form.control}
-                      name="currentPassword"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Current Password</FormLabel>
-                          <FormControl>
-                            <PasswordInput
-                              placeholder="Current Password"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="newPassword"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>New Password</FormLabel>
-                          <FormControl>
-                            <PasswordInput
-                              placeholder="New Password"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="confirmNewPassword"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Confirm Password</FormLabel>
-                          <FormControl>
-                            <PasswordInput
-                              placeholder="Confirm Password"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <Button type="submit" className="w-fit">
-                      Save
-                    </Button>
-                  </form>
-                </Form>
-              </SheetContent>
-            </Sheet>
-            {editing && (
-              <div className="flex gap-3">
-                <Button
-                  className="w-fit"
-                  variant="secondary"
-                  onClick={() => cancelEdit()}
-                >
-                  Cancel
-                </Button>
-                <Button className="w-fit" onClick={() => onSave()}>
-                  Save
-                </Button>
-              </div>
-            )}
-          </div>
-          <div className="flex w-[50%] flex-col gap-3 rounded border border-gray-200 bg-white p-2.5">
-            <h1 className="text-xl font-semibold">Payment Information</h1>
-            <ArtistItem
-              label="Payment Type"
-              value={paymentType}
-              setValue={setPaymentType}
-              editing={false}
-            />
-            {paymentType === "Check" && (
+        <div className="grid grid-cols-2 gap-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>General Information</CardTitle>
+              <CardDescription>
+                General information about artist
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-3">
               <ArtistItem
-                label="Payee Name"
-                value={payeeName}
-                setValue={setPayeeName}
+                label="Artist / Org"
+                value={artistVal}
+                setValue={setArtistVal}
+                editing={editing}
+              />
+              <ArtistItem
+                label="Number of Performers"
+                value={performersVal}
+                setValue={setPerformersVal}
+                editing={editing}
+                dropdown={true}
+              />
+              <ArtistItem
+                label="Email"
+                value={emailVal}
+                setValue={setEmailVal}
+                editing={editing}
+              />
+              <ArtistItem
+                label="Phone"
+                value={phoneVal}
+                setValue={setPhoneVal}
+                editing={editing}
+              />
+              <ArtistItem
+                label="Address"
+                value={addressVal}
+                setValue={setAddressObject}
+                editing={editing}
+                address={addressObject}
+              />
+              <ArtistItem
+                label="Website"
+                value={websiteVal}
+                setValue={setWebsiteVal}
+                editing={editing}
+              />
+              <Sheet
+                open={changePasswordOpen}
+                onOpenChange={setChangePasswordOpen}
+              >
+                <SheetTrigger
+                  onClick={() => setChangePasswordOpen(true)}
+                  className="mt-3 w-fit cursor-pointer text-sm text-blue-500 hover:underline"
+                >
+                  Change Password
+                </SheetTrigger>
+                <SheetContent className="min-w-[30%]">
+                  <Form {...form}>
+                    <form
+                      onSubmit={form.handleSubmit(onSubmit)}
+                      className="flex w-full flex-col gap-3"
+                    >
+                      <div>
+                        <p className="text-2xl font-bold">Change Password</p>
+                        <p className="text-gray-500">
+                          {" "}
+                          Ensure your account is using a long, random password
+                          to stay secure.
+                        </p>
+                      </div>
+                      <FormField
+                        control={form.control}
+                        name="currentPassword"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Current Password</FormLabel>
+                            <FormControl>
+                              <PasswordInput
+                                placeholder="Current Password"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="newPassword"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>New Password</FormLabel>
+                            <FormControl>
+                              <PasswordInput
+                                placeholder="New Password"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="confirmNewPassword"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Confirm Password</FormLabel>
+                            <FormControl>
+                              <PasswordInput
+                                placeholder="Confirm Password"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <Button type="submit" className="w-fit">
+                        Save
+                      </Button>
+                    </form>
+                  </Form>
+                </SheetContent>
+              </Sheet>
+              {editing && (
+                <div className="flex gap-3">
+                  <Button
+                    className="w-fit"
+                    variant="secondary"
+                    onClick={() => cancelEdit()}
+                  >
+                    Cancel
+                  </Button>
+                  <Button className="w-fit" onClick={() => onSave()}>
+                    Save
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Payment Information</CardTitle>
+              <CardDescription>
+                Payment information about artist
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-3">
+              <ArtistItem
+                label="Payment Type"
+                value={paymentType}
+                setValue={setPaymentType}
                 editing={false}
               />
-            )}
-          </div>
+              {paymentType === "Check" && (
+                <ArtistItem
+                  label="Payee Name"
+                  value={payeeName}
+                  setValue={setPayeeName}
+                  editing={false}
+                />
+              )}
+            </CardContent>
+          </Card>
+          {isReferencesLoading ? (
+            <Spinner />
+          ) : (
+            <div className="col-span-2">
+              <DataGrid
+                tableTitle={"References"}
+                data={formatData(referencesData)}
+                columns={referencesColumns}
+                readOnly={true}
+                noSearch
+                noFilter
+                noSort
+                addButtonText="Add Reference"
+                CustomAddComponent={AddReference}
+                sheetProps={{ title: "Add Reference", artistRecordId }}
+              />
+            </div>
+          )}
         </div>
       )}
     </div>
