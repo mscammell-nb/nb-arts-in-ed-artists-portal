@@ -1,3 +1,4 @@
+import { FISCAL_YEAR_FIRST_MONTH } from "@/constants/constants";
 import { signOut } from "@/redux/slices/authSlice";
 
 export const capitalizeString = (str) => {
@@ -20,7 +21,9 @@ export const getCurrentFiscalYearKey = () => {
   const month = d.getMonth() + 1;
   const START_YEAR = 13;
   const fiscalYearKey =
-    month > 6 ? year - 2000 - START_YEAR + 1 : year - 2000 - START_YEAR;
+    month >= FISCAL_YEAR_FIRST_MONTH
+      ? year - 2000 - START_YEAR + 1
+      : year - 2000 - START_YEAR;
   return fiscalYearKey;
 };
 
