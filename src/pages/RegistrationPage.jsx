@@ -6,13 +6,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { useNavigate } from "react-router-dom";
-import { PasswordInput } from "../components/ui/password-input";
-import { useToast } from "@/components/ui/use-toast";
-import { useState, useEffect } from "react";
-import { getCurrentFiscalYearKey } from "@/utils/utils";
-import { capitalizeString } from "@/utils/utils";
 import {
   Form,
   FormControl,
@@ -21,11 +14,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useForm, useFieldArray } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
-import { useAddOrUpdateRecordMutation } from "@/redux/api/quickbaseApi";
-import { STATES, VALID_WEBSITE_URL_REGEX } from "@/constants/constants";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -33,13 +22,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Link } from "react-router-dom";
-import Steps from "../components/Steps";
-import { Plus, Trash2 } from "lucide-react";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@/firebaseConfig";
-import { useDispatch } from "react-redux";
+import { useToast } from "@/components/ui/use-toast";
+import { STATES, VALID_WEBSITE_URL_REGEX } from "@/constants/constants";
+import { useAddOrUpdateRecordMutation } from "@/redux/api/quickbaseApi";
 import { signUp } from "@/redux/slices/authSlice";
+import { capitalizeString, getCurrentFiscalYearKey } from "@/utils/utils";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { Plus, Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useFieldArray, useForm } from "react-hook-form";
+import { useDispatch } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import * as yup from "yup";
+import Steps from "../components/Steps";
+import { PasswordInput } from "../components/ui/password-input";
 
 const STEP_TITLES = [
   "Personal Information",
@@ -818,6 +814,3 @@ const RegistrationPage = () => {
 };
 
 export default RegistrationPage;
-
-// TODO: Try to fix the remove performer button bug. When I try to delete an empty performer, I see the validation error message and I gotta click again to delete it.
-// TODO: Try to fix the validation on-load problem.
