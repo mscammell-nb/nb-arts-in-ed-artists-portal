@@ -400,7 +400,6 @@ const NewProgramPage = () => {
         description: "There was an error adding the program.",
         variant: "destructive",
       });
-      console.log(isAddProgramError);
     }
   }, [toast, isAddProgramSuccess, isAddProgramError, isAddProgramError]);
 
