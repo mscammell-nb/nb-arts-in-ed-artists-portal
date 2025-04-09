@@ -75,8 +75,8 @@ const FileUploadPage = () => {
   const { data: documentsData, isLoading: isDocumentsDataLoading } =
     useQueryForDataQuery({
       from: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
-      select: [3, 6, 7, 9, 10, 11, 12, 14],
-      where: `{9.EX.${artist}}`,
+      select: [3, 6, 7, 9, 10, 11, 12, 14, 17],
+      where: `{9.EX.${artist}} AND {17.EX.${true}}`,
       sortBy: [{ fieldId: 10 }, { order: "DESC" }],
     });
 
@@ -159,7 +159,7 @@ const FileUploadPage = () => {
             },
           },
           6: { value: selectedType },
-          17: { value: false },
+          17: { value: true },
         },
       ],
     });
