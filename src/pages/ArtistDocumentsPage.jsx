@@ -1,7 +1,7 @@
+import DataGrid from "@/components/data-grid/data-grid";
 import { DropZone } from "@/components/DropZone";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import DataGrid from "@/components/data-grid/data-grid";
 import {
   Dialog,
   DialogClose,
@@ -22,13 +22,13 @@ import { Separator } from "@/components/ui/separator";
 import Spinner from "@/components/ui/Spinner";
 import { toast } from "@/components/ui/use-toast";
 import {
-  useAddOrUpdateRecordMutation,
-  useQueryForDataQuery,
-} from "@/redux/api/quickbaseApi";
-import {
   TICKET_VENDOR,
   TICKET_VENDOR_EXCEPTION_FILES,
 } from "@/constants/constants";
+import {
+  useAddOrUpdateRecordMutation,
+  useQueryForDataQuery,
+} from "@/redux/api/quickbaseApi";
 import { documentColumns } from "@/utils/TableColumns";
 import {
   downloadFile,
@@ -117,7 +117,10 @@ const ArtistDocumentsPage = () => {
         const inTicketVendorException = TICKET_VENDOR_EXCEPTION_FILES.includes(
           type[31].value,
         );
-        if ((!inUserTypes && !isTicketVendor) || (!inUserTypes && !inTicketVendorException)) {
+        if (
+          (!inUserTypes && !isTicketVendor) ||
+          (!inUserTypes && !inTicketVendorException)
+        ) {
           setMissingFiles((curr) => [...curr, type[31].value]);
         }
       }
@@ -307,19 +310,14 @@ const ArtistDocumentsPage = () => {
         </Dialog>
       </div>
       {documentsData && (
-        <DataGrid data={formatData(documentsData)} columns={documentColumns()} readOnly />
+        <DataGrid
+          data={formatData(documentsData)}
+          columns={documentColumns()}
+          readOnly
+        />
       )}
     </div>
   );
 };
 
 export default ArtistDocumentsPage;
-// TODO: Email all docs in welcome email when artist is created (from which email?)
-// TODO: For the missing files, separate required files from optional files.
-/*
-  - Vendor Application (Required)
-  - w-9 (Required)
-  - OSPRA 102 (based on district)
-  - OSPRA 104 (based on district)
-  - Insurance Specification (artist information)
-*/
