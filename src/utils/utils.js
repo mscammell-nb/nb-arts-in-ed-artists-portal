@@ -47,7 +47,7 @@ export const getNextFiscalYear = () => {
   const year = d.getFullYear();
   const month = d.getMonth() + 1;
   const fiscalYear =
-    month > 5
+    month > FISCAL_YEAR_FIRST_MONTH - 1
       ? (year + 1).toString().slice(2) + "/" + (year + 2).toString().slice(2)
       : year.toString().slice(2) + "/" + (year + 1).toString().slice(2);
 
