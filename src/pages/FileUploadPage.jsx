@@ -29,10 +29,9 @@ import { downloadFile, getCurrentFiscalYearKey } from "@/utils/utils";
 import { Label } from "@radix-ui/react-dropdown-menu";
 import { DownloadIcon, Loader2, UploadIcon } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 
 import { handleSignout } from "@/utils/utils";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 const INSTRUCTIONS = [
@@ -44,24 +43,23 @@ const INSTRUCTIONS = [
 
 const FileUploadPage = () => {
   const [documentTypes, setDocumentTypes] = useState(null);
-  const [fileInputState, setFileInputState] = useState(null);
   const [selectedType, setSelectedType] = useState("");
   const [fileUploads, setFileUploads] = useState(null);
   const [open, setOpen] = useState(false);
-  const [missingFiles, setMissingFiles] = useState([]);
   const artist = localStorage.getItem("artist/org");
+  const fiscalYear = getCurrentFiscalYearKey();
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const { user } = useSelector((state) => state.auth);
 
-  const { data: artistsData, isLoading: isArtistDataLoading } =
+  const { data: artistData, isLoading: isArtistDataLoading } =
     useQueryForDataQuery(
       user
         ? {
             from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
-            select: [46],
+            select: [48],
             where: `{10.EX.${user.uid}}`,
           }
         : { skip: !user, refetchOnMountOrArgChange: true },
@@ -142,7 +140,6 @@ const FileUploadPage = () => {
       });
       return;
     }
-    const fiscalYear = getCurrentFiscalYearKey();
     const artist = localStorage.getItem("artist/org");
     let base64 = await fileToBase64(fileUploads);
     base64 = base64.split("base64,")[1];
@@ -196,13 +193,17 @@ const FileUploadPage = () => {
     where: "{'13'.EX.'true'}",
   });
 
-  if (isDocumentTypesLoading) {
+  if (isDocumentTypesLoading || isArtistDataLoading) {
     return (
       <div className="pt-20">
         <Spinner />
       </div>
     );
   }
+
+  // TODO: MAKE THIS CHANGE FISCAL YEAR TO BE THE FISCAL YEAR THAT IT SHOULD BE
+  // TODO: FOR EXAMPLE, IT WILL BE 25/26 IF IT'S PAST THE CUTOFF DATE.
+  console.log(artistData.data[0][48].value);
 
   if (isDocumentTypesError) {
     console.error(documentTypesError);
@@ -223,8 +224,6 @@ const FileUploadPage = () => {
       acc[documentType[6].value] = [];
       return acc;
     }, {});
-
-    setFileInputState(initialFileInputState);
   }
 
   if (isDocumentsDataLoading || isFileTypesLoading) {
