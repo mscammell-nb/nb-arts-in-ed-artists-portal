@@ -102,11 +102,11 @@ const RegistrationRenewalPage = () => {
   const { toast } = useToast();
   const [fileUploads, setFileUploads] = useState(null);
   const [documentTypes, setDocumentTypes] = useState(null);
-  const [fileInputState, setFileInputState] = useState(null);
   const [selectedType, setSelectedType] = useState("");
   const [open, setOpen] = useState(false);
-  const [missingFiles, setMissingFiles] = useState([]);
   const artist = localStorage.getItem("artist/org");
+  const fiscalYear = getCurrentFiscalYear();
+  const fiscalYearKey = getCurrentFiscalYearKey();
 
   const {
     data: artistData,
@@ -165,8 +165,8 @@ const RegistrationRenewalPage = () => {
         city: data[15].value,
         state: data[16].value,
         zipCode: data[17].value,
-        fiscalYear: getCurrentFiscalYear(),
-        fiscalYearKey: getCurrentFiscalYearKey(),
+        fiscalYear: fiscalYear,
+        fiscalYearKey: fiscalYearKey,
       };
       reset(defaultValues);
       setValue("state", data[16].value);
@@ -209,7 +209,7 @@ const RegistrationRenewalPage = () => {
             value: "United States",
           },
           24: {
-            value: data.fiscalYearKey,
+            value: fiscalYearKey,
           },
         },
       ],
@@ -276,7 +276,6 @@ const RegistrationRenewalPage = () => {
       });
       return;
     }
-    const fiscalYear = getCurrentFiscalYearKey();
     const artist = localStorage.getItem("artist/org");
     let base64 = await toBase64(fileUploads);
     base64 = base64.split("base64,")[1];
@@ -284,7 +283,7 @@ const RegistrationRenewalPage = () => {
       to: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
       data: [
         {
-          10: { value: fiscalYear },
+          10: { value: fiscalYearKey },
           9: { value: artist },
           7: {
             value: {
@@ -293,6 +292,7 @@ const RegistrationRenewalPage = () => {
             },
           },
           6: { value: selectedType },
+          17: { value: false },
         },
       ],
     });
@@ -354,16 +354,13 @@ const RegistrationRenewalPage = () => {
       from: import.meta.env.VITE_QUICKBASE_DOCUMENT_TYPES_TABLE_ID,
       select: [3, 7, 31],
     });
-  const {
-    data: documentsData,
-    isLoading: isDocumentsDataLoading,
-    refetch,
-  } = useQueryForDataQuery({
-    from: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
-    select: [3, 6, 7, 9, 10, 11, 12, 14, 17],
-    where: `{9.EX.${artist}} AND {10.EX.${fiscalYear}}`,
-    sortBy: [{ fieldId: 10 }, { order: "DESC" }],
-  });
+  const { data: documentsData, isLoading: isDocumentsDataLoading } =
+    useQueryForDataQuery({
+      from: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
+      select: [3, 6, 7, 9, 10, 11, 12, 14, 17],
+      where: `{9.EX.${artist}} AND {10.EX.${fiscalYear}} AND {17.EX.${false}}`,
+      sortBy: [{ fieldId: 10 }, { order: "DESC" }],
+    });
 
   const [
     removeDocument,
