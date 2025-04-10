@@ -1,6 +1,5 @@
 import { FISCAL_YEAR_FIRST_MONTH, TICKET_VENDOR } from "@/constants/constants";
 import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
-import { useSelector } from "react-redux";
 import { getNextFiscalYear } from "./utils";
 
 export const isRegistrationExpiring = (user) => {
@@ -52,9 +51,9 @@ export const isRegistrationExpiring = (user) => {
   if (isTicketVendor) return false;
 
   // Check if artist is already registered for next fiscal year
-  const registeredNextYear = registrationData.data.forEach((registration) => {
-    if (registration[25].value === nextFiscalYear) {
-      return false;
+  const registeredNextYear = registrationData.data.some((registration) => {
+    if (registration[25].value == nextFiscalYear) {
+      return true;
     }
   });
 
