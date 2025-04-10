@@ -22,6 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import Spinner from "@/components/ui/Spinner";
 import { useToast } from "@/components/ui/use-toast";
 import { STATES, VALID_WEBSITE_URL_REGEX } from "@/constants/constants";
 import {
@@ -97,21 +98,20 @@ const RegistrationPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { user, authReady } = useSelector((state) => state.auth);
-
-  const { data: artistData, isLoading: isArtistDataLoading } =
-    useQueryForDataQuery(
-      user
-        ? {
-            from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
-            select: [48],
-            where: `{10.EX.${user.uid}}`,
-          }
-        : { skip: !user, refetchOnMountOrArgChange: true },
-    );
-
-  const cutoffMonth = new Date(artistData.data[0][48].value).getMonth();
-  const cutoffDay = new Date(artistData.data[0][48].value).getDate() + 1;
-  const fiscalYearKey = getCutoffFiscalYearKey(cutoffMonth, cutoffDay);
+  const {
+    data: artistData,
+    isLoading: isArtistDataLoading,
+    isError: isArtistDataError,
+    error: artistDataError,
+  } = useQueryForDataQuery(
+    (user && authReady)
+      ? {
+          from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
+          select: [48],
+          where: `{10.EX.${user.uid}}`,
+        }
+      : { skip: !user, refetchOnMountOrArgChange: true },
+  );
 
   const getCurrentStepSchema = () => {
     switch (formStep) {
@@ -253,6 +253,26 @@ const RegistrationPage = () => {
 
     return body;
   };
+
+  if (isArtistDataError) {
+    console.log(artistData);
+    console.log(isArtistDataLoading);
+    console.log(isArtistDataError);
+    console.log(artistDataError);
+    return <div></div>;
+  }
+
+  if (isArtistDataLoading) {
+    return (
+      <div className="pt-20">
+        <Spinner />
+      </div>
+    );
+  }
+
+  const cutoffMonth = new Date(artistData.data[0][48].value).getMonth();
+  const cutoffDay = new Date(artistData.data[0][48].value).getDate() + 1;
+  const fiscalYearKey = getCutoffFiscalYearKey(cutoffMonth, cutoffDay);
 
   const formatDataForTheArtistRegistrationTable = (
     data,
