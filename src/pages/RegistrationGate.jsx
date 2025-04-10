@@ -60,7 +60,7 @@ const RegistrationGate = () => {
     return (
       <div className="flex flex-col items-start gap-4">
         <div>Your registration request is pending</div>
-        <Button onClick={() => handleSignOut(dispatch, navigate)}>
+        <Button onClick={() => handleSignout(dispatch, navigate)}>
           Sign out
         </Button>
       </div>
@@ -81,7 +81,7 @@ const RegistrationGate = () => {
           <Button>
             <Link to={"/registration-renewal"}>Registration Renewal</Link>
           </Button>
-          <Button variant="outline" onClick={() => handleSignout()}>
+          <Button variant="outline" onClick={() => handleSignout(dispatch, navigate)}>
             Sign Out
           </Button>
         </div>
