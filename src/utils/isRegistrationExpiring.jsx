@@ -3,8 +3,11 @@ import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
 import { useSelector } from "react-redux";
 import { getNextFiscalYear } from "./utils";
 
-export const isRegistrationExpiring = () => {
-  const { user } = useSelector((state) => state.auth);
+export const isRegistrationExpiring = (user) => {
+  const nextFiscalYear = getNextFiscalYear();
+  const date = new Date();
+  const currMonth = date.getMonth();
+  const currDay = date.getDate();
 
   const {
     data: registrationData,
@@ -35,11 +38,6 @@ export const isRegistrationExpiring = () => {
         }
       : { skip: !user, refetchOnMountOrArgChange: true },
   );
-
-  const nextFiscalYear = getNextFiscalYear();
-  const date = new Date();
-  const currMonth = date.getMonth();
-  const currDay = date.getDate();
 
   if (
     isRegistrationDataLoading ||

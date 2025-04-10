@@ -24,6 +24,8 @@ const formatData = (unformattedData) => {
 
 const ArtistRegistrationsPage = () => {
   const { user } = useSelector((state) => state.auth);
+  const expired = isRegistrationExpiring(user);
+  
   const {
     data: registrationData,
     isError: isRegistrationDataError,
@@ -58,7 +60,7 @@ const ArtistRegistrationsPage = () => {
 
   return (
     <div className="w-full">
-      {isRegistrationExpiring() && (
+      {expired && (
         <Card className="z-999 flex min-w-fit max-w-xl bg-yellow-100 text-gray-800 shadow-lg">
           <CardHeader className="flex flex-col items-start">
             <CardHeader className="text-xl font-semibold">
