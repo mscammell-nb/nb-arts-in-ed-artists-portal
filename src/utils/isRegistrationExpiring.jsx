@@ -1,9 +1,4 @@
-import {
-  FISCAL_YEAR_FIRST_MONTH,
-  REGISTRATION_CUTOFF_DAY,
-  REGISTRATION_CUTOFF_MONTH,
-  TICKET_VENDOR,
-} from "@/constants/constants";
+import { FISCAL_YEAR_FIRST_MONTH, TICKET_VENDOR } from "@/constants/constants";
 import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
 import { useSelector } from "react-redux";
 import { getNextFiscalYear } from "./utils";
@@ -68,10 +63,14 @@ export const isRegistrationExpiring = () => {
   if (registeredNextYear) return false;
 
   // Not registered for next fiscal year, check month and day
+  const cutoffMonth = new Date(artistData.data[0][48].value).getMonth();
+  const cutoffDay = new Date(artistData.data[0][48].value).getDate() + 1;
+
   if (
-    currMonth >= REGISTRATION_CUTOFF_MONTH &&
-    currDay >= REGISTRATION_CUTOFF_DAY &&
-    currMonth < FISCAL_YEAR_FIRST_MONTH
+    currMonth > cutoffMonth ||
+    (currMonth == cutoffMonth &&
+      currMonth < FISCAL_YEAR_FIRST_MONTH &&
+      currDay >= cutoffDay)
   ) {
     return true;
   }

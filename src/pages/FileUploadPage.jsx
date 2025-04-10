@@ -25,7 +25,11 @@ import {
   useQueryForDataQuery,
 } from "@/redux/api/quickbaseApi";
 import { documentColumns } from "@/utils/TableColumns";
-import { downloadFile, getCurrentFiscalYearKey } from "@/utils/utils";
+import {
+  downloadFile,
+  getCurrentFiscalYearKey,
+  getNextFiscalYearKey,
+} from "@/utils/utils";
 import { Label } from "@radix-ui/react-dropdown-menu";
 import { DownloadIcon, Loader2, UploadIcon } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -47,7 +51,6 @@ const FileUploadPage = () => {
   const [fileUploads, setFileUploads] = useState(null);
   const [open, setOpen] = useState(false);
   const artist = localStorage.getItem("artist/org");
-  const fiscalYear = getCurrentFiscalYearKey();
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -77,6 +80,18 @@ const FileUploadPage = () => {
       where: `{9.EX.${artist}} AND {17.EX.${true}}`,
       sortBy: [{ fieldId: 10 }, { order: "DESC" }],
     });
+
+  const {
+    data: documentTypesData,
+    isLoading: isDocumentTypesLoading,
+    isSuccess: isDocumentTypesSuccess,
+    isError: isDocumentTypesError,
+    error: documentTypesError,
+  } = useQueryForDataQuery({
+    from: import.meta.env.VITE_QUICKBASE_DOCUMENT_TYPES_TABLE_ID,
+    select: [3, 6, 12],
+    where: "{'13'.EX.'true'}",
+  });
 
   const [
     addDocument,
@@ -123,6 +138,31 @@ const FileUploadPage = () => {
     });
   };
 
+  if (isDocumentTypesLoading || isDocumentTypesLoading || isArtistDataLoading) {
+    return (
+      <div className="pt-20">
+        <Spinner />
+      </div>
+    );
+  }
+
+  const cutoffMonth = new Date(artistData.data[0][48].value).getMonth();
+  const cutoffDay = new Date(artistData.data[0][48].value).getDate() + 1;
+  const date = new Date();
+  const currMonth = date.getMonth();
+  const currDay = date.getDate();
+
+  var fiscalYearKey;
+
+  if (
+    currMonth > cutoffMonth ||
+    (currMonth == cutoffMonth && currDay >= cutoffDay)
+  ) {
+    fiscalYearKey = getNextFiscalYearKey();
+  } else {
+    fiscalYearKey = getCurrentFiscalYearKey();
+  }
+
   const uploadFile = async () => {
     if (fileUploads === null) {
       toast({
@@ -147,7 +187,7 @@ const FileUploadPage = () => {
       to: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
       data: [
         {
-          10: { value: fiscalYear },
+          10: { value: fiscalYearKey },
           9: { value: artist },
           7: {
             value: {
@@ -180,30 +220,6 @@ const FileUploadPage = () => {
       versionNumber,
     );
   };
-
-  const {
-    data: documentTypesData,
-    isLoading: isDocumentTypesLoading,
-    isSuccess: isDocumentTypesSuccess,
-    isError: isDocumentTypesError,
-    error: documentTypesError,
-  } = useQueryForDataQuery({
-    from: import.meta.env.VITE_QUICKBASE_DOCUMENT_TYPES_TABLE_ID,
-    select: [3, 6, 12],
-    where: "{'13'.EX.'true'}",
-  });
-
-  if (isDocumentTypesLoading || isArtistDataLoading) {
-    return (
-      <div className="pt-20">
-        <Spinner />
-      </div>
-    );
-  }
-
-  // TODO: MAKE THIS CHANGE FISCAL YEAR TO BE THE FISCAL YEAR THAT IT SHOULD BE
-  // TODO: FOR EXAMPLE, IT WILL BE 25/26 IF IT'S PAST THE CUTOFF DATE.
-  console.log(artistData.data[0][48].value);
 
   if (isDocumentTypesError) {
     console.error(documentTypesError);

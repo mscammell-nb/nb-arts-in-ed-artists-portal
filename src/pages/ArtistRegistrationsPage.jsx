@@ -1,13 +1,8 @@
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import DataGrid from "@/components/data-grid/data-grid";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import Spinner from "@/components/ui/Spinner";
-import {
-  FISCAL_YEAR_FIRST_MONTH,
-  REGISTRATION_CUTOFF_DAY,
-  REGISTRATION_CUTOFF_MONTH,
-} from "@/constants/constants";
+import { isRegistrationExpiring } from "@/utils/isRegistrationExpiring";
 import { registrationColumns } from "@/utils/TableColumns";
-import { getNextFiscalYear } from "@/utils/utils";
 import { useSelector } from "react-redux";
 import { useQueryForDataQuery } from "../redux/api/quickbaseApi";
 
@@ -60,32 +55,6 @@ const ArtistRegistrationsPage = () => {
       </div>
     );
   }
-
-  const isRegistrationExpiring = () => {
-    const nextFiscalYear = getNextFiscalYear();
-    const date = new Date();
-    const currMonth = date.getMonth();
-    const currDay = date.getDate();
-
-    // Check if artist is already registered for next fiscal year
-    const registeredNextYear = registrationData.data.forEach((registration) => {
-      if (registration[25].value === nextFiscalYear) {
-        return false;
-      }
-    });
-
-    if (registeredNextYear) return false;
-
-    // Not registered for next fiscal year, check month and day
-    if (
-      currMonth >= REGISTRATION_CUTOFF_MONTH &&
-      currDay >= REGISTRATION_CUTOFF_DAY &&
-      currMonth < FISCAL_YEAR_FIRST_MONTH
-    ) {
-      return true;
-    }
-    return false;
-  };
 
   return (
     <div className="w-full">
