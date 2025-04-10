@@ -30,7 +30,7 @@ export const isRegistrationExpiring = () => {
     user
       ? {
           from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
-          select: [3, 10, 46],
+          select: [3, 10, 46, 48],
           where: `{10.EX.${user.uid}}`,
         }
       : { skip: !user, refetchOnMountOrArgChange: true },
