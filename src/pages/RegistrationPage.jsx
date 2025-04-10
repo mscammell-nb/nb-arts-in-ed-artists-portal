@@ -24,14 +24,17 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 import { STATES, VALID_WEBSITE_URL_REGEX } from "@/constants/constants";
-import { useAddOrUpdateRecordMutation } from "@/redux/api/quickbaseApi";
+import {
+  useAddOrUpdateRecordMutation,
+  useQueryForDataQuery,
+} from "@/redux/api/quickbaseApi";
 import { signUp } from "@/redux/slices/authSlice";
-import { capitalizeString, getCurrentFiscalYearKey } from "@/utils/utils";
+import { capitalizeString, getCutoffFiscalYearKey } from "@/utils/utils";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Plus, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import Steps from "../components/Steps";
@@ -93,6 +96,22 @@ const RegistrationPage = () => {
 
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user, authReady } = useSelector((state) => state.auth);
+
+  const { data: artistData, isLoading: isArtistDataLoading } =
+    useQueryForDataQuery(
+      user
+        ? {
+            from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
+            select: [48],
+            where: `{10.EX.${user.uid}}`,
+          }
+        : { skip: !user, refetchOnMountOrArgChange: true },
+    );
+
+  const cutoffMonth = new Date(artistData.data[0][48].value).getMonth();
+  const cutoffDay = new Date(artistData.data[0][48].value).getDate() + 1;
+  const fiscalYearKey = getCutoffFiscalYearKey(cutoffMonth, cutoffDay);
 
   const getCurrentStepSchema = () => {
     switch (formStep) {
@@ -274,6 +293,9 @@ const RegistrationPage = () => {
           20: {
             value: "United States",
           },
+          24: {
+            value: fiscalYearKey,
+          },
         },
       ],
     };
@@ -301,7 +323,7 @@ const RegistrationPage = () => {
             value: capitalizeString(performer.lastName.trim()),
           },
           12: {
-            value: getCurrentFiscalYearKey(),
+            value: fiscalYearKey,
           },
           14: {
             value: artistRecordId,

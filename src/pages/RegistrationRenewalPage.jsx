@@ -27,6 +27,8 @@ import {
   downloadFile,
   getCurrentFiscalYear,
   getCurrentFiscalYearKey,
+  getCutoffFiscalYear,
+  getCutoffFiscalYearKey,
   parsePhoneNumber,
 } from "@/utils/utils";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -105,22 +107,24 @@ const RegistrationRenewalPage = () => {
   const [selectedType, setSelectedType] = useState("");
   const [open, setOpen] = useState(false);
   const artist = localStorage.getItem("artist/org");
-  const fiscalYear = getCurrentFiscalYear();
-  const fiscalYearKey = getCurrentFiscalYearKey();
+  const [fiscalYear, setFiscalYear] = useState(getCurrentFiscalYear());
+  const [fiscalYearKey, setFiscalYearKey] = useState(getCurrentFiscalYearKey());
 
   const {
     data: artistData,
+    isLoading: isArtistLoading,
     isError: isArtistDataError,
     error: artistDataError,
   } = useQueryForDataQuery(
     user
       ? {
           from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
-          select: [3, 6, 7, 8, 9, 11, 13, 14, 15, 16, 17, 31],
+          select: [3, 6, 7, 8, 9, 11, 13, 14, 15, 16, 17, 31, 48],
           where: `{10.EX.${user.uid}}`,
         }
       : { skip: !user, refetchOnMountOrArgChange: true },
   );
+
   const [
     addOrUpdateRecord,
     {
@@ -154,6 +158,12 @@ const RegistrationRenewalPage = () => {
   useEffect(() => {
     if (artistData) {
       const data = artistData.data[0];
+      const cutoffMonth = new Date(data[48].value).getMonth();
+      const cutoffDay = new Date(data[48].value).getDate() + 1;
+      const tempFiscalYear = getCutoffFiscalYear(cutoffMonth, cutoffDay);
+      const tempFiscalYearKey = getCutoffFiscalYearKey(cutoffMonth, cutoffDay);
+      setFiscalYear(tempFiscalYear);
+      setFiscalYearKey(tempFiscalYearKey);
       const defaultValues = {
         artistOrg: data[6].value,
         email: data[7].value,
@@ -165,8 +175,8 @@ const RegistrationRenewalPage = () => {
         city: data[15].value,
         state: data[16].value,
         zipCode: data[17].value,
-        fiscalYear: fiscalYear,
-        fiscalYearKey: fiscalYearKey,
+        fiscalYear: tempFiscalYear,
+        fiscalYearKey: tempFiscalYearKey,
       };
       reset(defaultValues);
       setValue("state", data[16].value);
@@ -174,6 +184,9 @@ const RegistrationRenewalPage = () => {
   }, [artistData, reset, setValue]);
 
   const formatDataForQuickbase = (data) => {
+    const cutoffMonth = new Date(artistData.data[0][48].value).getMonth();
+    const cutoffDay = new Date(artistData.data[0][48].value).getDate() + 1;
+    const fiscalYearKey = getCutoffFiscalYearKey(cutoffMonth, cutoffDay);
     const body = {
       to: import.meta.env.VITE_QUICKBASE_ARTIST_REGISTRATIONS_TABLE_ID,
       data: [
@@ -371,7 +384,12 @@ const RegistrationRenewalPage = () => {
     },
   ] = useDeleteRecordMutation();
 
-  if (isDocumentTypesLoading || isDocumentsDataLoading || isFileTypesLoading) {
+  if (
+    isArtistLoading ||
+    isDocumentTypesLoading ||
+    isDocumentsDataLoading ||
+    isFileTypesLoading
+  ) {
     return (
       <div className="pt-20">
         <Spinner />

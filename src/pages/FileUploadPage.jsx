@@ -25,11 +25,7 @@ import {
   useQueryForDataQuery,
 } from "@/redux/api/quickbaseApi";
 import { documentColumns } from "@/utils/TableColumns";
-import {
-  downloadFile,
-  getCurrentFiscalYearKey,
-  getNextFiscalYearKey,
-} from "@/utils/utils";
+import { downloadFile, getCutoffFiscalYearKey } from "@/utils/utils";
 import { Label } from "@radix-ui/react-dropdown-menu";
 import { DownloadIcon, Loader2, UploadIcon } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -148,20 +144,7 @@ const FileUploadPage = () => {
 
   const cutoffMonth = new Date(artistData.data[0][48].value).getMonth();
   const cutoffDay = new Date(artistData.data[0][48].value).getDate() + 1;
-  const date = new Date();
-  const currMonth = date.getMonth();
-  const currDay = date.getDate();
-
-  var fiscalYearKey;
-
-  if (
-    currMonth > cutoffMonth ||
-    (currMonth == cutoffMonth && currDay >= cutoffDay)
-  ) {
-    fiscalYearKey = getNextFiscalYearKey();
-  } else {
-    fiscalYearKey = getCurrentFiscalYearKey();
-  }
+  const fiscalYearKey = getCutoffFiscalYearKey(cutoffMonth, cutoffDay);
 
   const uploadFile = async () => {
     if (fileUploads === null) {
