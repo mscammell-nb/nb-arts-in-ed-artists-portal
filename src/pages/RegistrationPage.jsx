@@ -35,7 +35,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Plus, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import Steps from "../components/Steps";
@@ -97,21 +97,15 @@ const RegistrationPage = () => {
 
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { user, authReady } = useSelector((state) => state.auth);
   const {
-    data: artistData,
-    isLoading: isArtistDataLoading,
-    isError: isArtistDataError,
-    error: artistDataError,
-  } = useQueryForDataQuery(
-    (user && authReady)
-      ? {
-          from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
-          select: [48],
-          where: `{10.EX.${user.uid}}`,
-        }
-      : { skip: !user, refetchOnMountOrArgChange: true },
-  );
+    data: masterData,
+    isLoading: isMasterDataLoading,
+    isError: isMasterDataError,
+    error: masterDataError,
+  } = useQueryForDataQuery({
+    from: import.meta.env.VITE_QUICKBASE_MASTER_TABLE_ID,
+    select: [6, 9],
+  });
 
   const getCurrentStepSchema = () => {
     switch (formStep) {
@@ -254,24 +248,77 @@ const RegistrationPage = () => {
     return body;
   };
 
-  if (isArtistDataError) {
-    console.log(artistData);
-    console.log(isArtistDataLoading);
-    console.log(isArtistDataError);
-    console.log(artistDataError);
-    return <div></div>;
-  }
+  useEffect(() => {
+    if (
+      isAddArtistSuccess &&
+      addArtistData &&
+      isAddArtistRegistrationSuccess &&
+      addArtistRegistrationData &&
+      isAddPerformersSuccess &&
+      addPerformersData
+    ) {
+      toast({
+        variant: "success",
+        title: "Operation successful!",
+        description: "Your account has been created.",
+      });
+      navigate("/file-upload");
+    }
 
-  if (isArtistDataLoading) {
+    if (
+      (isAddArtistError && addArtistError) ||
+      (isAddArtistRegistrationError && addArtistRegistrationError) ||
+      (isAddPerformersError && addPerformersError)
+    ) {
+      let errorTitle = "Uh oh! Something went wrong.";
+      let errorMessage;
+
+      if (addArtistError) {
+        console.log("addArtistError: ", addArtistError);
+        errorTitle = "Error adding data to the Artists table";
+        const { message, description } = addArtistError.data;
+        errorMessage = `${message}: ${description}`;
+      } else if (addArtistRegistrationError) {
+        console.log("addArtistRegistrationError: ", addArtistRegistrationError);
+        errorTitle = "Error adding data to the ArtistRegistrations table";
+        errorMessage = addArtistRegistrationError.error;
+      }
+
+      toast({
+        variant: "destructive",
+        title: errorTitle,
+        description: errorMessage,
+      });
+    }
+  }, [
+    isAddArtistSuccess,
+    isAddArtistRegistrationSuccess,
+    addArtistData,
+    addArtistRegistrationData,
+    isAddArtistError,
+    isAddArtistRegistrationError,
+    addArtistError,
+    addArtistRegistrationError,
+    isAddPerformersSuccess,
+    addPerformersData,
+    addPerformersError,
+    toast,
+  ]);
+
+  useEffect(() => {
+    trigger();
+  }, [formStep]);
+
+  if (isMasterDataLoading) {
     return (
-      <div className="pt-20">
+      <div>
         <Spinner />
       </div>
     );
   }
 
-  const cutoffMonth = new Date(artistData.data[0][48].value).getMonth();
-  const cutoffDay = new Date(artistData.data[0][48].value).getDate() + 1;
+  const cutoffMonth = new Date(masterData.data[0][6].value).getMonth();
+  const cutoffDay = new Date(masterData.data[0][6].value).getDate() + 1;
   const fiscalYearKey = getCutoffFiscalYearKey(cutoffMonth, cutoffDay);
 
   const formatDataForTheArtistRegistrationTable = (
@@ -424,67 +471,6 @@ const RegistrationPage = () => {
       })
       .catch((err) => console.error(err));
   };
-
-  useEffect(() => {
-    if (
-      isAddArtistSuccess &&
-      addArtistData &&
-      isAddArtistRegistrationSuccess &&
-      addArtistRegistrationData &&
-      isAddPerformersSuccess &&
-      addPerformersData
-    ) {
-      toast({
-        variant: "success",
-        title: "Operation successful!",
-        description: "Your account has been created.",
-      });
-      navigate("/file-upload");
-    }
-
-    if (
-      (isAddArtistError && addArtistError) ||
-      (isAddArtistRegistrationError && addArtistRegistrationError) ||
-      (isAddPerformersError && addPerformersError)
-    ) {
-      let errorTitle = "Uh oh! Something went wrong.";
-      let errorMessage;
-
-      if (addArtistError) {
-        console.log("addArtistError: ", addArtistError);
-        errorTitle = "Error adding data to the Artists table";
-        const { message, description } = addArtistError.data;
-        errorMessage = `${message}: ${description}`;
-      } else if (addArtistRegistrationError) {
-        console.log("addArtistRegistrationError: ", addArtistRegistrationError);
-        errorTitle = "Error adding data to the ArtistRegistrations table";
-        errorMessage = addArtistRegistrationError.error;
-      }
-
-      toast({
-        variant: "destructive",
-        title: errorTitle,
-        description: errorMessage,
-      });
-    }
-  }, [
-    isAddArtistSuccess,
-    isAddArtistRegistrationSuccess,
-    addArtistData,
-    addArtistRegistrationData,
-    isAddArtistError,
-    isAddArtistRegistrationError,
-    addArtistError,
-    addArtistRegistrationError,
-    isAddPerformersSuccess,
-    addPerformersData,
-    addPerformersError,
-    toast,
-  ]);
-
-  useEffect(() => {
-    trigger();
-  }, [formStep]);
 
   return (
     <div className="flex w-full flex-col items-center justify-center gap-5 py-8">
