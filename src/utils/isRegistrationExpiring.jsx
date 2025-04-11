@@ -51,21 +51,11 @@ export const isRegistrationExpiring = (user) => {
   if (isTicketVendor) return false;
 
   // Check if artist is already registered for next fiscal year
-  console.log(registrationData.data);
   const registeredNextYear = registrationData.data.some((registration) => {
-    console.log("----Start----");
-    console.log(registration[25].value);
-    console.log(nextFiscalYear);
-    console.log(registration[25].value == nextFiscalYear);
     if (registration[25].value == nextFiscalYear) {
       return true;
     }
-    console.log("----End----");
   });
-
-  console.log("next year:");
-  console.log(registeredNextYear);
-  console.log("next year:");
 
   if (registeredNextYear) return false;
 

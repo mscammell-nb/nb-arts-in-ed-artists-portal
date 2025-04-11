@@ -452,7 +452,6 @@ const RegistrationPage = () => {
       .then(async (res) => {
         if (signUp.fulfilled.match(res)) {
           uid = res.payload.uid;
-          console.log(res.payload);
           const response = await addArtist(
             formatDataForTheArtistTable(data, uid),
           );
