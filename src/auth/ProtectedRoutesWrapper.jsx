@@ -40,9 +40,9 @@ const ProtectedRoutesWrapper = () => {
         navigate("/registration-gate");
       }
     }
-  }, [expired, approved, navigate, authReady, user]);
+  }, [expired, approved, authReady, user]);
 
-  if (!authReady) {
+  if (!authReady || isArtistLoading || !artistsData.data) {
     return (
       <div className="flex h-screen w-full items-center justify-center">
         <Spinner />
@@ -54,3 +54,5 @@ const ProtectedRoutesWrapper = () => {
 };
 
 export default ProtectedRoutesWrapper;
+
+// !: Currently there's a slight issue where if you type in a route you shouldn't have access to it'll show it for a millisecond then switch to where you can go.

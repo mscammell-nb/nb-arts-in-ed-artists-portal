@@ -1,6 +1,6 @@
+import DataGrid from "@/components/data-grid/data-grid";
 import { DropZone } from "@/components/DropZone";
 import { Button } from "@/components/ui/button";
-import DataGrid from "@/components/data-grid/data-grid";
 import {
   Dialog,
   DialogClose,
@@ -25,30 +25,27 @@ import {
   useQueryForDataQuery,
 } from "@/redux/api/quickbaseApi";
 import { documentColumns } from "@/utils/TableColumns";
-import { downloadFile, getCurrentFiscalYearKey } from "@/utils/utils";
+import { downloadFile, getCutoffFiscalYearKey } from "@/utils/utils";
 import { Label } from "@radix-ui/react-dropdown-menu";
 import { DownloadIcon, Loader2, UploadIcon } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 
 import { handleSignout } from "@/utils/utils";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 const INSTRUCTIONS = [
   "To upload a file, click the 'Upload a file' button below.",
   "Pick what file you are uploading from the dropdown menu",
   "Either select the file from your computer or drop the file into the page and click Submit.",
-  "Once you are approved you will be able to log into your dashboard."
+  "Once you are approved you will be able to log into your dashboard.",
 ];
 
 const FileUploadPage = () => {
   const [documentTypes, setDocumentTypes] = useState(null);
-  const [fileInputState, setFileInputState] = useState(null);
   const [selectedType, setSelectedType] = useState("");
   const [fileUploads, setFileUploads] = useState(null);
   const [open, setOpen] = useState(false);
-  const [missingFiles, setMissingFiles] = useState([]);
   const artist = localStorage.getItem("artist/org");
 
   const navigate = useNavigate();
@@ -56,12 +53,12 @@ const FileUploadPage = () => {
 
   const { user } = useSelector((state) => state.auth);
 
-  const { data: artistsData, isLoading: isArtistDataLoading } =
+  const { data: artistData, isLoading: isArtistDataLoading } =
     useQueryForDataQuery(
       user
         ? {
             from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
-            select: [46],
+            select: [48],
             where: `{10.EX.${user.uid}}`,
           }
         : { skip: !user, refetchOnMountOrArgChange: true },
@@ -75,10 +72,22 @@ const FileUploadPage = () => {
   const { data: documentsData, isLoading: isDocumentsDataLoading } =
     useQueryForDataQuery({
       from: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
-      select: [11, 9, 7, 12, 6, 14, 3, 10],
-      where: `{9.EX.${artist}}`,
+      select: [3, 6, 7, 9, 10, 11, 12, 14, 17],
+      where: `{9.EX.${artist}} AND {17.EX.${true}}`,
       sortBy: [{ fieldId: 10 }, { order: "DESC" }],
     });
+
+  const {
+    data: documentTypesData,
+    isLoading: isDocumentTypesLoading,
+    isSuccess: isDocumentTypesSuccess,
+    isError: isDocumentTypesError,
+    error: documentTypesError,
+  } = useQueryForDataQuery({
+    from: import.meta.env.VITE_QUICKBASE_DOCUMENT_TYPES_TABLE_ID,
+    select: [3, 6, 12],
+    where: "{'13'.EX.'true'}",
+  });
 
   const [
     addDocument,
@@ -125,6 +134,18 @@ const FileUploadPage = () => {
     });
   };
 
+  if (isDocumentTypesLoading || isDocumentTypesLoading || isArtistDataLoading) {
+    return (
+      <div className="pt-20">
+        <Spinner />
+      </div>
+    );
+  }
+
+  const cutoffMonth = new Date(artistData.data[0][48].value).getMonth();
+  const cutoffDay = new Date(artistData.data[0][48].value).getDate() + 1;
+  const fiscalYearKey = getCutoffFiscalYearKey(cutoffMonth, cutoffDay);
+
   const uploadFile = async () => {
     if (fileUploads === null) {
       toast({
@@ -142,7 +163,6 @@ const FileUploadPage = () => {
       });
       return;
     }
-    const fiscalYear = getCurrentFiscalYearKey();
     const artist = localStorage.getItem("artist/org");
     let base64 = await fileToBase64(fileUploads);
     base64 = base64.split("base64,")[1];
@@ -150,7 +170,7 @@ const FileUploadPage = () => {
       to: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
       data: [
         {
-          10: { value: fiscalYear },
+          10: { value: fiscalYearKey },
           9: { value: artist },
           7: {
             value: {
@@ -159,6 +179,7 @@ const FileUploadPage = () => {
             },
           },
           6: { value: selectedType },
+          17: { value: true },
         },
       ],
     });
@@ -183,26 +204,6 @@ const FileUploadPage = () => {
     );
   };
 
-  const {
-    data: documentTypesData,
-    isLoading: isDocumentTypesLoading,
-    isSuccess: isDocumentTypesSuccess,
-    isError: isDocumentTypesError,
-    error: documentTypesError,
-  } = useQueryForDataQuery({
-    from: import.meta.env.VITE_QUICKBASE_DOCUMENT_TYPES_TABLE_ID,
-    select: [3, 6, 12],
-    where: "{'13'.EX.'true'}",
-  });
-
-  if (isDocumentTypesLoading) {
-    return (
-      <div className="pt-20">
-        <Spinner />
-      </div>
-    );
-  }
-
   if (isDocumentTypesError) {
     console.error(documentTypesError);
     return <p>There was an error querying the document types.</p>;
@@ -222,8 +223,6 @@ const FileUploadPage = () => {
       acc[documentType[6].value] = [];
       return acc;
     }, {});
-
-    setFileInputState(initialFileInputState);
   }
 
   if (isDocumentsDataLoading || isFileTypesLoading) {

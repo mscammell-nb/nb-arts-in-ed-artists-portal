@@ -1,22 +1,35 @@
-import { useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { getCurrentFiscalYearKey } from "@/utils/utils";
-import { toBase64 } from "@/utils/toBase64";
-import { useToast } from "@/components/ui/use-toast";
-import { useAddOrUpdateRecordMutation } from "@/redux/api/quickbaseApi";
 import FileUpload from "@/components/FileUpload";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
+import { useAddOrUpdateRecordMutation, useQueryForDataQuery } from "@/redux/api/quickbaseApi";
+import { toBase64 } from "@/utils/toBase64";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Spinner from "./ui/Spinner";
 
 const FileUploadForm = ({
   documentTypes,
   fileInputState,
   setFileInputState,
 }) => {
+  const { user, authReady } = useSelector((state) => state.auth);
   const { toast } = useToast();
-
-  const artistRecordId = localStorage.getItem("artistRecordId");
-
   const navigate = useNavigate();
+
+  const { data: artistData, isLoading: isArtistDataLoading } =
+    useQueryForDataQuery(
+      user
+        ? {
+            from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
+            select: [48],
+            where: `{10.EX.${user.uid}}`,
+          }
+        : { skip: !user, refetchOnMountOrArgChange: true },
+    );
+
+  const cutoffMonth = new Date(artistData.data[0][48].value).getMonth();
+  const cutoffDay = new Date(artistData.data[0][48].value).getDate() + 1;
+  const fiscalYearKey = getCutoffFiscalYearKey(cutoffMonth, cutoffDay);
 
   const [
     addArtistDocumentRecord,
@@ -83,6 +96,14 @@ const FileUploadForm = ({
     }));
   };
 
+  if (isArtistDataLoading) {
+    return (
+      <div>
+        <Spinner />
+      </div>
+    );
+  }
+
   const handleUploadFiles = (files, documentType) => {
     if (files.length === 0) return;
 
@@ -93,7 +114,7 @@ const FileUploadForm = ({
           data: [
             {
               10: {
-                value: getCurrentFiscalYearKey(),
+                value: fiscalYearKey,
               },
               8: {
                 value: artistRecordId,
@@ -107,6 +128,7 @@ const FileUploadForm = ({
               15: {
                 value: documentType.recordId,
               },
+              17: { value: false },
             },
           ],
         });

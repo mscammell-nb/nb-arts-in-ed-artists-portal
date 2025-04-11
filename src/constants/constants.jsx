@@ -1,7 +1,5 @@
 import { SelectItem } from "@/components/ui/select";
 
-export const REGISTRATION_CUTOFF_MONTH = 4; // Starts at 0 with January, so 4 is April
-export const REGISTRATION_CUTOFF_DAY = 1; // 1st of the month
 export const FISCAL_YEAR_FIRST_MONTH = 6; // June
 
 export const MIN_INPUT_LENGTH = 8;

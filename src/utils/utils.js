@@ -1,3 +1,4 @@
+import { FISCAL_YEAR_FIRST_MONTH } from "@/constants/constants";
 import { signOut } from "@/redux/slices/authSlice";
 
 export const capitalizeString = (str) => {
@@ -20,8 +21,14 @@ export const getCurrentFiscalYearKey = () => {
   const month = d.getMonth() + 1;
   const START_YEAR = 13;
   const fiscalYearKey =
-    month > 6 ? year - 2000 - START_YEAR + 1 : year - 2000 - START_YEAR;
+    month >= FISCAL_YEAR_FIRST_MONTH
+      ? year - 2000 - START_YEAR + 1
+      : year - 2000 - START_YEAR;
   return fiscalYearKey;
+};
+
+export const getNextFiscalYearKey = () => {
+  return getCurrentFiscalYearKey() + 1;
 };
 
 // Parses a phone number in this format: (123) 456-7890 -> 1234567890
@@ -32,7 +39,7 @@ export const getCurrentFiscalYear = () => {
   const year = d.getFullYear();
   const month = d.getMonth() + 1;
   const fiscalYear =
-    month > 5
+    month >= FISCAL_YEAR_FIRST_MONTH
       ? year.toString().slice(2) + "/" + (year + 1).toString().slice(2)
       : (year - 1).toString().slice(2) + "/" + year.toString().slice(2);
 
@@ -44,12 +51,42 @@ export const getNextFiscalYear = () => {
   const year = d.getFullYear();
   const month = d.getMonth() + 1;
   const fiscalYear =
-    month > 5
+    month >= FISCAL_YEAR_FIRST_MONTH
       ? (year + 1).toString().slice(2) + "/" + (year + 2).toString().slice(2)
       : year.toString().slice(2) + "/" + (year + 1).toString().slice(2);
 
   return fiscalYear;
 };
+
+export const getCutoffFiscalYearKey = (cutoffMonth, cutoffDay) => {
+  const date = new Date();
+  const currMonth = date.getMonth();
+  const currDay = date.getDate();
+
+  if (
+    currMonth > cutoffMonth ||
+    (currMonth == cutoffMonth && currDay >= cutoffDay)
+  ) {
+    return getNextFiscalYearKey();
+  } else {
+    return getCurrentFiscalYearKey();
+  }
+}
+
+export const getCutoffFiscalYear = (cutoffMonth, cutoffDay) => {
+  const date = new Date();
+  const currMonth = date.getMonth();
+  const currDay = date.getDate();
+
+  if (
+    currMonth > cutoffMonth ||
+    (currMonth == cutoffMonth && currDay >= cutoffDay)
+  ) {
+    return getNextFiscalYear();
+  } else {
+    return getCurrentFiscalYear();
+  }
+}
 
 const getFileName = (contentDisposition) => {
   if (!contentDisposition) return null;

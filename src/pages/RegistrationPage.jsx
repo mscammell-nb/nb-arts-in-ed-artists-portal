@@ -6,13 +6,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { useNavigate } from "react-router-dom";
-import { PasswordInput } from "../components/ui/password-input";
-import { useToast } from "@/components/ui/use-toast";
-import { useState, useEffect } from "react";
-import { getCurrentFiscalYearKey } from "@/utils/utils";
-import { capitalizeString } from "@/utils/utils";
 import {
   Form,
   FormControl,
@@ -21,11 +14,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useForm, useFieldArray } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
-import { useAddOrUpdateRecordMutation } from "@/redux/api/quickbaseApi";
-import { STATES, VALID_WEBSITE_URL_REGEX } from "@/constants/constants";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -33,13 +22,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Link } from "react-router-dom";
-import Steps from "../components/Steps";
-import { Plus, Trash2 } from "lucide-react";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@/firebaseConfig";
-import { useDispatch } from "react-redux";
+import Spinner from "@/components/ui/Spinner";
+import { useToast } from "@/components/ui/use-toast";
+import { STATES, VALID_WEBSITE_URL_REGEX } from "@/constants/constants";
+import {
+  useAddOrUpdateRecordMutation,
+  useQueryForDataQuery,
+} from "@/redux/api/quickbaseApi";
 import { signUp } from "@/redux/slices/authSlice";
+import { capitalizeString, getCutoffFiscalYearKey } from "@/utils/utils";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { Plus, Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useFieldArray, useForm } from "react-hook-form";
+import { useDispatch } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import * as yup from "yup";
+import Steps from "../components/Steps";
+import { PasswordInput } from "../components/ui/password-input";
 
 const STEP_TITLES = [
   "Personal Information",
@@ -97,6 +97,15 @@ const RegistrationPage = () => {
 
   const navigate = useNavigate();
   const { toast } = useToast();
+  const {
+    data: masterData,
+    isLoading: isMasterDataLoading,
+    isError: isMasterDataError,
+    error: masterDataError,
+  } = useQueryForDataQuery({
+    from: import.meta.env.VITE_QUICKBASE_MASTER_TABLE_ID,
+    select: [6, 9],
+  });
 
   const getCurrentStepSchema = () => {
     switch (formStep) {
@@ -239,6 +248,79 @@ const RegistrationPage = () => {
     return body;
   };
 
+  useEffect(() => {
+    if (
+      isAddArtistSuccess &&
+      addArtistData &&
+      isAddArtistRegistrationSuccess &&
+      addArtistRegistrationData &&
+      isAddPerformersSuccess &&
+      addPerformersData
+    ) {
+      toast({
+        variant: "success",
+        title: "Operation successful!",
+        description: "Your account has been created.",
+      });
+      navigate("/file-upload");
+    }
+
+    if (
+      (isAddArtistError && addArtistError) ||
+      (isAddArtistRegistrationError && addArtistRegistrationError) ||
+      (isAddPerformersError && addPerformersError)
+    ) {
+      let errorTitle = "Uh oh! Something went wrong.";
+      let errorMessage;
+
+      if (addArtistError) {
+        console.log("addArtistError: ", addArtistError);
+        errorTitle = "Error adding data to the Artists table";
+        const { message, description } = addArtistError.data;
+        errorMessage = `${message}: ${description}`;
+      } else if (addArtistRegistrationError) {
+        console.log("addArtistRegistrationError: ", addArtistRegistrationError);
+        errorTitle = "Error adding data to the ArtistRegistrations table";
+        errorMessage = addArtistRegistrationError.error;
+      }
+
+      toast({
+        variant: "destructive",
+        title: errorTitle,
+        description: errorMessage,
+      });
+    }
+  }, [
+    isAddArtistSuccess,
+    isAddArtistRegistrationSuccess,
+    addArtistData,
+    addArtistRegistrationData,
+    isAddArtistError,
+    isAddArtistRegistrationError,
+    addArtistError,
+    addArtistRegistrationError,
+    isAddPerformersSuccess,
+    addPerformersData,
+    addPerformersError,
+    toast,
+  ]);
+
+  useEffect(() => {
+    trigger();
+  }, [formStep]);
+
+  if (isMasterDataLoading) {
+    return (
+      <div>
+        <Spinner />
+      </div>
+    );
+  }
+
+  const cutoffMonth = new Date(masterData.data[0][6].value).getMonth();
+  const cutoffDay = new Date(masterData.data[0][6].value).getDate() + 1;
+  const fiscalYearKey = getCutoffFiscalYearKey(cutoffMonth, cutoffDay);
+
   const formatDataForTheArtistRegistrationTable = (
     data,
     artistRecordId,
@@ -278,6 +360,9 @@ const RegistrationPage = () => {
           20: {
             value: "United States",
           },
+          24: {
+            value: fiscalYearKey,
+          },
         },
       ],
     };
@@ -305,7 +390,7 @@ const RegistrationPage = () => {
             value: capitalizeString(performer.lastName.trim()),
           },
           12: {
-            value: getCurrentFiscalYearKey(),
+            value: fiscalYearKey,
           },
           14: {
             value: artistRecordId,
@@ -386,67 +471,6 @@ const RegistrationPage = () => {
       })
       .catch((err) => console.error(err));
   };
-
-  useEffect(() => {
-    if (
-      isAddArtistSuccess &&
-      addArtistData &&
-      isAddArtistRegistrationSuccess &&
-      addArtistRegistrationData &&
-      isAddPerformersSuccess &&
-      addPerformersData
-    ) {
-      toast({
-        variant: "success",
-        title: "Operation successful!",
-        description: "Your account has been created.",
-      });
-      navigate("/file-upload");
-    }
-
-    if (
-      (isAddArtistError && addArtistError) ||
-      (isAddArtistRegistrationError && addArtistRegistrationError) ||
-      (isAddPerformersError && addPerformersError)
-    ) {
-      let errorTitle = "Uh oh! Something went wrong.";
-      let errorMessage;
-
-      if (addArtistError) {
-        console.log("addArtistError: ", addArtistError);
-        errorTitle = "Error adding data to the Artists table";
-        const { message, description } = addArtistError.data;
-        errorMessage = `${message}: ${description}`;
-      } else if (addArtistRegistrationError) {
-        console.log("addArtistRegistrationError: ", addArtistRegistrationError);
-        errorTitle = "Error adding data to the ArtistRegistrations table";
-        errorMessage = addArtistRegistrationError.error;
-      }
-
-      toast({
-        variant: "destructive",
-        title: errorTitle,
-        description: errorMessage,
-      });
-    }
-  }, [
-    isAddArtistSuccess,
-    isAddArtistRegistrationSuccess,
-    addArtistData,
-    addArtistRegistrationData,
-    isAddArtistError,
-    isAddArtistRegistrationError,
-    addArtistError,
-    addArtistRegistrationError,
-    isAddPerformersSuccess,
-    addPerformersData,
-    addPerformersError,
-    toast,
-  ]);
-
-  useEffect(() => {
-    trigger();
-  }, [formStep]);
 
   return (
     <div className="flex w-full flex-col items-center justify-center gap-5 py-8">
@@ -818,6 +842,3 @@ const RegistrationPage = () => {
 };
 
 export default RegistrationPage;
-
-// TODO: Try to fix the remove performer button bug. When I try to delete an empty performer, I see the validation error message and I gotta click again to delete it.
-// TODO: Try to fix the validation on-load problem.

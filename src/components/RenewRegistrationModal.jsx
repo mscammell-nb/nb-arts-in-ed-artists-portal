@@ -10,12 +10,14 @@ import {
 } from "@/components/ui/alert-dialog";
 import { isRegistrationExpiring } from "@/utils/isRegistrationExpiring";
 import React from "react";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 const RenewRegistrationModal = (openProp) => {
   const [open, setOpen] = React.useState(openProp);
   const navigate = useNavigate();
-  const isRegistrationExpired = isRegistrationExpiring();
+  const {user} = useSelector(state => state.auth);
+  const isRegistrationExpired = isRegistrationExpiring(user);
 
   if (!isRegistrationExpired) return <></>;
 

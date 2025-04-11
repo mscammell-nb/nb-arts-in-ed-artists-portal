@@ -1,15 +1,12 @@
-import {
-  FISCAL_YEAR_FIRST_MONTH,
-  REGISTRATION_CUTOFF_DAY,
-  REGISTRATION_CUTOFF_MONTH,
-  TICKET_VENDOR,
-} from "@/constants/constants";
+import { FISCAL_YEAR_FIRST_MONTH, TICKET_VENDOR } from "@/constants/constants";
 import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
-import { useSelector } from "react-redux";
 import { getNextFiscalYear } from "./utils";
 
-export const isRegistrationExpiring = () => {
-  const { user } = useSelector((state) => state.auth);
+export const isRegistrationExpiring = (user) => {
+  const nextFiscalYear = getNextFiscalYear();
+  const date = new Date();
+  const currMonth = date.getMonth();
+  const currDay = date.getDate();
 
   const {
     data: registrationData,
@@ -35,16 +32,11 @@ export const isRegistrationExpiring = () => {
     user
       ? {
           from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
-          select: [3, 10, 46],
+          select: [3, 10, 46, 48],
           where: `{10.EX.${user.uid}}`,
         }
       : { skip: !user, refetchOnMountOrArgChange: true },
   );
-
-  const nextFiscalYear = getNextFiscalYear();
-  const date = new Date();
-  const currMonth = date.getMonth();
-  const currDay = date.getDate();
 
   if (
     isRegistrationDataLoading ||
@@ -59,19 +51,23 @@ export const isRegistrationExpiring = () => {
   if (isTicketVendor) return false;
 
   // Check if artist is already registered for next fiscal year
-  const registeredNextYear = registrationData.data.forEach((registration) => {
-    if (registration[25].value === nextFiscalYear) {
-      return false;
+  const registeredNextYear = registrationData.data.some((registration) => {
+    if (registration[25].value == nextFiscalYear) {
+      return true;
     }
   });
 
   if (registeredNextYear) return false;
 
   // Not registered for next fiscal year, check month and day
+  const cutoffMonth = new Date(artistData.data[0][48].value).getMonth();
+  const cutoffDay = new Date(artistData.data[0][48].value).getDate() + 1;
+
   if (
-    currMonth >= REGISTRATION_CUTOFF_MONTH &&
-    currDay >= REGISTRATION_CUTOFF_DAY &&
-    currMonth < FISCAL_YEAR_FIRST_MONTH
+    currMonth > cutoffMonth ||
+    (currMonth == cutoffMonth &&
+      currMonth < FISCAL_YEAR_FIRST_MONTH &&
+      currDay >= cutoffDay)
   ) {
     return true;
   }
