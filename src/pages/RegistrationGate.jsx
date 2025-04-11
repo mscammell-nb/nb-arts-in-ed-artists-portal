@@ -13,7 +13,7 @@ import Spinner from "../components/ui/Spinner";
 
 const RegistrationGate = () => {
   const { user } = useSelector((state) => state.auth);
-  const registeredNextYear = !isRegistrationExpiring();
+  const registeredNextYear = !isRegistrationExpiring(user);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
