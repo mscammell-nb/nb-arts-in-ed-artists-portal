@@ -29,6 +29,8 @@ import {
   getCurrentFiscalYearKey,
   getCutoffFiscalYear,
   getCutoffFiscalYearKey,
+  getNextFiscalYear,
+  getNextFiscalYearKey,
   parsePhoneNumber,
 } from "@/utils/utils";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -107,8 +109,7 @@ const RegistrationRenewalPage = () => {
   const [selectedType, setSelectedType] = useState("");
   const [open, setOpen] = useState(false);
   const artist = localStorage.getItem("artist/org");
-  const [fiscalYear, setFiscalYear] = useState(getCurrentFiscalYear());
-  const [fiscalYearKey, setFiscalYearKey] = useState(getCurrentFiscalYearKey());
+  const [fiscalYearKey, setFiscalYearKey] = useState(getNextFiscalYearKey());
 
   const {
     data: artistData,
@@ -162,7 +163,6 @@ const RegistrationRenewalPage = () => {
       const cutoffDay = new Date(data[48].value).getDate() + 1;
       const tempFiscalYear = getCutoffFiscalYear(cutoffMonth, cutoffDay);
       const tempFiscalYearKey = getCutoffFiscalYearKey(cutoffMonth, cutoffDay);
-      setFiscalYear(tempFiscalYear);
       setFiscalYearKey(tempFiscalYearKey);
       const defaultValues = {
         artistOrg: data[6].value,
@@ -186,7 +186,7 @@ const RegistrationRenewalPage = () => {
   const formatDataForQuickbase = (data) => {
     const cutoffMonth = new Date(artistData.data[0][48].value).getMonth();
     const cutoffDay = new Date(artistData.data[0][48].value).getDate() + 1;
-    const fiscalYearKey = getCutoffFiscalYearKey(cutoffMonth, cutoffDay);
+    const tempFiscalYearKey = getCutoffFiscalYearKey(cutoffMonth, cutoffDay);
     const body = {
       to: import.meta.env.VITE_QUICKBASE_ARTIST_REGISTRATIONS_TABLE_ID,
       data: [
@@ -222,7 +222,7 @@ const RegistrationRenewalPage = () => {
             value: "United States",
           },
           24: {
-            value: fiscalYearKey,
+            value: tempFiscalYearKey,
           },
         },
       ],
@@ -371,7 +371,7 @@ const RegistrationRenewalPage = () => {
     useQueryForDataQuery({
       from: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
       select: [3, 6, 7, 9, 10, 11, 12, 14, 17],
-      where: `{9.EX.${artist}} AND {10.EX.${fiscalYear}} AND {17.EX.${false}}`,
+      where: `{9.EX.${artist}} AND {10.EX.${fiscalYearKey}} AND {17.EX.${false}}`,
       sortBy: [{ fieldId: 10 }, { order: "DESC" }],
     });
 

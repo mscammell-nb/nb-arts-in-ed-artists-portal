@@ -17,9 +17,9 @@ const RenewRegistrationModal = (openProp) => {
   const [open, setOpen] = React.useState(openProp);
   const navigate = useNavigate();
   const {user} = useSelector(state => state.auth);
-  const isRegistrationExpired = isRegistrationExpiring(user);
+  const expiring = isRegistrationExpiring(user);
 
-  if (!isRegistrationExpired) return <></>;
+  if (!expiring) return <></>;
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
