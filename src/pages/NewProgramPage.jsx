@@ -28,17 +28,15 @@ import {
   CATEGORY_DEFINITIONS,
   GRADES,
   KEYWORD_GROUPS,
+  MAX_COST_LENGTH,
+  MIN_INPUT_LENGTH,
+  MIN_TEXTAREA_LENGTH,
   SERVICE_TYPE_DEFINITIONS,
 } from "@/constants/constants";
 import {
   useAddOrUpdateRecordMutation,
   useQueryForDataQuery,
 } from "@/redux/api/quickbaseApi";
-import {
-  MAX_COST_LENGTH,
-  MIN_INPUT_LENGTH,
-  MIN_TEXTAREA_LENGTH,
-} from "@/constants/constants";
 import { getCurrentFiscalYearKey } from "@/utils/utils";
 import { ArrowLeftIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -133,7 +131,7 @@ const NewProgramPage = () => {
 
   const clearAllKeywords = () => {
     myRef.current?.handleClear();
-  }
+  };
 
   useEffect(() => {
     const exploratoryChecked = formValues.categories.includes(
@@ -362,6 +360,9 @@ const NewProgramPage = () => {
           },
           29: {
             value: formValues.costDetails,
+          },
+          32: {
+            value: "Pending Review",
           },
         },
       ],
@@ -656,7 +657,7 @@ const NewProgramPage = () => {
                 </Link>
               </div>
               <MultiSelect
-              ref={myRef}
+                ref={myRef}
                 options={KEYWORD_GROUPS}
                 onValueChange={setSelectedKeywords}
                 defaultValue={[]}
