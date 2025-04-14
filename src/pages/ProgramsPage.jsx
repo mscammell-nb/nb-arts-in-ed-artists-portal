@@ -1,14 +1,14 @@
-import { Link } from "react-router-dom";
+import DataGrid from "@/components/data-grid/data-grid";
 import { buttonVariants } from "@/components/ui/button";
+import Spinner from "@/components/ui/Spinner";
+import { PROGRAMS_EDITABLE_FIELDS } from "@/constants/constants";
 import {
   useAddOrUpdateRecordMutation,
   useQueryForDataQuery,
 } from "@/redux/api/quickbaseApi";
-import { getCurrentFiscalYear, groupByIdAndField } from "@/utils/utils";
-import Spinner from "@/components/ui/Spinner";
 import { programTableColumns } from "@/utils/TableColumns";
-import DataGrid from "@/components/data-grid/data-grid";
-import { PROGRAMS_EDITABLE_FIELDS } from "@/constants/constants";
+import { getCurrentFiscalYear, groupByIdAndField } from "@/utils/utils";
+import { Link } from "react-router-dom";
 
 const BUTTON_LINKS = [
   { label: "New Program", url: "/new-program", isTargetBlank: false },
@@ -34,6 +34,15 @@ const formatProgramsData = (programsData) => {
     fiscalYear: record[16].value,
     dateCreated: formatDate(new Date(record[1].value)),
     program: record[11].value,
+    description: record[12].value,
+    keywords: record[20].value,
+    category: record[22].value,
+    length: record[26].value,
+    grades: record[27].value,
+    serviceType: record[34].value,
+    cost: record[25].value,
+    costDetails: record[29].value,
+    performers: record[30].value,
     paid: record[31].value ? "Yes" : "No",
     status: record[32].value,
     programGroupLegend: record[33].value,
@@ -49,7 +58,7 @@ const ProgramsPage = () => {
     error: programsDataError,
   } = useQueryForDataQuery({
     from: import.meta.env.VITE_QUICKBASE_PROGRAMS_TABLE_ID,
-    select: [1, 3, 8, 11, 16, 31, 32, 33],
+    select: [1, 3, 8, 11, 12, 16, 20, 22, 25, 26, 27, 29, 30, 31, 32, 33, 34],
     where: `{8.EX.${localStorage.getItem("artistRecordId")}}`,
   });
   const [
@@ -96,7 +105,7 @@ const ProgramsPage = () => {
     updateRecord({
       to: import.meta.env.VITE_QUICKBASE_PROGRAMS_TABLE_ID,
       data: updatedFields,
-    })
+    });
   };
 
   return (
