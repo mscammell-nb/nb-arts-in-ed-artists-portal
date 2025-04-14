@@ -27,6 +27,7 @@ export const PERFORMERS_EDITABLE_FIELDS = new Map([
 
 export const PROGRAMS_EDITABLE_FIELDS = new Map([
   ["program", { field: 11, type: "string", options: [] }],
+  ["description", { field: 12, type: "string", options: [] }],
   [
     "paid",
     {
