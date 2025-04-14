@@ -45,6 +45,7 @@ function DataGrid({
   legend = null,
   noFilter = false,
   noSort = false,
+  rowSpecificEditing = false,
 }) {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
@@ -62,6 +63,7 @@ function DataGrid({
       editableFields,
       form,
       setForm,
+      rowSpecificEditing,
     ),
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),

@@ -5,8 +5,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import React, { useState, useCallback, useMemo } from "react";
 import { cn } from "@/lib/utils";
+import React, { useCallback, useMemo, useState } from "react";
 
 /**
  * Handles changes to editable cell values
@@ -37,17 +37,26 @@ const editableColumns = (
   editableFields,
   form,
   setForm,
+  rowSpecificEditing,
 ) => {
   // Use memoization to prevent unnecessary re-renders
   return useMemo(
     () =>
       columns.map((column) => {
+        const tempCell = column.cell;
         if (editing && column.id && column.id === "edit")
           return { ...column, cell: () => null };
         return editing && editableFields.has(column.accessorKey)
           ? {
               ...column,
               cell: ({ row, column, getValue }) => {
+                if (
+                  rowSpecificEditing &&
+                  row.original.editableFields &&
+                  !row.original.editableFields.includes(column.id)
+                ) {
+                  return tempCell({ row, column, getValue });
+                }
                 const originalValue =
                   editableFields.get(column.id).type === "boolean"
                     ? getValue() === "Yes"

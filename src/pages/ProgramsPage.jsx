@@ -46,6 +46,8 @@ const formatProgramsData = (programsData) => {
     paid: record[31].value ? "Yes" : "No",
     status: record[32].value,
     programGroupLegend: record[33].value,
+    editableFields:
+      record[32].value === "Accepted" ? ["cost", "description"] : null,
   }));
 };
 
@@ -132,6 +134,7 @@ const ProgramsPage = () => {
         )}
         updateFunction={updateFunction}
         editableFields={PROGRAMS_EDITABLE_FIELDS}
+        rowSpecificEditing
       />
     </div>
   );
