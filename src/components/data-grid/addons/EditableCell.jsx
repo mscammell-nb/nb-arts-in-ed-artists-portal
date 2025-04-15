@@ -163,7 +163,6 @@ const editableColumns = (
                 if (editableFields.get(column.id).type === "list") {
                   const handleValueChange = useCallback(
                     (e) => {
-                      console.log("e", e);
                       handleCellChange(
                         column.id,
                         e,
@@ -175,8 +174,6 @@ const editableColumns = (
                     },
                     [column.id, row.original.id, form, setForm],
                   );
-
-                  console.log("buh", inputValue);
 
                   return (
                     <MultiSelect
