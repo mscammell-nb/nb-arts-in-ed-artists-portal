@@ -801,6 +801,117 @@ export const programTableColumns = [
         Program
       </Button>
     ),
+    cell: (info) => (
+      <p className="max-w-48 text-wrap font-semibold">{info.getValue()}</p>
+    ),
+  },
+  {
+    accessorKey: "description",
+    header: ({ column }) => (
+      <Button variant="ghost" onClick={() => column.toggleSorting()}>
+        Description
+      </Button>
+    ),
+    cell: (info) => (
+      <p className="max-w-48 text-wrap font-semibold">{info.getValue()}</p>
+    ),
+  },
+  {
+    accessorKey: "keywords",
+    header: ({ column }) => (
+      <Button variant="ghost" onClick={() => column.toggleSorting()}>
+        Keywords
+      </Button>
+    ),
+    cell: (info) => (
+      <div className="flex flex-wrap gap-1">
+        {info.getValue().map((element) => {
+          return (
+            <Badge variant="outline" className="border-blue-400 bg-blue-200">
+              {element
+                .replaceAll("-", " ")
+                .split(" ")
+                .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(" ")}
+            </Badge>
+          );
+        })}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "category",
+    header: ({ column }) => (
+      <Button variant="ghost" onClick={() => column.toggleSorting()}>
+        Categories
+      </Button>
+    ),
+    cell: (info) => (
+      <div className="flex flex-wrap gap-1">
+        {info.getValue().map((element) => {
+          return (
+            <Badge variant="outline" className="border-blue-400 bg-blue-200">
+              {element}
+            </Badge>
+          );
+        })}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "length",
+    header: ({ column }) => (
+      <Button variant="ghost" onClick={() => column.toggleSorting()}>
+        Length
+      </Button>
+    ),
+    cell: (info) => <p className="font-semibold">{info.getValue()}</p>,
+  },
+  {
+    accessorKey: "grades",
+    header: ({ column }) => (
+      <Button variant="ghost" onClick={() => column.toggleSorting()}>
+        Grades
+      </Button>
+    ),
+    cell: (info) => <p className="font-semibold">{info.getValue()}</p>,
+  },
+  {
+    accessorKey: "serviceType",
+    header: ({ column }) => (
+      <Button variant="ghost" onClick={() => column.toggleSorting()}>
+        Service Type
+      </Button>
+    ),
+    cell: (info) => <p className="font-semibold">{info.getValue()}</p>,
+  },
+  {
+    accessorKey: "cost",
+    header: ({ column }) => (
+      <Button variant="ghost" onClick={() => column.toggleSorting()}>
+        Cost
+      </Button>
+    ),
+    cell: (info) => <p className="font-semibold">{info.getValue()}</p>,
+  },
+  {
+    accessorKey: "costDetails",
+    header: ({ column }) => (
+      <Button variant="ghost" onClick={() => column.toggleSorting()}>
+        Cost Details
+      </Button>
+    ),
+    cell: (info) => (
+      <div className="max-w-48 text-wrap font-semibold">{info.getValue()}</div>
+    ),
+  },
+  {
+    accessorKey: "performers",
+    header: ({ column }) => (
+      <Button variant="ghost" onClick={() => column.toggleSorting()}>
+        Performers
+      </Button>
+    ),
     cell: (info) => <p className="font-semibold">{info.getValue()}</p>,
   },
   {
@@ -808,15 +919,6 @@ export const programTableColumns = [
     header: ({ column }) => (
       <Button variant="ghost" onClick={() => column.toggleSorting()}>
         Status
-      </Button>
-    ),
-    cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
-  },
-  {
-    accessorKey: "paid",
-    header: ({ column }) => (
-      <Button variant="ghost" onClick={() => column.toggleSorting()}>
-        Paid
       </Button>
     ),
     cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
