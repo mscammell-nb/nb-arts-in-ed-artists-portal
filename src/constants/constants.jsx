@@ -28,6 +28,33 @@ export const PERFORMERS_EDITABLE_FIELDS = new Map([
 export const PROGRAMS_EDITABLE_FIELDS = new Map([
   ["program", { field: 11, type: "string", options: [] }],
   ["description", { field: 12, type: "string", options: [] }],
+  ["keywords", { field: 20, type: "list", options: [] }],
+  [
+    "category",
+    {
+      field: 22,
+      type: "string",
+      options: CATEGORIES,
+    },
+  ],
+  ["length", { field: 26, type: "list", options: PROGRAM_LENGTHS }],
+  ["grades", { field: 27, type: "list", options: GRADES }],
+  [
+    "serviceType",
+    {
+      field: 34,
+      type: "string",
+      options: SERVICE_TYPE_DEFINITIONS.forEach(
+        (serviceType) => serviceType.title,
+      ),
+    },
+  ],
+  ["cost", { field: 25, type: "integer", options: [">0"] }],
+  ["costDetails", { field: 29, type: "string", options: [] }],
+  [
+    "performers",
+    { field: 30, type: "integer", options: [">0", "<100", "<totalPerformers"] },
+  ],
   [
     "paid",
     {
@@ -234,6 +261,14 @@ export const VALID_WEBSITE_URL_REGEX =
   /^(?:https?:\/\/)?(?:www\.)?([a-zA-Z0-9-]+)(?:\.[a-zA-Z]{2,})+(?:\/[^\s]*)?$/;
 
 export const GRADES = ["PK", "K", 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+
+export const PROGRAM_LENGTHS = [
+  "30 - 44 min",
+  "45 - 59 min",
+  "60 - 89 min",
+  "90 - 119 min",
+  "120+ min",
+];
 
 export const CATEGORIES = [
   "Dance (DA)",
