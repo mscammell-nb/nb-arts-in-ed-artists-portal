@@ -1,4 +1,5 @@
 import { Input } from "@/components/ui/input";
+import { MultiSelect } from "@/components/ui/multi-select";
 import {
   Select,
   SelectContent,
@@ -160,6 +161,48 @@ const editableColumns = (
                 }
 
                 if (editableFields.get(column.id).type === "list") {
+                  const handleValueChange = useCallback(
+                    (e) => {
+                      handleCellChange(
+                        column.id,
+                        e,
+                        setInputValue,
+                        row.original.id,
+                        form,
+                        setForm,
+                      );
+                    },
+                    [column.id, row.original.id, form, setForm],
+                  );
+
+                  return (
+                    <MultiSelect
+                      className={
+                        "w-full rounded border border-gray-200 p-1 " +
+                        cn(
+                          inputValue === originalValue
+                            ? "bg-white"
+                            : "bg-yellow-200",
+                        )
+                      }
+                      options={[
+                        {
+                          heading: column.id,
+                          options: editableFields
+                            .get(column.id)
+                            .options.map((option) => ({
+                              value: option,
+                              label: option,
+                            })),
+                        },
+                      ]}
+                      onValueChange={handleValueChange}
+                      defaultValue={inputValue}
+                      variant="inverted"
+                      animation={2}
+                      maxCount={72}
+                    ></MultiSelect>
+                  );
                 }
 
                 // Handle other editable field types

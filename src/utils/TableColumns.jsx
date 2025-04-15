@@ -874,7 +874,21 @@ export const programTableColumns = [
         Grades
       </Button>
     ),
-    cell: (info) => <p className="font-semibold">{info.getValue()}</p>,
+    cell: (info) => (
+      <div className="flex flex-wrap gap-1">
+        {info.getValue().map((element) => {
+          return (
+            <Badge variant="outline" className="border-blue-400 bg-blue-200">
+              {element
+                .replaceAll("-", " ")
+                .split(" ")
+                .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(" ")}
+            </Badge>
+          );
+        })}
+      </div>
+    ),
   },
   {
     accessorKey: "serviceType",
