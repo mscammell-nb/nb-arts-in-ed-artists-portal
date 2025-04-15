@@ -177,15 +177,23 @@ const editableColumns = (
 
                   return (
                     <MultiSelect
+                      className={
+                        "w-full rounded border border-gray-200 p-1 " +
+                        cn(
+                          inputValue === originalValue
+                            ? "bg-white"
+                            : "bg-yellow-200",
+                        )
+                      }
                       options={[
                         {
                           heading: column.id,
-                          options: editableFields.get(column.id).options.map(
-                            (option) => ({
+                          options: editableFields
+                            .get(column.id)
+                            .options.map((option) => ({
                               value: option,
                               label: option,
-                            }),
-                          ),
+                            })),
                         },
                       ]}
                       onValueChange={handleValueChange}
