@@ -773,7 +773,7 @@ const NewProgramPage = () => {
                     <SelectItem value="30 - 44 min">30 - 44 min</SelectItem>
                     <SelectItem value="45 - 59 min">45 - 59 min</SelectItem>
                     <SelectItem value="60 - 89 min">60 - 89 min</SelectItem>
-                    <SelectItem value="90 - 199 min">90 - 119 min</SelectItem>
+                    <SelectItem value="90 - 119 min">90 - 119 min</SelectItem>
                     <SelectItem value="120+ min">120+ min</SelectItem>
                   </SelectGroup>
                 </SelectContent>
