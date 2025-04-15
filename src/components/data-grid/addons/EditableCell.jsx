@@ -2,6 +2,7 @@ import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
+  SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -109,6 +110,56 @@ const editableColumns = (
                       </SelectContent>
                     </Select>
                   );
+                }
+
+                if (editableFields.get(column.id).type === "integer") {
+                }
+
+                if (editableFields.get(column.id).type === "select") {
+                  const handleValueChange = useCallback(
+                    (e) => {
+                      handleCellChange(
+                        column.id,
+                        e,
+                        setInputValue,
+                        row.original.id,
+                        form,
+                        setForm,
+                      );
+                    },
+                    [column.id, row.original.id, form, setForm],
+                  );
+
+                  return (
+                    <Select
+                      value={inputValue}
+                      onValueChange={handleValueChange}
+                      className="w-full rounded border border-gray-200 p-1"
+                      // Add accessibility attributes
+                      aria-label={`Edit ${column.id}`}
+                    >
+                      <SelectTrigger
+                        className={cn(
+                          inputValue === originalValue
+                            ? "bg-white"
+                            : "bg-yellow-200",
+                        )}
+                        aria-label={`Current value: ${inputValue}`}
+                      >
+                        <SelectValue placeholder="Select a value" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {editableFields.get(column.id).options.map((option) => (
+                          <SelectItem value={option} key={option}>
+                            {option}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  );
+                }
+
+                if (editableFields.get(column.id).type === "list") {
                 }
 
                 // Handle other editable field types
