@@ -479,9 +479,7 @@ export const PROGRAMS_EDITABLE_FIELDS = new Map([
     {
       field: 34,
       type: "select",
-      options: SERVICE_TYPE_DEFINITIONS.map(
-        (type) => type.title,
-      ),
+      options: SERVICE_TYPE_DEFINITIONS.map((type) => type.title),
     },
   ],
   ["cost", { field: 25, type: "integer", options: [">0"] }],
@@ -489,20 +487,5 @@ export const PROGRAMS_EDITABLE_FIELDS = new Map([
   [
     "performers",
     { field: 30, type: "integer", options: [">0", "<100", "<totalPerformers"] },
-  ],
-  [
-    "paid",
-    {
-      field: 31,
-      type: "boolean",
-      options: [
-        <SelectItem value={true} key={"yes"}>
-          Yes
-        </SelectItem>,
-        <SelectItem value={false} key={"No"}>
-          No
-        </SelectItem>,
-      ],
-    },
   ],
 ]);
