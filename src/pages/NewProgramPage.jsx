@@ -363,10 +363,7 @@ const NewProgramPage = () => {
           },
           32: {
             value: "Pending Review",
-          },
-          37: {
-            value: formValues.categories.includes("Professional Development"),
-          },
+          }
         },
       ],
     });
