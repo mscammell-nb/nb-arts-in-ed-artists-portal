@@ -479,8 +479,8 @@ export const PROGRAMS_EDITABLE_FIELDS = new Map([
     {
       field: 34,
       type: "select",
-      options: SERVICE_TYPE_DEFINITIONS.forEach(
-        (serviceType) => serviceType.title,
+      options: SERVICE_TYPE_DEFINITIONS.map(
+        (type) => type.title,
       ),
     },
   ],
