@@ -513,7 +513,7 @@ export const PROGRAMS_EDITABLE_FIELDS = new Map([
       options: SERVICE_TYPE_DEFINITIONS.map((type) => type.title),
     },
   ],
-  ["cost", { field: 25, type: "integer", options: [">0"] }],
+  ["cost", { field: 25, type: "integer", options: [{ min: 1, max: 2000 }] }],
   ["costDetails", { field: 29, type: "string", options: [] }],
   [
     "performers",

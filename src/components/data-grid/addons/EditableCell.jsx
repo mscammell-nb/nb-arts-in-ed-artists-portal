@@ -114,6 +114,50 @@ const editableColumns = (
                 }
 
                 if (editableFields.get(column.id).type === "integer") {
+
+                  const min = editableFields.get(column.id).options[0].min;
+                  const max = editableFields.get(column.id).options[0].max;
+
+                  const handleValueChange = useCallback(
+                    (e) => {
+                      if (e.target.value < min || e.target.value > max) {
+                        return;
+                      }
+                      handleCellChange(
+                        column.id,
+                        e.target.value,
+                        setInputValue,
+                        row.original.id,
+                        form,
+                        setForm,
+                      );
+                    },
+                    [column.id, row.original.id, form, setForm],
+                  );
+
+                  return (
+                    <Input
+                      type="number"
+                      min={min}
+                      max={max}
+                      value={inputValue}
+                      onChange={handleValueChange}
+                      className={cn(
+                        inputValue === originalValue
+                          ? "bg-white"
+                          : "bg-yellow-200",
+                      ) + 
+                        "w-full rounded border border-gray-200 p-1 " +
+                        cn(
+                          inputValue === originalValue
+                            ? "bg-white"
+                            : "bg-yellow-200",
+                        )
+                      }
+                      // Add accessibility attributes
+                      aria-label={`Edit ${column.id}`}
+                    />
+                  );
                 }
 
                 if (editableFields.get(column.id).type === "select") {
