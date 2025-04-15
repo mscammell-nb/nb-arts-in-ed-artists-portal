@@ -500,6 +500,7 @@ const ArtistInformationPage = () => {
     setPayeeName(artistsData.data[0][31].value);
   };
   const formatData = (d) => {
+    console.log(d)
     const { data } = d;
     return data.map((record) => {
       return {
@@ -513,7 +514,7 @@ const ArtistInformationPage = () => {
     });
   };
 
-  if (isArtistsLoading) {
+  if (isArtistsLoading || isReferencesLoading) {
     return (
       <div className="flex h-screen w-full items-center justify-center">
         <Spinner />
