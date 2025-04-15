@@ -25,53 +25,6 @@ export const PERFORMERS_EDITABLE_FIELDS = new Map([
   ["stageName", { field: 22, type: "string", options: [] }],
 ]);
 
-export const PROGRAMS_EDITABLE_FIELDS = new Map([
-  ["program", { field: 11, type: "string", options: [] }],
-  ["description", { field: 12, type: "string", options: [] }],
-  ["keywords", { field: 20, type: "list", options: [] }],
-  [
-    "category",
-    {
-      field: 22,
-      type: "string",
-      options: CATEGORIES,
-    },
-  ],
-  ["length", { field: 26, type: "list", options: PROGRAM_LENGTHS }],
-  ["grades", { field: 27, type: "list", options: GRADES }],
-  [
-    "serviceType",
-    {
-      field: 34,
-      type: "string",
-      options: SERVICE_TYPE_DEFINITIONS.forEach(
-        (serviceType) => serviceType.title,
-      ),
-    },
-  ],
-  ["cost", { field: 25, type: "integer", options: [">0"] }],
-  ["costDetails", { field: 29, type: "string", options: [] }],
-  [
-    "performers",
-    { field: 30, type: "integer", options: [">0", "<100", "<totalPerformers"] },
-  ],
-  [
-    "paid",
-    {
-      field: 31,
-      type: "boolean",
-      options: [
-        <SelectItem value={true} key={"yes"}>
-          Yes
-        </SelectItem>,
-        <SelectItem value={false} key={"No"}>
-          No
-        </SelectItem>,
-      ],
-    },
-  ],
-]);
-
 export const EVALUATIONS_EDITABLE_FIELDS = new Map([
   [
     "servicePerformed",
@@ -506,3 +459,50 @@ export const SERVICE_TYPE_DEFINITIONS = [
       "A residency is a series of workshops over a period of five days or more which might include one or more performances. It is important that a residency include sequential visits to the same group(s) of students by the artist(s). Residencies generally take place in a classroom, a dance studio, or art gallery, etc. Residency artists work directly with the students to produce a final product (concert, performance, mural, theater piece, etc.).",
   },
 ];
+
+export const PROGRAMS_EDITABLE_FIELDS = new Map([
+  ["program", { field: 11, type: "string", options: [] }],
+  ["description", { field: 12, type: "string", options: [] }],
+  ["keywords", { field: 20, type: "list", options: [] }],
+  [
+    "category",
+    {
+      field: 22,
+      type: "string",
+      options: CATEGORIES,
+    },
+  ],
+  ["length", { field: 26, type: "select", options: PROGRAM_LENGTHS }],
+  ["grades", { field: 27, type: "list", options: GRADES }],
+  [
+    "serviceType",
+    {
+      field: 34,
+      type: "select",
+      options: SERVICE_TYPE_DEFINITIONS.forEach(
+        (serviceType) => serviceType.title,
+      ),
+    },
+  ],
+  ["cost", { field: 25, type: "integer", options: [">0"] }],
+  ["costDetails", { field: 29, type: "string", options: [] }],
+  [
+    "performers",
+    { field: 30, type: "integer", options: [">0", "<100", "<totalPerformers"] },
+  ],
+  [
+    "paid",
+    {
+      field: 31,
+      type: "boolean",
+      options: [
+        <SelectItem value={true} key={"yes"}>
+          Yes
+        </SelectItem>,
+        <SelectItem value={false} key={"No"}>
+          No
+        </SelectItem>,
+      ],
+    },
+  ],
+]);
