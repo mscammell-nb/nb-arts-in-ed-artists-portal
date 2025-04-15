@@ -213,7 +213,22 @@ export const STATES = [
 export const VALID_WEBSITE_URL_REGEX =
   /^(?:https?:\/\/)?(?:www\.)?([a-zA-Z0-9-]+)(?:\.[a-zA-Z]{2,})+(?:\/[^\s]*)?$/;
 
-export const GRADES = ["PK", "K", 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+export const GRADES = [
+  "PK",
+  "K",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5",
+  "6",
+  "7",
+  "8",
+  "9",
+  "10",
+  "11",
+  "12",
+];
 
 export const PROGRAM_LENGTHS = [
   "30 - 44 min",
@@ -463,17 +478,24 @@ export const SERVICE_TYPE_DEFINITIONS = [
 export const PROGRAMS_EDITABLE_FIELDS = new Map([
   ["program", { field: 11, type: "string", options: [] }],
   ["description", { field: 12, type: "string", options: [] }],
-  ["keywords", { field: 20, type: "list", options: [] }],
+  ["keywords", { field: 20, type: "list", options: KEYWORD_GROUPS }],
   [
     "category",
     {
       field: 22,
-      type: "string",
+      type: "list",
       options: CATEGORIES,
     },
   ],
   ["length", { field: 26, type: "select", options: PROGRAM_LENGTHS }],
-  ["grades", { field: 27, type: "list", options: GRADES }],
+  [
+    "grades",
+    {
+      field: 27,
+      type: "list",
+      options: GRADES,
+    },
+  ],
   [
     "serviceType",
     {
