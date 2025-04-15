@@ -142,11 +142,12 @@ const editableColumns = (
                       max={max}
                       value={inputValue}
                       onChange={handleValueChange}
-                      className={cn(
-                        inputValue === originalValue
-                          ? "bg-white"
-                          : "bg-yellow-200",
-                      ) + 
+                      className={
+                        cn(
+                          inputValue === originalValue
+                            ? "bg-white"
+                            : "bg-yellow-200",
+                        ) +
                         "w-full rounded border border-gray-200 p-1 " +
                         cn(
                           inputValue === originalValue
