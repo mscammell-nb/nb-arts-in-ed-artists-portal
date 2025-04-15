@@ -923,15 +923,6 @@ export const programTableColumns = [
     ),
     cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
   },
-  {
-    accessorKey: "paid",
-    header: ({ column }) => (
-      <Button variant="ghost" onClick={() => column.toggleSorting()}>
-        Paid
-      </Button>
-    ),
-    cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
-  },
 ];
 export const referencesColumns = [
   {
