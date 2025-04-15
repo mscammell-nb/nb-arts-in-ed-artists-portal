@@ -730,10 +730,10 @@ const NewProgramPage = () => {
                   <SelectGroup>
                     <SelectLabel>Service Type</SelectLabel>
 
-                    <SelectItem value="workshop">Workshop</SelectItem>
-                    <SelectItem value="performance">Performance</SelectItem>
-                    <SelectItem value="residency">Residency</SelectItem>
-                    <SelectItem value="workshop & performance">
+                    <SelectItem value="Workshop">Workshop</SelectItem>
+                    <SelectItem value="Performance">Performance</SelectItem>
+                    <SelectItem value="Residency">Residency</SelectItem>
+                    <SelectItem value="Workshop & Performance">
                       Workshop & Performance
                     </SelectItem>
                   </SelectGroup>
