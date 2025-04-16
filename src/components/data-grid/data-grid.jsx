@@ -280,7 +280,7 @@ function DataGrid({
                   <td
                     key={cell.id}
                     className={cn(
-                      "px-6 py-4",
+                      "p-4",
                       cell.column.id === "programName" &&
                         "whitespace-nowrap font-medium text-gray-900 dark:text-white",
                     )}
