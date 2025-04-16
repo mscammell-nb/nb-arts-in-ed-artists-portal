@@ -204,9 +204,6 @@ const RegistrationPage = () => {
           7: {
             value: data.email,
           },
-          8: {
-            value: data.password,
-          },
           9: {
             value: data.phone,
           },
