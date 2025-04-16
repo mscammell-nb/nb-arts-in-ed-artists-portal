@@ -824,10 +824,10 @@ export const programTableColumns = [
       </Button>
     ),
     cell: (info) => (
-      <div className="flex flex-wrap gap-1">
+      <div className="flex flex-wrap gap-1" style={{"word-break": "auto-phrase"}}>
         {info.getValue().map((element) => {
           return (
-            <Badge variant="outline" className="border-blue-400 bg-blue-200">
+            <Badge variant="outline" className="border-teal-700 bg-teal-300 w-full">
               {element
                 .replaceAll("-", " ")
                 .split(" ")
@@ -847,10 +847,10 @@ export const programTableColumns = [
       </Button>
     ),
     cell: (info) => (
-      <div className="flex flex-wrap gap-1">
+      <div className="flex flex-col min-w-fit gap-1" style={{"word-break": "auto-phrase"}}>
         {info.getValue().map((element) => {
           return (
-            <Badge variant="outline" className="border-blue-400 bg-blue-200">
+            <Badge variant="outline" className="border-blue-700 bg-blue-300 min-w-fit">
               {element}
             </Badge>
           );
@@ -878,7 +878,7 @@ export const programTableColumns = [
       <div className="flex flex-wrap gap-1">
         {info.getValue().map((element) => {
           return (
-            <Badge variant="outline" className="border-blue-400 bg-blue-200">
+            <Badge variant="outline" className="border-fuchsia-700 bg-fuchsia-300">
               {element
                 .replaceAll("-", " ")
                 .split(" ")
