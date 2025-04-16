@@ -14,6 +14,7 @@ import Spinner from "../components/ui/Spinner";
 const RegistrationGate = () => {
   const { user } = useSelector((state) => state.auth);
   const registeredNextYear = !isRegistrationExpiring(user);
+  const currFiscalYear = getCurrentFiscalYear();
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -42,7 +43,7 @@ const RegistrationGate = () => {
       ? {
           from: import.meta.env.VITE_QUICKBASE_ARTIST_REGISTRATIONS_TABLE_ID,
           select: [3, 6, 25],
-          where: `{13.EX.${user.uid}} AND {25.EX.${getCurrentFiscalYear()}}`,
+          where: `{13.EX.${user.uid}} AND {25.EX.${currFiscalYear}}`,
           sortBy: [{ fieldId: 25 }, { order: "DESC" }],
         }
       : { skip: !user, refetchOnMountOrArgChange: true },
@@ -65,12 +66,9 @@ const RegistrationGate = () => {
 
   const cutoffMonth = new Date(artistData.data[0][48].value).getMonth();
   const cutoffDay = new Date(artistData.data[0][48].value).getDate() + 1;
-  const fiscalYear = getCutoffFiscalYear(cutoffMonth, cutoffDay);
+  const cutoffFiscalYear = getCutoffFiscalYear(cutoffMonth, cutoffDay);
 
-  if (
-    (registrationData?.data[0] && !registrationData.data[0][6].value) ||
-    (fiscalYear != getCurrentFiscalYear() && registeredNextYear)
-  ) {
+  if (registrationData?.data[0] && !registrationData.data[0][6].value) {
     return (
       <div className="flex flex-col items-start gap-4">
         <div>Your registration request is pending</div>

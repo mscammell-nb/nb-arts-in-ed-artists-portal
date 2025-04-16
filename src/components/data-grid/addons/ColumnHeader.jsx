@@ -12,7 +12,7 @@ function ColumnHeader({ header, table, noFilter, noSort }) {
   const title = flexRender(header.column.columnDef.header, header.getContext());
   return (
     <div
-      className="flex items-center px-6 py-3"
+      className="flex items-center py-3"
       onClick={() => column.toggleSorting()}
     >
       <div>{title}</div>
