@@ -517,6 +517,6 @@ export const PROGRAMS_EDITABLE_FIELDS = new Map([
   ["costDetails", { field: 29, type: "string", options: [] }],
   [
     "performers",
-    { field: 30, type: "integer", options: [">0", "<100", "<totalPerformers"] },
+    { field: 30, type: "integer", options: [{ min: 1, max: 100 }] },
   ],
 ]);

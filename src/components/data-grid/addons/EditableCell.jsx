@@ -114,7 +114,6 @@ const editableColumns = (
                 }
 
                 if (editableFields.get(column.id).type === "integer") {
-
                   const min = editableFields.get(column.id).options[0].min;
                   const max = editableFields.get(column.id).options[0].max;
 
