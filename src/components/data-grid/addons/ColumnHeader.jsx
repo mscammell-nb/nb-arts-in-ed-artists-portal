@@ -15,14 +15,14 @@ function ColumnHeader({ header, table, noFilter, noSort }) {
       className="flex items-center py-3"
       onClick={() => column.toggleSorting()}
     >
+      {column.getCanFilter() && !noFilter && (
+        <FilterMenu column={column} table={table} />
+      )}
       <div>{title}</div>
       {column.getCanSort() && !noSort && (
         <Button type="button" variant="ghost" className="px-2 py-1 text-center">
           {getSortIcon(column)}
         </Button>
-      )}
-      {column.getCanFilter() && !noFilter && (
-        <FilterMenu column={column} table={table} />
       )}
     </div>
   );
