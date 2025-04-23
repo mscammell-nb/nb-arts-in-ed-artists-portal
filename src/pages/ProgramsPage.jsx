@@ -10,7 +10,10 @@ import {
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Spinner from "@/components/ui/Spinner";
-import { PROGRAMS_EDITABLE_FIELDS } from "@/constants/constants";
+import {
+  PROGRAMS_EDITABLE_FIELDS,
+  SERVICE_TYPE_DEFINITIONS,
+} from "@/constants/constants";
 import {
   useAddOrUpdateRecordMutation,
   useQueryForDataQuery,
@@ -112,7 +115,6 @@ const ProgramsPage = () => {
       </>
     );
   }
-
   const updateFunction = (records) => {
     const editableFields = PROGRAMS_EDITABLE_FIELDS;
     const acceptedChanges = [];
@@ -120,10 +122,16 @@ const ProgramsPage = () => {
       const id = recordKey;
       Object.keys(records[recordKey]).forEach((key) => {
         if (editableFields.has(key)) {
+          let value = records[id][key];
+          if (key === "serviceType") {
+            value = SERVICE_TYPE_DEFINITIONS.find(
+              (service) => service.title === records[id][key],
+            ).id;
+          }
           acceptedChanges.push({
             id,
             field: editableFields.get(key).field,
-            value: records[id][key],
+            value,
           });
         }
       });

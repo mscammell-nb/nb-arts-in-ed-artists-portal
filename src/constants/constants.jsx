@@ -530,7 +530,7 @@ export const PROGRAMS_EDITABLE_FIELDS = new Map([
   [
     "serviceType",
     {
-      field: 34,
+      field: 23,
       type: "select",
       options: SERVICE_TYPE_DEFINITIONS.map((type) => type.title),
     },
