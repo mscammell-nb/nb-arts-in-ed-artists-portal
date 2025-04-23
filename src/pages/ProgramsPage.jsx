@@ -39,7 +39,7 @@ const formatProgramsData = (programsData) => {
     category: record[22].value,
     length: record[26].value,
     grades: record[27].value,
-    serviceType: record[34].value,
+    serviceType: record[24].value,
     cost: record[25].value,
     costDetails: record[29].value,
     performers: record[30].value,
@@ -59,7 +59,7 @@ const ProgramsPage = () => {
     error: programsDataError,
   } = useQueryForDataQuery({
     from: import.meta.env.VITE_QUICKBASE_PROGRAMS_TABLE_ID,
-    select: [1, 3, 8, 11, 12, 16, 20, 22, 25, 26, 27, 29, 30, 32, 33, 34],
+    select: [1, 3, 8, 11, 12, 16, 20, 22, 24, 25, 26, 27, 29, 30, 32, 33],
     where: `{8.EX.${localStorage.getItem("artistRecordId")}}`,
   });
   const [
