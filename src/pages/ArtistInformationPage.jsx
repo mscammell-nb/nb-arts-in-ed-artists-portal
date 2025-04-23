@@ -500,7 +500,6 @@ const ArtistInformationPage = () => {
     setPayeeName(artistsData.data[0][31].value);
   };
   const formatData = (d) => {
-    console.log(d)
     const { data } = d;
     return data.map((record) => {
       return {
