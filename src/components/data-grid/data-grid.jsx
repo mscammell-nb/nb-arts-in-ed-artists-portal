@@ -284,7 +284,7 @@ function DataGrid({
                       cell.column.id === "programName" &&
                         "whitespace-nowrap font-medium text-gray-900 dark:text-white",
                     )}
-                    style={{ "word-break": "break-word" }}
+                    style={{ wordBreak: "break-word" }}
                     role="gridcell"
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}

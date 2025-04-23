@@ -827,11 +827,12 @@ export const programTableColumns = [
     cell: (info) => (
       <div
         className="flex flex-wrap gap-1"
-        style={{ "word-break": "auto-phrase" }}
+        style={{ wordBreak: "auto-phrase" }}
       >
-        {info.getValue().map((element) => {
+        {info.getValue().map((element, idx) => {
           return (
             <Badge
+              key={idx}
               variant="outline"
               className="w-full border-teal-700 bg-teal-300"
             >
@@ -856,11 +857,12 @@ export const programTableColumns = [
     cell: (info) => (
       <div
         className="flex min-w-fit flex-col gap-1"
-        style={{ "word-break": "auto-phrase" }}
+        style={{ wordBreak: "auto-phrase" }}
       >
-        {info.getValue().map((element) => {
+        {info.getValue().map((element, idx) => {
           return (
             <Badge
+              key={idx}
               variant="outline"
               className="min-w-fit border-blue-700 bg-blue-300"
             >
@@ -889,9 +891,10 @@ export const programTableColumns = [
     ),
     cell: (info) => (
       <div className="flex flex-wrap gap-1">
-        {info.getValue().map((element) => {
+        {info.getValue().map((element, idx) => {
           return (
             <Badge
+              key={idx}
               variant="outline"
               className="border-fuchsia-700 bg-fuchsia-300"
             >
