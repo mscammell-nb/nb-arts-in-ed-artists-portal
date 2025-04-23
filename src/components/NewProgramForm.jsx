@@ -335,11 +335,13 @@ function NewProgramForm({ selectedArtist = null, onSubmitSuccess = () => {} }) {
           20: {
             value: selectedKeywords,
           },
+          23: {
+            value: SERVICE_TYPE_DEFINITIONS.find(
+              (service) => service.title === formValues.serviceType,
+            ).id,
+          },
           25: {
             value: formValues.cost,
-          },
-          34: {
-            value: formValues.serviceType,
           },
           26: {
             value: formValues.length,
@@ -699,13 +701,11 @@ function NewProgramForm({ selectedArtist = null, onSubmitSuccess = () => {} }) {
           <SelectContent>
             <SelectGroup>
               <SelectLabel>Service Type</SelectLabel>
-
-              <SelectItem value="Workshop">Workshop</SelectItem>
-              <SelectItem value="Performance">Performance</SelectItem>
-              <SelectItem value="Residency">Residency</SelectItem>
-              <SelectItem value="Workshop & Performance">
-                Workshop & Performance
-              </SelectItem>
+              {SERVICE_TYPE_DEFINITIONS.map((definition) => (
+                <SelectItem value={definition.title}>
+                  {definition.title}
+                </SelectItem>
+              ))}
             </SelectGroup>
           </SelectContent>
         </Select>
@@ -777,7 +777,7 @@ function NewProgramForm({ selectedArtist = null, onSubmitSuccess = () => {} }) {
                 isTriggered: isValid ? false : true,
                 message: isValid
                   ? ""
-                  : `You only have ${maxPerformers} active performers.`,
+                  : `This artist only has ${maxPerformers} active performers.`,
               },
             }));
           }}
