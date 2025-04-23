@@ -11,7 +11,7 @@ import { Button } from "./ui/button";
 const DefinitionsDialog = ({ definitions }) => {
   return (
     <Dialog>
-      <DialogTrigger>
+      <DialogTrigger asChild>
         <Button variant="link" type="button">
           Click here for definitions
         </Button>

@@ -1,5 +1,14 @@
 import DataGrid from "@/components/data-grid/data-grid";
+import NewProgramForm from "@/components/NewProgramForm";
 import { buttonVariants } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import Spinner from "@/components/ui/Spinner";
 import { PROGRAMS_EDITABLE_FIELDS } from "@/constants/constants";
 import {
@@ -10,8 +19,25 @@ import { programTableColumns } from "@/utils/TableColumns";
 import { getCurrentFiscalYear, groupByIdAndField } from "@/utils/utils";
 import { Link } from "react-router-dom";
 
+const AddProgramSheet = ({ open, onOpenChange, sheetProps }) => {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle className="text-3xl">Add New Program</DialogTitle>
+          <DialogDescription>
+            Please fill out the form to add a new program
+          </DialogDescription>
+        </DialogHeader>
+        <ScrollArea className="h-[300px] lg:h-[600px]">
+          <NewProgramForm />
+        </ScrollArea>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
 const BUTTON_LINKS = [
-  { label: "New Program", url: "/new-program", isTargetBlank: false },
   { label: "View-Pay Invoice", url: "/program-invoice", isTargetBlank: false },
   { label: "View Contracts", url: "/program-contracts", isTargetBlank: false },
   { label: "Step-by-Step Help", url: "#", isTargetBlank: true },
@@ -134,6 +160,9 @@ const ProgramsPage = () => {
         updateFunction={updateFunction}
         editableFields={PROGRAMS_EDITABLE_FIELDS}
         rowSpecificEditing
+        addButtonText="Add New Program"
+        CustomAddComponent={AddProgramSheet}
+        sheetProps={{ title: "Add New Program" }}
       />
     </div>
   );
