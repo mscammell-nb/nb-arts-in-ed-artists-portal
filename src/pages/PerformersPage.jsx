@@ -248,6 +248,9 @@ const PerformersPage = () => {
         printed: record[9].value,
         cleared: record[10].value,
         active: record[11].value,
+        editableFields: record[18].value
+          ? ["firstName", "middleInitial", "lastName"]
+          : [""],
       };
     });
   };
@@ -354,6 +357,7 @@ const PerformersPage = () => {
           ]}
           updateFunction={updateFunction}
           editableFields={PERFORMERS_EDITABLE_FIELDS}
+          rowSpecificEditing
         />
       </div>
     )
