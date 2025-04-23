@@ -46,7 +46,7 @@ const formatProgramsData = (programsData) => {
     status: record[32].value,
     programGroupLegend: record[33].value,
     editableFields:
-      record[32].value === "Accepted" ? ["cost", "description"] : null,
+      record[32].value === "Accepted" ? ["cost", "description"] : [""],
   }));
 };
 
