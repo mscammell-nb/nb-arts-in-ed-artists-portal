@@ -702,7 +702,7 @@ function NewProgramForm({ selectedArtist = null, onSubmitSuccess = () => {} }) {
             <SelectGroup>
               <SelectLabel>Service Type</SelectLabel>
               {SERVICE_TYPE_DEFINITIONS.map((definition) => (
-                <SelectItem value={definition.title}>
+                <SelectItem value={definition.title} key={definition.id}>
                   {definition.title}
                 </SelectItem>
               ))}

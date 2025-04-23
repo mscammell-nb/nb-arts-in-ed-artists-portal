@@ -30,7 +30,7 @@ const AddProgramSheet = ({ open, onOpenChange, sheetProps }) => {
           </DialogDescription>
         </DialogHeader>
         <ScrollArea className="h-[300px] lg:h-[600px]">
-          <NewProgramForm />
+          <NewProgramForm onSubmitSuccess={() => onOpenChange(false)} />
         </ScrollArea>
       </DialogContent>
     </Dialog>
