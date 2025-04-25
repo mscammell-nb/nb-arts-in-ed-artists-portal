@@ -25,11 +25,8 @@ import {
 } from "@/redux/api/quickbaseApi";
 import {
   downloadFile,
-  getCurrentFiscalYear,
-  getCurrentFiscalYearKey,
   getCutoffFiscalYear,
   getCutoffFiscalYearKey,
-  getNextFiscalYear,
   getNextFiscalYearKey,
   parsePhoneNumber,
 } from "@/utils/utils";
@@ -108,7 +105,7 @@ const RegistrationRenewalPage = () => {
   const [documentTypes, setDocumentTypes] = useState(null);
   const [selectedType, setSelectedType] = useState("");
   const [open, setOpen] = useState(false);
-  const artist = localStorage.getItem("artist/org");
+  const artist = useSelector((state) => state.auth.artistOrg);
   const [fiscalYearKey, setFiscalYearKey] = useState(getNextFiscalYearKey());
 
   const {
@@ -289,7 +286,7 @@ const RegistrationRenewalPage = () => {
       });
       return;
     }
-    const artist = localStorage.getItem("artist/org");
+    const artist = useSelector((state) => state.auth.artistOrg);
     let base64 = await toBase64(fileUploads);
     base64 = base64.split("base64,")[1];
     addDocument({
@@ -368,12 +365,16 @@ const RegistrationRenewalPage = () => {
       select: [3, 7, 31],
     });
   const { data: documentsData, isLoading: isDocumentsDataLoading } =
-    useQueryForDataQuery({
-      from: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
-      select: [3, 6, 7, 9, 10, 11, 12, 14, 17],
-      where: `{9.EX.${artist}} AND {10.EX.${fiscalYearKey}} AND {17.EX.${false}}`,
-      sortBy: [{ fieldId: 10 }, { order: "DESC" }],
-    });
+    useQueryForDataQuery(
+      artist
+        ? {
+            from: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
+            select: [3, 6, 7, 9, 10, 11, 12, 14, 17],
+            where: `{9.EX.${artist}} AND {10.EX.${fiscalYearKey}} AND {17.EX.${false}}`,
+            sortBy: [{ fieldId: 10 }, { order: "DESC" }],
+          }
+        : { skip: !artist, refetchOnMountOrArgChange: true },
+    );
 
   const [
     removeDocument,

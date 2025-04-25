@@ -29,7 +29,7 @@ import {
   useAddOrUpdateRecordMutation,
   useQueryForDataQuery,
 } from "@/redux/api/quickbaseApi";
-import { signUp } from "@/redux/slices/authSlice";
+import { setArtist, signUp } from "@/redux/slices/authSlice";
 import { capitalizeString, getCutoffFiscalYearKey } from "@/utils/utils";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Plus, Trash2 } from "lucide-react";
@@ -453,7 +453,12 @@ const RegistrationPage = () => {
             formatDataForTheArtistTable(data, uid),
           );
           const artistRecordId = response.data.data[0][3].value;
-          localStorage.setItem("artistRecordId", artistRecordId);
+          dispatch(
+            setArtist({
+              artistOrg: response.data.data[0][6].value,
+              artistRecordId,
+            }),
+          );
 
           addArtistRegistration(
             formatDataForTheArtistRegistrationTable(data, artistRecordId, uid),

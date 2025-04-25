@@ -40,11 +40,12 @@ import {
 import { getCurrentFiscalYearKey } from "@/utils/utils";
 import { ArrowLeftIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 const NewProgramPage = () => {
   const { toast } = useToast();
-  const artistRecordId = localStorage.getItem("artistRecordId");
+  const artistRecordId = useSelector((state) => state.auth.artistRecordId);
 
   const [selectedKeywords, setSelectedKeywords] = useState([]);
   const [tempCategories, setTempCategories] = useState([]);
@@ -363,7 +364,7 @@ const NewProgramPage = () => {
           },
           32: {
             value: "Pending Review",
-          }
+          },
         },
       ],
     });

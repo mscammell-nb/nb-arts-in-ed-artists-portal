@@ -20,6 +20,7 @@ import {
 } from "@/redux/api/quickbaseApi";
 import { programTableColumns } from "@/utils/TableColumns";
 import { getCurrentFiscalYear, groupByIdAndField } from "@/utils/utils";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 const AddProgramSheet = ({ open, onOpenChange, sheetProps }) => {
@@ -80,17 +81,22 @@ const formatProgramsData = (programsData) => {
 };
 
 const ProgramsPage = () => {
+  const artistRecordId = useSelector((state) => state.auth.artistRecordId);
   const fiscalYear = getCurrentFiscalYear();
   const {
     data: programsData,
     isLoading: isProgramsDataLoading,
     isError: isProgramsDataError,
     error: programsDataError,
-  } = useQueryForDataQuery({
-    from: import.meta.env.VITE_QUICKBASE_PROGRAMS_TABLE_ID,
-    select: [1, 3, 8, 11, 12, 16, 20, 22, 24, 25, 26, 27, 29, 30, 32, 33],
-    where: `{8.EX.${localStorage.getItem("artistRecordId")}}`,
-  });
+  } = useQueryForDataQuery(
+    artistRecordId
+      ? {
+          from: import.meta.env.VITE_QUICKBASE_PROGRAMS_TABLE_ID,
+          select: [1, 3, 8, 11, 12, 16, 20, 22, 24, 25, 26, 27, 29, 30, 32, 33],
+          where: `{8.EX.${artistRecordId}}`,
+        }
+      : { skip: true, refetchOnMountOrArgChange: true },
+  );
   const [
     updateRecord,
     { isLoading: isUpdateLoading, isError: isUpdateError, error: updateError },

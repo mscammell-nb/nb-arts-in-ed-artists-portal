@@ -1,5 +1,4 @@
 import DataGrid from "@/components/data-grid/data-grid";
-import { Separator } from "@/components/ui/separator";
 import {
   Sheet,
   SheetContent,
@@ -8,14 +7,15 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import Spinner from "@/components/ui/Spinner";
+import { EVALUATIONS_EDITABLE_FIELDS } from "@/constants/constants";
 import {
   useAddOrUpdateRecordMutation,
   useQueryForDataQuery,
 } from "@/redux/api/quickbaseApi";
-import { getCurrentFiscalYear, groupByIdAndField } from "@/utils/utils";
-import EvaluationPage from "./EvaluationPage";
 import { evalTableColumns } from "@/utils/TableColumns";
-import { EVALUATIONS_EDITABLE_FIELDS } from "@/constants/constants";
+import { getCurrentFiscalYear, groupByIdAndField } from "@/utils/utils";
+import { useSelector } from "react-redux";
+import EvaluationPage from "./EvaluationPage";
 
 const formatEvaluationsData = (
   evaluationsData,
@@ -64,53 +64,68 @@ const AddSheet = ({ open, onOpenChange, sheetProps }) => {
   const closeSheet = () => onOpenChange(false);
   return (
     <Sheet open={open} onOpenChange={onOpenChange} className="z-20">
-      <SheetContent className="overflow-y-auto w-full sm:w-1/3">
-          <SheetHeader>
-            <SheetTitle className="text-3xl">{sheetProps.title}</SheetTitle>
-            <SheetDescription className="hidden">
-              {"Add a new Evaluation"}
-            </SheetDescription>
-          </SheetHeader>
-          {!sheetProps.isContractsLoading &&
-            !sheetProps.isProgramsDataLoading && (
-              <EvaluationPage
-                contractData={sheetProps.contractData.data}
-                programData={sheetProps.programsData.data}
-                closeSheet={closeSheet}
-              />
-            )}
+      <SheetContent className="w-full overflow-y-auto sm:w-1/3">
+        <SheetHeader>
+          <SheetTitle className="text-3xl">{sheetProps.title}</SheetTitle>
+          <SheetDescription className="hidden">
+            {"Add a new Evaluation"}
+          </SheetDescription>
+        </SheetHeader>
+        {!sheetProps.isContractsLoading &&
+          !sheetProps.isProgramsDataLoading && (
+            <EvaluationPage
+              contractData={sheetProps.contractData.data}
+              programData={sheetProps.programsData.data}
+              closeSheet={closeSheet}
+            />
+          )}
       </SheetContent>
     </Sheet>
   );
 };
 
 const ArtistEvaluationsPage = () => {
+  const artistRecordId = useSelector((state) => state.auth.artistRecordId);
   const {
     data: evaluationData,
     isLoading: evaluationDataLoading,
     isError: evaluationDataError,
-  } = useQueryForDataQuery({
-    from: import.meta.env.VITE_QUICKBASE_EVALUATIONS_TABLE_ID,
-    select: [2, 3, 6, 7, 8, 9, 11, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22],
-    where: `{8.EX.${localStorage.getItem("artistRecordId")}}`,
-  });
+  } = useQueryForDataQuery(
+    artistRecordId
+      ? {
+          from: import.meta.env.VITE_QUICKBASE_EVALUATIONS_TABLE_ID,
+          select: [
+            2, 3, 6, 7, 8, 9, 11, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
+          ],
+          where: `{8.EX.${artistRecordId}}`,
+        }
+      : { skip: true, refetchOnMountOrArgChange: true },
+  );
 
   const {
     data: programsData,
     isLoading: isProgramsDataLoading,
     isError: isProgramsDataError,
     error: programsDataError,
-  } = useQueryForDataQuery({
-    from: import.meta.env.VITE_QUICKBASE_PROGRAMS_TABLE_ID,
-    select: [1, 3, 8, 11, 16, 31, 32, 33],
-    where: `{8.EX.${localStorage.getItem("artistRecordId")}}AND{16.EX.${getCurrentFiscalYear()}}`,
-  });
+  } = useQueryForDataQuery(
+    artistRecordId
+      ? {
+          from: import.meta.env.VITE_QUICKBASE_PROGRAMS_TABLE_ID,
+          select: [1, 3, 8, 11, 16, 31, 32, 33],
+          where: `{8.EX.${artistRecordId}}AND{16.EX.${getCurrentFiscalYear()}}`,
+        }
+      : { skip: true, refetchOnMountOrArgChange: true },
+  );
   const { data: contractData, isLoading: isContractsLoading } =
-    useQueryForDataQuery({
-      from: import.meta.env.VITE_QUICKBASE_CONTRACTS_TABLE_ID,
-      select: [1, 3, 8, 10, 12, 13, 15, 16],
-      where: `{9.EX.${localStorage.getItem("artistRecordId")}}AND{15.EX.${getCurrentFiscalYear()}}`,
-    });
+    useQueryForDataQuery(
+      artistRecordId
+        ? {
+            from: import.meta.env.VITE_QUICKBASE_CONTRACTS_TABLE_ID,
+            select: [1, 3, 8, 10, 12, 13, 15, 16],
+            where: `{9.EX.${artistRecordId}}AND{15.EX.${getCurrentFiscalYear()}}`,
+          }
+        : { skip: true, refetchOnMountOrArgChange: true },
+    );
 
   const [
     updateRecord,
@@ -157,7 +172,7 @@ const ArtistEvaluationsPage = () => {
     <div className="w-full">
       {evaluationData && (
         <DataGrid
-        tableTitle={'Artist Evaluations'}
+          tableTitle={"Artist Evaluations"}
           data={formatEvaluationsData(
             evaluationData,
             isProgramsDataLoading,
