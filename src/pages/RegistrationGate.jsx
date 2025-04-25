@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
+import { setArtist } from "@/redux/slices/authSlice";
 import { isRegistrationExpiring } from "@/utils/isRegistrationExpiring";
 import {
   getCurrentFiscalYear,
@@ -51,8 +52,12 @@ const RegistrationGate = () => {
 
   useEffect(() => {
     if (artistData?.data && !isArtistDataLoading) {
-      localStorage.setItem("artistRecordId", artistData.data[0][3].value);
-      localStorage.setItem("artist/org", artistData.data[0][6].value);
+      dispatch(
+        setArtist({
+          artistOrg: artistData.data[0][6].value,
+          artistRecordId: artistData.data[0][3].value,
+        }),
+      );
     }
   }, [artistData, isArtistDataLoading]);
 

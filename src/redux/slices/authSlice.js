@@ -1,47 +1,70 @@
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut as firebaseSignOut } from "firebase/auth";
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { auth } from "@/firebaseConfig";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import {
+  createUserWithEmailAndPassword,
+  signOut as firebaseSignOut,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 
-export const signIn = createAsyncThunk("auth/signIn", async ({email, password}, {rejectWithValue}) => {
-  try {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    return {
-      email: userCredential.user.email,
-      uid: userCredential.user.uid,
-      accessToken: userCredential.user.accessToken
+export const signIn = createAsyncThunk(
+  "auth/signIn",
+  async ({ email, password }, { rejectWithValue }) => {
+    try {
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password,
+      );
+      return {
+        email: userCredential.user.email,
+        uid: userCredential.user.uid,
+        accessToken: userCredential.user.accessToken,
+      };
+    } catch (error) {
+      return rejectWithValue(error.message);
     }
-  } catch(error) {
-    return rejectWithValue(error.message);
-  }
-});
+  },
+);
 
-export const signUp = createAsyncThunk("auth/signUp", async({email, password}, {rejectWithValue}) => {
-  try{
-    const userCredential= await createUserWithEmailAndPassword(auth, email, password);
-    return {
-      email: userCredential.user.email,
-      uid: userCredential.user.uid,
-      accessToken: userCredential.user.accessToken
+export const signUp = createAsyncThunk(
+  "auth/signUp",
+  async ({ email, password }, { rejectWithValue }) => {
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password,
+      );
+      return {
+        email: userCredential.user.email,
+        uid: userCredential.user.uid,
+        accessToken: userCredential.user.accessToken,
+      };
+    } catch (error) {
+      return rejectWithValue(error.message);
     }
-  }catch(error) {
-    return rejectWithValue(error.message)
-  }
-});
+  },
+);
 
-export const signOut = createAsyncThunk("auth/signOut", async (_, {rejectWithValue}) => {
-  try{
-    await firebaseSignOut(auth);
-    return null
-  } catch (error) {
-    return rejectWithValue(error.message);
-  }
-})
+export const signOut = createAsyncThunk(
+  "auth/signOut",
+  async (_, { rejectWithValue }) => {
+    try {
+      await firebaseSignOut(auth);
+      return null;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  },
+);
 
 const initialState = {
   user: null,
   loading: true,
   authReady: false,
   error: null,
+  artistOrg: null,
+  artistRecordId: null,
 };
 
 export const authSlice = createSlice({
@@ -53,6 +76,11 @@ export const authSlice = createSlice({
       state.loading = false;
       state.authReady = true;
       state.error = null;
+    },
+    setArtist: (state, action) => {
+      const { artistOrg, artistRecordId } = action.payload;
+      state.artistOrg = artistOrg;
+      state.artistRecordId = artistRecordId;
     },
     clearError: (state) => {
       state.error = null;
@@ -101,6 +129,6 @@ export const authSlice = createSlice({
   },
 });
 
-export const { setUser, clearError } = authSlice.actions;
+export const { setUser, clearError, setArtist } = authSlice.actions;
 
 export default authSlice.reducer;

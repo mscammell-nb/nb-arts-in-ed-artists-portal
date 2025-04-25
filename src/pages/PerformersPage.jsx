@@ -34,6 +34,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Mail } from "lucide-react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { useSelector } from "react-redux";
 import * as yup from "yup";
 import Spinner from "../components/ui/Spinner";
 
@@ -146,17 +147,21 @@ const AddSheet = ({ open, onOpenChange, sheetProps }) => {
 };
 
 const PerformersPage = () => {
-  const artistRecordId = localStorage.getItem("artistRecordId");
+  const artistRecordId = useSelector((state) => state.auth.artistRecordId);
   const {
     data: performersData,
     isLoading: isPerformersLoading,
     isError: isPerformersError,
     error: performersError,
-  } = useQueryForDataQuery({
-    from: import.meta.env.VITE_QUICKBASE_PERFORMERS_TABLE_ID,
-    select: [3, 7, 8, 9, 10, 11, 14, 18, 20, 22, 23],
-    where: `{14.EX.${artistRecordId}}`,
-  });
+  } = useQueryForDataQuery(
+    artistRecordId
+      ? {
+          from: import.meta.env.VITE_QUICKBASE_PERFORMERS_TABLE_ID,
+          select: [3, 7, 8, 9, 10, 11, 14, 18, 20, 22, 23],
+          where: `{14.EX.${artistRecordId}}`,
+        }
+      : { skip: true, refetchOnMountOrArgChange: true },
+  );
   const [
     addPerformerRecord,
     {

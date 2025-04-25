@@ -57,6 +57,7 @@ import { signInWithEmailAndPassword, updatePassword } from "firebase/auth";
 import { CircleAlert, Pencil } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useSelector } from "react-redux";
 import * as yup from "yup";
 import "yup-phone-lite";
 
@@ -312,7 +313,7 @@ const ArtistInformationPage = () => {
   const [payeeName, setPayeeName] = useState("");
   const [changePasswordOpen, setChangePasswordOpen] = useState(false);
 
-  const artistRecordId = localStorage.getItem("artistRecordId");
+  const artistRecordId = useSelector((state) => state.auth.artistRecordId);
 
   const schema = yup.object({
     currentPassword: yup
@@ -404,19 +405,28 @@ const ArtistInformationPage = () => {
     isLoading: isArtistsLoading,
     isError: isArtistsError,
     error: artistsError,
-  } = useQueryForDataQuery({
-    from: import.meta.env.VITE_QUICKBASE_ARTIST_REGISTRATIONS_TABLE_ID,
-    select: [
-      3, 6, 7, 8, 9, 11, 12, 14, 15, 16, 17, 18, 19, 21, 23, 24, 25, 30, 31,
-    ],
-    where: `{7.EX.${artistRecordId}} AND {25.EX.${getCurrentFiscalYear()}}`,
-  });
+  } = useQueryForDataQuery(
+    artistRecordId
+      ? {
+          from: import.meta.env.VITE_QUICKBASE_ARTIST_REGISTRATIONS_TABLE_ID,
+          select: [
+            3, 6, 7, 8, 9, 11, 12, 14, 15, 16, 17, 18, 19, 21, 23, 24, 25, 30,
+            31,
+          ],
+          where: `{7.EX.${artistRecordId}} AND {25.EX.${getCurrentFiscalYear()}}`,
+        }
+      : { skip: true, refetchOnMountOrArgChange: true },
+  );
   const { data: referencesData, isLoading: isReferencesLoading } =
-    useQueryForDataQuery({
-      from: import.meta.env.VITE_QUICKBASE_REFERENCES_TABLE_ID,
-      select: [3, 6, 7, 8, 9, 10, 11, 12],
-      where: `{12.EX.${artistRecordId}}`,
-    });
+    useQueryForDataQuery(
+      artistRecordId
+        ? {
+            from: import.meta.env.VITE_QUICKBASE_REFERENCES_TABLE_ID,
+            select: [3, 6, 7, 8, 9, 10, 11, 12],
+            where: `{12.EX.${artistRecordId}}`,
+          }
+        : { skip: true, refetchOnMountOrArgChange: true },
+    );
   useEffect(() => {
     if (artistsData) {
       resetInformation();

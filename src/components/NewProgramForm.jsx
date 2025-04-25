@@ -14,6 +14,7 @@ import {
 } from "@/redux/api/quickbaseApi";
 import { getCurrentFiscalYearKey } from "@/utils/utils";
 import { useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import DefinitionsDialog from "./DefinitionsDialog";
 import { Button } from "./ui/button";
@@ -38,17 +39,21 @@ function NewProgramForm({ selectedArtist = null, onSubmitSuccess = () => {} }) {
   const { toast } = useToast();
   const artistRecordId = selectedArtist
     ? selectedArtist[3].value
-    : localStorage.getItem("artistRecordId");
+    : useSelector((state) => state.auth.artistRecordId);
 
   const [selectedKeywords, setSelectedKeywords] = useState([]);
   const [tempCategories, setTempCategories] = useState([]);
   const myRef = useRef();
   const { data: performersData, isLoading: isPerformersLoading } =
-    useQueryForDataQuery({
-      from: import.meta.env.VITE_QUICKBASE_PERFORMERS_TABLE_ID,
-      select: [3, 9, 10, 11, 14],
-      where: `{14.EX.${artistRecordId}} AND {9.EX.Yes} AND {10.EX.Yes} AND {11.EX.Yes}`,
-    });
+    useQueryForDataQuery(
+      artistRecordId
+        ? {
+            from: import.meta.env.VITE_QUICKBASE_PERFORMERS_TABLE_ID,
+            select: [3, 9, 10, 11, 14],
+            where: `{14.EX.${artistRecordId}} AND {9.EX.Yes} AND {10.EX.Yes} AND {11.EX.Yes}`,
+          }
+        : { skip: true, refetchOnMountOrArgChange: true },
+    );
 
   const maxPerformers =
     performersData && !isPerformersLoading ? performersData.data.length : 0;

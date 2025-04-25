@@ -46,7 +46,7 @@ const FileUploadPage = () => {
   const [selectedType, setSelectedType] = useState("");
   const [fileUploads, setFileUploads] = useState(null);
   const [open, setOpen] = useState(false);
-  const artist = localStorage.getItem("artist/org");
+  const artist = useSelector((state) => state.auth.artistOrg);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -70,12 +70,16 @@ const FileUploadPage = () => {
       select: [3, 7, 31],
     });
   const { data: documentsData, isLoading: isDocumentsDataLoading } =
-    useQueryForDataQuery({
-      from: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
-      select: [3, 6, 7, 9, 10, 11, 12, 14, 17],
-      where: `{9.EX.${artist}} AND {17.EX.${true}}`,
-      sortBy: [{ fieldId: 10 }, { order: "DESC" }],
-    });
+    useQueryForDataQuery(
+      artist
+        ? {
+            from: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
+            select: [3, 6, 7, 9, 10, 11, 12, 14, 17],
+            where: `{9.EX.${artist}} AND {17.EX.${true}}`,
+            sortBy: [{ fieldId: 10 }, { order: "DESC" }],
+          }
+        : { skip: !artist, refetchOnMountOrArgChange: true },
+    );
 
   const {
     data: documentTypesData,
@@ -163,7 +167,7 @@ const FileUploadPage = () => {
       });
       return;
     }
-    const artist = localStorage.getItem("artist/org");
+    const artist = useSelector((state) => state.auth.artistOrg);
     let base64 = await fileToBase64(fileUploads);
     base64 = base64.split("base64,")[1];
     addDocument({

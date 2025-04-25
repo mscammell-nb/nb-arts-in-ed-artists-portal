@@ -46,7 +46,7 @@ const ArtistDocumentsPage = () => {
   const [open, setOpen] = useState(false);
   const [selectedType, setSelectedType] = useState("");
   const [missingFiles, setMissingFiles] = useState([]);
-  const artist = localStorage.getItem("artist/org");
+  const artist = useSelector((state) => state.auth.artistOrg);
 
   const { user } = useSelector((state) => state.auth);
 
@@ -67,12 +67,16 @@ const ArtistDocumentsPage = () => {
       select: [3, 7, 31],
     });
   const { data: documentsData, isLoading: isDocumentsDataLoading } =
-    useQueryForDataQuery({
-      from: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
-      select: [3, 6, 7, 9, 10, 11, 12, 14, 17],
-      where: `{9.EX.${artist}} AND {17.EX.${true}}`,
-      sortBy: [{ fieldId: 10 }, { order: "DESC" }],
-    });
+    useQueryForDataQuery(
+      artist
+        ? {
+            from: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
+            select: [3, 6, 7, 9, 10, 11, 12, 14, 17],
+            where: `{9.EX.${artist}} AND {17.EX.${true}}`,
+            sortBy: [{ fieldId: 10 }, { order: "DESC" }],
+          }
+        : { skip: !artist, refetchOnMountOrArgChange: true },
+    );
 
   const [
     addDocument,
@@ -181,7 +185,6 @@ const ArtistDocumentsPage = () => {
       return;
     }
     const fiscalYear = getCurrentFiscalYearKey();
-    const artist = localStorage.getItem("artist/org");
     let base64 = await fileToBase64(fileUploads);
     base64 = base64.split("base64,")[1];
     addDocument({
