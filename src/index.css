@@ -96,3 +96,8 @@
     @apply bg-background text-foreground;
   }
 }
+
+div[role="tablist"] > button[data-state="active"] {
+  background: #3B82F6;
+  color: #ffffff;
+}

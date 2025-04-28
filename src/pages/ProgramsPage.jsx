@@ -89,6 +89,14 @@ const ProgramsPage = () => {
   const artistRecordId = useSelector((state) => state.auth.artistRecordId);
   const fiscalYear = getCurrentFiscalYear();
   const nextFiscalYear = getNextFiscalYear();
+  const { cutoffDate } = useSelector((state) => state.auth);
+  const tempCutoffDate = new Date(cutoffDate);
+  const currDate = new Date();
+  const isDuringCutoff =
+    currDate.getMonth() > tempCutoffDate.getMonth() ||
+    (currDate.getMonth() == tempCutoffDate.getMonth() &&
+      currDate.getDate() >= tempCutoffDate.getDate());
+
   const {
     data: programsData,
     isLoading: isProgramsDataLoading,
@@ -157,95 +165,149 @@ const ProgramsPage = () => {
 
   return (
     <div className="w-full">
-      <h1 className="mb-4 text-3xl font-extrabold text-gray-800">
-        Program Requests for District
-      </h1>
-      <Tabs defaultValue={fiscalYear} className="w-full">
-        <TabsList className="mb-4 grid w-full grid-cols-2">
-          <TabsTrigger
-            className="font-semibold text-gray-700"
-            value={fiscalYear}
-          >
-            {fiscalYear}
-          </TabsTrigger>
-          <TabsTrigger
-            className="font-semibold text-gray-700"
-            value={nextFiscalYear}
-          >
-            {nextFiscalYear}
-          </TabsTrigger>
-        </TabsList>
-        <TabsContent value={fiscalYear}>
-          <div className="flex w-full flex-col justify-center gap-5 pb-10">
-            <DataGrid
-              columns={programTableColumns}
-              data={formatProgramsData({
-                data: programsData.data.filter((record) => {
-                  return record[16].value == fiscalYear;
-                }),
-              })}
-              tableTitle={"Programs"}
-              usePagination
-              allowExport
-              customButtons={BUTTON_LINKS.map(
-                (link, index) =>
-                  (link.label !== "New Program" ||
-                    fiscalYear === getCurrentFiscalYear()) && (
-                    <Link
-                      key={index}
-                      to={link.url}
-                      target={link.isTargetBlank ? "_blank" : null}
-                      className={buttonVariants({ variant: "lighter" })}
-                    >
-                      {link.label}
-                    </Link>
-                  ),
-              )}
-              updateFunction={updateFunction}
-              editableFields={PROGRAMS_EDITABLE_FIELDS}
-              rowSpecificEditing
-              addButtonText="Add New Program"
-              CustomAddComponent={AddProgramSheet}
-              sheetProps={{ title: "Add New Program" }}
-            />
-          </div>
-        </TabsContent>
-        <TabsContent value={nextFiscalYear}>
-          <div className="flex w-full flex-col justify-center gap-5 pb-10">
-            <DataGrid
-              columns={programTableColumns}
-              data={formatProgramsData({
-                data: programsData.data.filter((record) => {
-                  return record[16].value == nextFiscalYear;
-                }),
-              })}
-              tableTitle={"Programs"}
-              usePagination
-              allowExport
-              customButtons={BUTTON_LINKS.map(
-                (link, index) =>
-                  (link.label !== "New Program" ||
-                    fiscalYear === getCurrentFiscalYear()) && (
-                    <Link
-                      key={index}
-                      to={link.url}
-                      target={link.isTargetBlank ? "_blank" : null}
-                      className={buttonVariants({ variant: "lighter" })}
-                    >
-                      {link.label}
-                    </Link>
-                  ),
-              )}
-              updateFunction={updateFunction}
-              editableFields={PROGRAMS_EDITABLE_FIELDS}
-              rowSpecificEditing
-              addButtonText="Add New Program"
-              CustomAddComponent={AddProgramSheet}
-              sheetProps={{ title: "Add New Program" }}
-            />
-          </div>
-        </TabsContent>
-      </Tabs>
+      {isDuringCutoff && (
+        <Tabs defaultValue={fiscalYear} className="w-full">
+          <TabsContent value={fiscalYear}>
+            <div className="flex w-full flex-col justify-center gap-5 pb-10">
+              <DataGrid
+                columns={programTableColumns}
+                data={formatProgramsData({
+                  data: programsData.data.filter((record) => {
+                    return record[16].value == fiscalYear;
+                  }),
+                })}
+                tableTitle={
+                  <div className="flex gap-x-6">
+                    <div>Programs</div>
+                    <TabsList className="mb-4 grid min-w-full grid-cols-2">
+                      <TabsTrigger
+                        className="font-semibold text-gray-700"
+                        value={fiscalYear}
+                      >
+                        {fiscalYear}
+                      </TabsTrigger>
+                      <TabsTrigger
+                        className="font-semibold text-gray-700"
+                        value={nextFiscalYear}
+                      >
+                        {nextFiscalYear}
+                      </TabsTrigger>
+                    </TabsList>
+                  </div>
+                }
+                usePagination
+                allowExport
+                customButtons={BUTTON_LINKS.map(
+                  (link, index) =>
+                    (link.label !== "New Program" ||
+                      fiscalYear === getCurrentFiscalYear()) && (
+                      <Link
+                        key={index}
+                        to={link.url}
+                        target={link.isTargetBlank ? "_blank" : null}
+                        className={buttonVariants({ variant: "lighter" })}
+                      >
+                        {link.label}
+                      </Link>
+                    ),
+                )}
+                updateFunction={updateFunction}
+                editableFields={PROGRAMS_EDITABLE_FIELDS}
+                rowSpecificEditing
+                addButtonText="Add New Program"
+                CustomAddComponent={AddProgramSheet}
+                sheetProps={{ title: "Add New Program" }}
+              />
+            </div>
+          </TabsContent>
+          <TabsContent value={nextFiscalYear}>
+            <div className="flex w-full flex-col justify-center gap-5 pb-10">
+              <DataGrid
+                columns={programTableColumns}
+                data={formatProgramsData({
+                  data: programsData.data.filter((record) => {
+                    return record[16].value == nextFiscalYear;
+                  }),
+                })}
+                tableTitle={
+                  <div className="flex gap-x-6">
+                    <div>Programs</div>
+                    <TabsList className="mb-4 grid min-w-full grid-cols-2">
+                      <TabsTrigger
+                        className="font-semibold text-gray-700"
+                        value={fiscalYear}
+                      >
+                        {fiscalYear}
+                      </TabsTrigger>
+                      <TabsTrigger
+                        className="font-semibold text-gray-700"
+                        value={nextFiscalYear}
+                      >
+                        {nextFiscalYear}
+                      </TabsTrigger>
+                    </TabsList>
+                  </div>
+                }
+                usePagination
+                allowExport
+                customButtons={BUTTON_LINKS.map(
+                  (link, index) =>
+                    (link.label !== "New Program" ||
+                      fiscalYear === getCurrentFiscalYear()) && (
+                      <Link
+                        key={index}
+                        to={link.url}
+                        target={link.isTargetBlank ? "_blank" : null}
+                        className={buttonVariants({ variant: "lighter" })}
+                      >
+                        {link.label}
+                      </Link>
+                    ),
+                )}
+                updateFunction={updateFunction}
+                editableFields={PROGRAMS_EDITABLE_FIELDS}
+                rowSpecificEditing
+                addButtonText="Add New Program"
+                CustomAddComponent={AddProgramSheet}
+                sheetProps={{ title: "Add New Program" }}
+              />
+            </div>
+          </TabsContent>
+        </Tabs>
+      )}
+      {!isDuringCutoff && (
+        <DataGrid
+          columns={programTableColumns}
+          data={formatProgramsData({
+            data: programsData.data.filter((record) => {
+              return record[16].value == fiscalYear;
+            }),
+          })}
+          tableTitle={"Programs"}
+          usePagination
+          allowExport
+          customButtons={BUTTON_LINKS.map(
+            (link, index) =>
+              (link.label !== "New Program" ||
+                fiscalYear === getCurrentFiscalYear()) && (
+                <Link
+                  key={index}
+                  to={link.url}
+                  target={link.isTargetBlank ? "_blank" : null}
+                  className={buttonVariants({ variant: "lighter" })}
+                >
+                  {link.label}
+                </Link>
+              ),
+          )}
+          updateFunction={updateFunction}
+          editableFields={PROGRAMS_EDITABLE_FIELDS}
+          rowSpecificEditing
+          addButtonText="Add New Program"
+          CustomAddComponent={AddProgramSheet}
+          sheetProps={{ title: "Add New Program" }}
+        />
+      )}
     </div>
   );
 };
