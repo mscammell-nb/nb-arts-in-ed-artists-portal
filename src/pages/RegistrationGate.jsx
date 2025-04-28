@@ -2,11 +2,7 @@ import { Button } from "@/components/ui/button";
 import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
 import { setArtist } from "@/redux/slices/authSlice";
 import { isRegistrationExpiring } from "@/utils/isRegistrationExpiring";
-import {
-  getCurrentFiscalYear,
-  getCutoffFiscalYear,
-  handleSignout,
-} from "@/utils/utils";
+import { getCurrentFiscalYear, handleSignout } from "@/utils/utils";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, Navigate, useNavigate } from "react-router-dom";
@@ -56,6 +52,7 @@ const RegistrationGate = () => {
         setArtist({
           artistOrg: artistData.data[0][6].value,
           artistRecordId: artistData.data[0][3].value,
+          cutoffDate: artistData.data[0][48].value,
         }),
       );
     }
@@ -68,10 +65,6 @@ const RegistrationGate = () => {
       </div>
     );
   }
-
-  const cutoffMonth = new Date(artistData.data[0][48].value).getMonth();
-  const cutoffDay = new Date(artistData.data[0][48].value).getDate() + 1;
-  const cutoffFiscalYear = getCutoffFiscalYear(cutoffMonth, cutoffDay);
 
   if (registrationData?.data[0] && !registrationData.data[0][6].value) {
     return (

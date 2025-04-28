@@ -1,9 +1,11 @@
 import FileUpload from "@/components/FileUpload";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { useAddOrUpdateRecordMutation, useQueryForDataQuery } from "@/redux/api/quickbaseApi";
+import { useAddOrUpdateRecordMutation } from "@/redux/api/quickbaseApi";
 import { toBase64 } from "@/utils/toBase64";
-import { useEffect } from "react";
+import { getCutoffFiscalYearKey } from "@/utils/utils";
+import { useEffect, useMemo } from "react";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Spinner from "./ui/Spinner";
 
@@ -12,25 +14,16 @@ const FileUploadForm = ({
   fileInputState,
   setFileInputState,
 }) => {
-  const { user, authReady } = useSelector((state) => state.auth);
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const { data: artistData, isLoading: isArtistDataLoading } =
-    useQueryForDataQuery(
-      user
-        ? {
-            from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
-            select: [48],
-            where: `{10.EX.${user.uid}}`,
-          }
-        : { skip: !user, refetchOnMountOrArgChange: true },
-    );
+  const cutoffDate = useSelector((state) => state.auth.cutoffDate);
 
-  const cutoffMonth = new Date(artistData.data[0][48].value).getMonth();
-  const cutoffDay = new Date(artistData.data[0][48].value).getDate() + 1;
-  const fiscalYearKey = getCutoffFiscalYearKey(cutoffMonth, cutoffDay);
-
+  const fiscalYearKey = useMemo(() => {
+    const cutoffMonth = new Date(cutoffDate).getMonth();
+    const cutoffDay = new Date(cutoffDate).getDate() + 1;
+    return getCutoffFiscalYearKey(cutoffMonth, cutoffDay);
+  }, [cutoffDate]);
   const [
     addArtistDocumentRecord,
     {

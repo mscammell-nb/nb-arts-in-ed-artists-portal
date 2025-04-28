@@ -28,7 +28,7 @@ import { documentColumns } from "@/utils/TableColumns";
 import { downloadFile, getCutoffFiscalYearKey } from "@/utils/utils";
 import { Label } from "@radix-ui/react-dropdown-menu";
 import { DownloadIcon, Loader2, UploadIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { handleSignout } from "@/utils/utils";
 import { useDispatch, useSelector } from "react-redux";
@@ -51,18 +51,7 @@ const FileUploadPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { user } = useSelector((state) => state.auth);
-
-  const { data: artistData, isLoading: isArtistDataLoading } =
-    useQueryForDataQuery(
-      user
-        ? {
-            from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
-            select: [48],
-            where: `{10.EX.${user.uid}}`,
-          }
-        : { skip: !user, refetchOnMountOrArgChange: true },
-    );
+  const cutoffDate = useSelector((state) => state.auth.cutoffDate);
 
   const { data: fileTypes, isLoading: isFileTypesLoading } =
     useQueryForDataQuery({
@@ -146,9 +135,11 @@ const FileUploadPage = () => {
     );
   }
 
-  const cutoffMonth = new Date(artistData.data[0][48].value).getMonth();
-  const cutoffDay = new Date(artistData.data[0][48].value).getDate() + 1;
-  const fiscalYearKey = getCutoffFiscalYearKey(cutoffMonth, cutoffDay);
+  const fiscalYearKey = useMemo(() => {
+    const cutoffMonth = new Date(cutoffDate).getMonth();
+    const cutoffDay = new Date(cutoffDate).getDate() + 1;
+    return getCutoffFiscalYearKey(cutoffMonth, cutoffDay);
+  }, [cutoffDate]);
 
   const uploadFile = async () => {
     if (fileUploads === null) {
