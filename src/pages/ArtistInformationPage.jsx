@@ -744,7 +744,7 @@ const ArtistInformationPage = () => {
             <div className="col-span-2">
               <DataGrid
                 tableTitle={"References"}
-                data={formatData(referencesData)}
+                data={formatData(referencesData || { data: [] })}
                 columns={referencesColumns}
                 readOnly={true}
                 noSearch
