@@ -108,6 +108,7 @@ const ProgramsPage = () => {
           from: import.meta.env.VITE_QUICKBASE_PROGRAMS_TABLE_ID,
           select: [1, 3, 8, 11, 12, 16, 20, 22, 24, 25, 26, 27, 29, 30, 32, 33],
           where: `{8.EX.${artistRecordId}}`,
+          sortBy: [{ fieldId: 11 }, { order: "DESC" }],
         }
       : { skip: true, refetchOnMountOrArgChange: true },
   );
