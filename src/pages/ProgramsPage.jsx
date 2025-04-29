@@ -214,8 +214,6 @@ const ProgramsPage = () => {
                 updateFunction={updateFunction}
                 editableFields={PROGRAMS_EDITABLE_FIELDS}
                 rowSpecificEditing
-                addButtonText="Add New Program"
-                CustomAddComponent={AddProgramSheet}
                 sheetProps={{ title: "Add New Program" }}
               />
             </div>
