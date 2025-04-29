@@ -189,3 +189,10 @@ export const handleSignout = async (dispatch, navigate) => {
   localStorage.clear();
   navigate("/login");
 };
+
+export const formatCurrency = (value) => {
+  return value.toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+  });
+};

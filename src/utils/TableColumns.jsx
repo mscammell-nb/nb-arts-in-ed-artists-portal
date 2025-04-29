@@ -40,7 +40,7 @@ import {
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
-import { capitalizeString, downloadFile } from "./utils";
+import { capitalizeString, downloadFile, formatCurrency } from "./utils";
 
 const renderStatusIcon = (value) => {
   switch (value) {
@@ -925,7 +925,9 @@ export const programTableColumns = [
         Cost
       </Button>
     ),
-    cell: (info) => <p className="font-semibold">{info.getValue()}</p>,
+    cell: (info) => (
+      <p className="font-semibold"> {formatCurrency(info.getValue())}</p>
+    ),
   },
   {
     accessorKey: "costDetails",
@@ -1003,4 +1005,90 @@ export const referencesColumns = [
     ),
     cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
   },
+];
+export const contractColumns = [
+  {
+    accessorKey: "id",
+    header: "Contract",
+    cell: ({ row }) => (
+      <span className="font-medium">{row.getValue("id")}</span>
+    ),
+  },
+  {
+    accessorKey: "coser",
+    header: "Coser",
+  },
+  {
+    accessorKey: "requestedDate",
+    header: "Requested On/By",
+    cell: ({ row }) => (
+      <div>
+        <div>{row.getValue("requestedDate")}</div>
+        <div className="text-sm text-gray-500">{row.original.requestedBy}</div>
+      </div>
+    ),
+  },
+  // {
+  //   accessorKey: "amount",
+  //   header: "Amount",
+  //   cell: ({ row }) => (
+  //     <div className="text-left font-medium">
+  //       ${row.getValue("amount").toFixed(2)}
+  //     </div>
+  //   ),
+  // },
+  // {
+  //   accessorKey: "districtApproval",
+  //   header: "District",
+  //   accessorFn: (row) => row.districtApproval.status,
+  //   cell: ({ row }) => (
+  //     <div className="flex flex-col items-start">
+  //       {row.original.districtApproval.date && (
+  //         <div className="mb-1 text-xs text-gray-500">
+  //           {row.original.districtApproval.date}
+  //         </div>
+  //       )}
+  //       <StatusBadge status={row.original.districtApproval.status} />
+  //     </div>
+  //   ),
+  //   meta: {
+  //     filterDisplayFn: (value) =>
+  //       value.charAt(0).toUpperCase() + value.slice(1),
+  //   },
+  // },
+  // {
+  //   accessorKey: "bocesApproval",
+  //   header: "BOCES",
+  //   accessorFn: (row) => row.bocesApproval.status,
+  //   cell: ({ row }) => (
+  //     <div className="flex flex-col items-start">
+  //       {row.original.bocesApproval.date && (
+  //         <div className="mb-1 text-xs text-gray-500">
+  //           {row.original.bocesApproval.date}
+  //         </div>
+  //       )}
+  //       <StatusBadge status={row.original.bocesApproval.status} />
+  //     </div>
+  //   ),
+  // },
+  // {
+  //   accessorKey: "serviced",
+  //   accessorFn: (row) => row.serviced.status,
+  //   header: "Serviced",
+  //   cell: ({ row }) => (
+  //     <div className="flex justify-start">
+  //       <StatusBadge status={row.original.serviced.status} />
+  //     </div>
+  //   ),
+  // },
+  // {
+  //   accessorKey: "tickets",
+  //   header: "Tickets",
+  //   cell: ({ row }) =>
+  //     row.original.tickets ? (
+  //       <div className="flex justify-center">
+  //         <Ticket className="h-5 w-5 text-gray-500" />
+  //       </div>
+  //     ) : null,
+  // },
 ];
