@@ -89,8 +89,8 @@ const ProgramsPage = () => {
   const artistRecordId = useSelector((state) => state.auth.artistRecordId);
   const fiscalYear = getCurrentFiscalYear();
   const nextFiscalYear = getNextFiscalYear();
-  const { cutoffDate } = useSelector((state) => state.auth);
-  const tempCutoffDate = new Date(cutoffDate);
+  const { programCutoffDate } = useSelector((state) => state.auth);
+  const tempCutoffDate = new Date(programCutoffDate);
   const currDate = new Date();
   const isDuringCutoff =
     currDate.getMonth() > tempCutoffDate.getMonth() ||
