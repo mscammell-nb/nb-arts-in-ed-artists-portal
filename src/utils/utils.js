@@ -64,14 +64,14 @@ export const getCutoffFiscalYearKey = (cutoffMonth, cutoffDay) => {
   const currDay = date.getDate();
 
   if (
-    currMonth > cutoffMonth ||
+    (currMonth > cutoffMonth && currMonth < FISCAL_YEAR_FIRST_MONTH) ||
     (currMonth == cutoffMonth && currDay >= cutoffDay)
   ) {
     return getNextFiscalYearKey();
   } else {
     return getCurrentFiscalYearKey();
   }
-}
+};
 
 export const getCutoffFiscalYear = (cutoffMonth, cutoffDay) => {
   const date = new Date();
@@ -79,14 +79,14 @@ export const getCutoffFiscalYear = (cutoffMonth, cutoffDay) => {
   const currDay = date.getDate();
 
   if (
-    currMonth > cutoffMonth ||
+    (currMonth > cutoffMonth && currMonth < FISCAL_YEAR_FIRST_MONTH) ||
     (currMonth == cutoffMonth && currDay >= cutoffDay)
   ) {
     return getNextFiscalYear();
   } else {
     return getCurrentFiscalYear();
   }
-}
+};
 
 const getFileName = (contentDisposition) => {
   if (!contentDisposition) return null;

@@ -64,10 +64,8 @@ export const isRegistrationExpiring = (user) => {
   const cutoffDay = new Date(artistData.data[0][48].value).getDate() + 1;
 
   if (
-    currMonth > cutoffMonth ||
-    (currMonth == cutoffMonth &&
-      currMonth < FISCAL_YEAR_FIRST_MONTH &&
-      currDay >= cutoffDay)
+    (currMonth > cutoffMonth && currMonth < FISCAL_YEAR_FIRST_MONTH) ||
+    (currMonth == cutoffMonth && currDay >= cutoffDay)
   ) {
     return true;
   }
