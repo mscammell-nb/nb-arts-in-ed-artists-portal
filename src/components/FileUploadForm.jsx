@@ -121,7 +121,6 @@ const FileUploadForm = ({
               15: {
                 value: documentType.recordId,
               },
-              17: { value: false },
             },
           ],
         });

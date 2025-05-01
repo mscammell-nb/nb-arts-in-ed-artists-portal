@@ -307,8 +307,8 @@ export const registrationColumns = [
 export const documentColumns = (
   allowDownload = true,
   allowDelete = false,
-  removeDocument,
-  isRemoveDocumentLoading,
+  removeDocument = null,
+  isRemoveDocumentLoading = null,
 ) => {
   const cols = [
     {

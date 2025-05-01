@@ -20,7 +20,6 @@ import { useToast } from "@/components/ui/use-toast";
 import { STATES, VALID_WEBSITE_URL_REGEX } from "@/constants/constants";
 import {
   useAddOrUpdateRecordMutation,
-  useDeleteRecordMutation,
   useQueryForDataQuery,
 } from "@/redux/api/quickbaseApi";
 import {
@@ -301,8 +300,7 @@ const RegistrationRenewalPage = () => {
               data: base64,
             },
           },
-          6: { value: selectedType },
-          17: { value: false },
+          6: { value: selectedType }
         },
       ],
     });
@@ -364,26 +362,18 @@ const RegistrationRenewalPage = () => {
       from: import.meta.env.VITE_QUICKBASE_DOCUMENT_TYPES_TABLE_ID,
       select: [3, 7, 31],
     });
+  // TODO UPDATE DOCUMENTS CURRENT COL
   const { data: documentsData, isLoading: isDocumentsDataLoading } =
     useQueryForDataQuery(
       artist
         ? {
             from: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
-            select: [3, 6, 7, 9, 10, 11, 12, 14, 17],
-            where: `{9.EX.${artist}} AND {10.EX.${fiscalYearKey}} AND {17.EX.${false}}`,
+            select: [3, 6, 7, 9, 10, 11, 12, 14],
+            where: `{9.EX.${artist}} AND {10.EX.${fiscalYearKey}}`,
             sortBy: [{ fieldId: 10 }, { order: "DESC" }],
           }
         : { skip: !artist, refetchOnMountOrArgChange: true },
     );
-
-  const [
-    removeDocument,
-    {
-      isLoading: isRemoveDocumentLoading,
-      isSuccess: isRemoveDocumentSuccess,
-      isError: isRemoveDocumentError,
-    },
-  ] = useDeleteRecordMutation();
 
   if (
     isArtistLoading ||
@@ -711,12 +701,7 @@ const RegistrationRenewalPage = () => {
               {documentsData && (
                 <DataGrid
                   data={formatDocData(documentsData)}
-                  columns={documentColumns(
-                    false,
-                    true,
-                    removeDocument,
-                    isRemoveDocumentLoading,
-                  )}
+                  columns={documentColumns(false, false)}
                   readOnly
                   noSearch
                   noFilter
