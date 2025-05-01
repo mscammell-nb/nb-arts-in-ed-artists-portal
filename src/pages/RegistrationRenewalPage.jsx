@@ -282,7 +282,6 @@ const RegistrationRenewalPage = () => {
       });
       return;
     }
-    const artist = useSelector((state) => state.auth.artistOrg);
     let base64 = await toBase64(fileUploads);
     base64 = base64.split("base64,")[1];
     addDocument({
