@@ -36,11 +36,13 @@ import {
   Loader2,
   Trash,
   X,
+  XIcon,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { capitalizeString, downloadFile, formatCurrency } from "./utils";
+import { DropZone } from "@/components/DropZone";
 
 const renderStatusIcon = (value) => {
   switch (value) {
@@ -1006,89 +1008,159 @@ export const referencesColumns = [
     cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
   },
 ];
-export const contractColumns = [
+export const baseContractColumns = [
   {
     accessorKey: "id",
-    header: "Contract",
+    header: "ID",
     cell: ({ row }) => (
       <span className="font-medium">{row.getValue("id")}</span>
     ),
   },
   {
-    accessorKey: "coser",
-    header: "Coser",
+    accessorKey: "programTitle",
+    header: "Program Title",
+    cell: ({ row }) => (
+      <div className="text-left font-medium">{row.getValue("programTitle")}</div>
+    ),
   },
   {
-    accessorKey: "requestedDate",
+    accessorKey: "fiscalYear",
+    header: "Fiscal Year",
+    cell: ({ row }) => (
+      <div className="text-left font-medium">{row.getValue("fiscalYear")}</div>
+    ),
+  },
+  {
+    accessorKey: "cost",
+    header: "Amount",
+    cell: ({ row }) => (
+      <div className="text-left font-medium">
+        {formatCurrency(row.getValue("cost"))}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "district",
+    header: "District",
+    cell: ({ row }) => (
+      <div className="text-left font-medium">{row.getValue("district")}</div>
+    ),
+  },
+  {
+    accessorKey: "requestedBy",
     header: "Requested On/By",
     cell: ({ row }) => (
       <div>
-        <div>{row.getValue("requestedDate")}</div>
         <div className="text-sm text-gray-500">{row.original.requestedBy}</div>
       </div>
     ),
   },
-  // {
-  //   accessorKey: "amount",
-  //   header: "Amount",
-  //   cell: ({ row }) => (
-  //     <div className="text-left font-medium">
-  //       ${row.getValue("amount").toFixed(2)}
-  //     </div>
-  //   ),
-  // },
-  // {
-  //   accessorKey: "districtApproval",
-  //   header: "District",
-  //   accessorFn: (row) => row.districtApproval.status,
-  //   cell: ({ row }) => (
-  //     <div className="flex flex-col items-start">
-  //       {row.original.districtApproval.date && (
-  //         <div className="mb-1 text-xs text-gray-500">
-  //           {row.original.districtApproval.date}
-  //         </div>
-  //       )}
-  //       <StatusBadge status={row.original.districtApproval.status} />
-  //     </div>
-  //   ),
-  //   meta: {
-  //     filterDisplayFn: (value) =>
-  //       value.charAt(0).toUpperCase() + value.slice(1),
-  //   },
-  // },
-  // {
-  //   accessorKey: "bocesApproval",
-  //   header: "BOCES",
-  //   accessorFn: (row) => row.bocesApproval.status,
-  //   cell: ({ row }) => (
-  //     <div className="flex flex-col items-start">
-  //       {row.original.bocesApproval.date && (
-  //         <div className="mb-1 text-xs text-gray-500">
-  //           {row.original.bocesApproval.date}
-  //         </div>
-  //       )}
-  //       <StatusBadge status={row.original.bocesApproval.status} />
-  //     </div>
-  //   ),
-  // },
-  // {
-  //   accessorKey: "serviced",
-  //   accessorFn: (row) => row.serviced.status,
-  //   header: "Serviced",
-  //   cell: ({ row }) => (
-  //     <div className="flex justify-start">
-  //       <StatusBadge status={row.original.serviced.status} />
-  //     </div>
-  //   ),
-  // },
-  // {
-  //   accessorKey: "tickets",
-  //   header: "Tickets",
-  //   cell: ({ row }) =>
-  //     row.original.tickets ? (
-  //       <div className="flex justify-center">
-  //         <Ticket className="h-5 w-5 text-gray-500" />
-  //       </div>
-  //     ) : null,
-  // },
+  {
+    accessorKey: "dateOfService",
+    header: "Date of Service",
+    cell: ({ row }) => (
+      <div>
+        <div className="text-sm text-gray-500">{row.original.dateOfService}</div>
+      </div>
+    ),
+  },
+  {
+    accessorKey: "invoiceMade",
+    header: "Invoice Made",
+    cell: ({ row }) => row.original.invoiceDate != '' ?(
+      <Check className="text-emerald-400" />
+    ): (<XIcon  className="text-red-400" />),
+  },
 ];
+export const contractColumns = [
+  ...baseContractColumns,
+  {
+    accessorKey: "invoiceDate",
+    header: "Invoice Date",
+    cell: ({ row }) => (
+      <div className="text-left font-medium">{row.getValue("invoiceDate")}</div>
+    ),
+  },
+]
+export const contractsThatRequireAnInvoiceColumns = [
+  ...baseContractColumns,
+  {
+    header: "Add Invoice",
+    cell: ({ row }) => {
+      const [isDialogOpen, setIsDialogOpen] = useState(false);
+      const [uploadedFile, setUploadedFile] = useState(null);
+  
+      const handleUpload = () => {
+        if (uploadedFile && uploadedFile.type === 'application/pdf') {
+          let invoiceDate = new Date().toISOString().split('T')[0];
+          let invoiceFile = uploadedFile;
+          
+          // TODO: Upload to quickbase
+
+          // Close dialog and reset state
+          setIsDialogOpen(false);
+          setUploadedFile(null);
+        }
+      };
+  
+      const handleCancel = () => {
+        setIsDialogOpen(false);
+        setUploadedFile(null);
+      };
+  
+      return (
+        <div className="flex justify-center">
+          <Tooltip>
+            <TooltipTrigger>
+              <div onClick={() => setIsDialogOpen(true)}>
+                <FilePenLine
+                  className="mr-1 h-4 w-4 cursor-pointer hover:text-primary"
+                  size={20}
+                  strokeWidth={2.25}
+                />
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Add invoice</p>
+            </TooltipContent>
+          </Tooltip>
+  
+          <Dialog open={isDialogOpen} onOpenChange={(open) => {
+            if (!open) handleCancel();
+          }}>
+            <DialogContent className="sm:max-w-xl">
+              <DialogHeader>
+                <DialogTitle>Upload Invoice</DialogTitle>
+                <DialogDescription>
+                  Upload a PDF invoice for this record
+                </DialogDescription>
+              </DialogHeader>
+              
+              <div className="space-y-4 mt-4">
+                {/* Use the DropZone component */}
+                <DropZone setUploadedFile={setUploadedFile} />
+  
+                {/* Only show upload button if there's a file */}
+                {uploadedFile && uploadedFile.type === 'application/pdf' && (
+                  <div className="flex justify-end gap-3">
+                    <Button 
+                      variant="outline" 
+                      onClick={handleCancel}
+                    >
+                      Cancel
+                    </Button>
+                    <Button 
+                      onClick={handleUpload}
+                    >
+                      Upload Invoice
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
+      );
+    },
+  }
+]

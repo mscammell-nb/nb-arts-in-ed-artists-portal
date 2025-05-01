@@ -1,7 +1,12 @@
 import DataGrid from "@/components/data-grid/data-grid";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import Spinner from "@/components/ui/Spinner";
 import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
-import { contractColumns } from "@/utils/TableColumns";
+import {
+  contractColumns,
+  contractsThatRequireAnInvoiceColumns,
+} from "@/utils/TableColumns";
+import { AlertCircle, AlertTriangle } from "lucide-react";
 import { format } from "prettier";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -21,7 +26,7 @@ export default function ArtistInvoicesPage() {
     artistRecordId
       ? {
           from: import.meta.env.VITE_QUICKBASE_CONTRACTS_TABLE_ID,
-          select: [1, 3, 8, 11, 12, 16, 20, 22, 24, 25, 26, 27, 29, 30, 32, 33],
+          select: [3, 20, 22, 23, 24, 28, 30, 32],
           where: `{33.EX.${artistRecordId}}`,
         }
       : { skip: true, refetchOnMountOrArgChange: true },
@@ -38,6 +43,7 @@ export default function ArtistInvoicesPage() {
   }, [isContractsDataLoading, contractsData]);
 
   const getContractsThatRequireAnInvoice = (contractsData) => {
+    // This currently only checks if the invoice date is empty, what we need to do is check if we are passed the date of service and still missing an invoice
     const { data } = contractsData;
     const contractsThatRequireAnInvoice = [];
     data.forEach((contract) => {
@@ -48,28 +54,46 @@ export default function ArtistInvoicesPage() {
     return contractsThatRequireAnInvoice;
   };
   const formatContractsData = (contractsData) => {
-    // TODO: ADD MORE FIELDS
+    // TODO: Add field on qb for requestedBy, this should come from program request and should be passed to contracts
     return contractsData.map((record) => ({
-      id: record[3].value,
-      coser: 403,
-      requestedBy: "Someone"
+      id: record[3]?.value,
+      coser: record[28]?.value,
+      requestedBy: "Someone",
+      programTitle: record[20]?.value,
+      fiscalYear: record[24]?.value,
+      cost: record[22]?.value,
+      dateOfService: record[30]?.value,
+      district: record[23]?.value,
+      invoiceDate: record[32]?.value,
     }));
   };
   return (
     <div className="flex w-full flex-col justify-center gap-5">
-      {(!isContractsDataLoading && contractsData?.data) ? (
+      <Alert variant="warning">
+        <AlertCircle className="h-4 w-4" />
+        <AlertTitle>Note!</AlertTitle>
+        <AlertDescription>
+          You can only add an invoice for contracts that are passed the date of
+          service.
+        </AlertDescription>
+      </Alert>
+      {!isContractsDataLoading && contractsData?.data ? (
         <>
           {contractsThatRequireAnInvoice.length > 0 && (
             <>
               {/* ALERT SAYING THAT THERE ARE CONTRACTS THAT REQUIRE AN INVOICE */}
-              <div className="rounded-md border border-red-400 bg-red-50 p-4 text-sm font-semibold text-red-700">
-                There are contracts that require an invoice. Please complete the
-                invoice for these contracts.
-              </div>
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>Missing Invoices!</AlertTitle>
+                <AlertDescription>
+                  There are contracts that require an invoice. Please complete
+                  the invoice for these contracts.
+                </AlertDescription>
+              </Alert>
               {/* LIST OF ALL CONTRACTS RELATED TO THE ARTIST THAT REQUIRE AN INVOICE */}
               <DataGrid
                 tableTitle={"Contracts that require an invoice"}
-                columns={contractColumns}
+                columns={contractsThatRequireAnInvoiceColumns}
                 data={formatContractsData(contractsThatRequireAnInvoice)}
                 usePagination
                 allowExport
