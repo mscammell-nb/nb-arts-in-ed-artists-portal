@@ -108,11 +108,7 @@ const ArtistDocumentsPage = () => {
     // Once file types and doc data are loaded, check to see which files are missing
     // Missing docs names, compare them to the docData.fileType
     if (documentsData && fileTypes) {
-      let userTypes = documentsData.data
-        .map((doc) => {
-          if (doc[10].value == getCurrentFiscalYearKey()) return doc[6].value;
-        })
-        .filter((n) => n);
+      let userTypes = documentsData.data.map((doc) => doc[6].value);
 
       const isTicketVendor = artistsData?.data[0][46].value === TICKET_VENDOR;
 
@@ -199,7 +195,7 @@ const ArtistDocumentsPage = () => {
               data: base64,
             },
           },
-          6: { value: selectedType }
+          6: { value: selectedType },
         },
       ],
     });
