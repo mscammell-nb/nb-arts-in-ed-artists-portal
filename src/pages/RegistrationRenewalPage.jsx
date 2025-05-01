@@ -193,9 +193,6 @@ const RegistrationRenewalPage = () => {
           9: {
             value: artistData.data[0][7].value,
           },
-          10: {
-            value: artistData.data[0][8].value,
-          },
           11: {
             value: data.phone,
           },
@@ -300,7 +297,7 @@ const RegistrationRenewalPage = () => {
               data: base64,
             },
           },
-          6: { value: selectedType }
+          6: { value: selectedType },
         },
       ],
     });
