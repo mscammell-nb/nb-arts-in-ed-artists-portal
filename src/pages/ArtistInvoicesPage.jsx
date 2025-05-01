@@ -12,8 +12,6 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
 export default function ArtistInvoicesPage() {
-  // TODO: Display an alert that informs the user of contracts that require an invoice
-  // TODO: Display a list of all contracts related to the artist
   const artistRecordId = useSelector((state) => state.auth.artistRecordId);
   const [contractsThatRequireAnInvoice, setContractsThatRequireAnInvoice] =
     useState([]);
@@ -43,7 +41,7 @@ export default function ArtistInvoicesPage() {
   }, [isContractsDataLoading, contractsData]);
 
   const getContractsThatRequireAnInvoice = (contractsData) => {
-    // This currently only checks if the invoice date is empty, what we need to do is check if we are passed the date of service and still missing an invoice
+    // TODO: This currently only checks if the invoice date is empty, what we need to do is check if we are past the date of service and still missing an invoice
     const { data } = contractsData;
     const contractsThatRequireAnInvoice = [];
     data.forEach((contract) => {
@@ -54,7 +52,7 @@ export default function ArtistInvoicesPage() {
     return contractsThatRequireAnInvoice;
   };
   const formatContractsData = (contractsData) => {
-    // TODO: Add field on qb for requestedBy, this should come from program request and should be passed to contracts
+    // TODO: Add field on qb for requestedBy, this should come from program request and should be past to contracts
     return contractsData.map((record) => ({
       id: record[3]?.value,
       coser: record[28]?.value,
@@ -73,7 +71,7 @@ export default function ArtistInvoicesPage() {
         <AlertCircle className="h-4 w-4" />
         <AlertTitle>Note!</AlertTitle>
         <AlertDescription>
-          You can only add an invoice for contracts that are passed the date of
+          You can only add an invoice for contracts that are past the date of
           service.
         </AlertDescription>
       </Alert>
