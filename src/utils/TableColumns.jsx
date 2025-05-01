@@ -312,6 +312,19 @@ export const documentColumns = (
 ) => {
   const cols = [
     {
+      accessorKey: "fiscalYear",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          className="text-xs font-semibold uppercase text-gray-700"
+          onClick={() => column.toggleSorting()}
+        >
+          Fiscal Year
+        </Button>
+      ),
+      cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
+    },
+    {
       accessorKey: "documentName",
       header: ({ column }) => (
         <Button

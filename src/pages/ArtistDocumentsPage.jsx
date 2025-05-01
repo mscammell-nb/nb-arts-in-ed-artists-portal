@@ -72,8 +72,8 @@ const ArtistDocumentsPage = () => {
         ? {
             from: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
             select: [3, 6, 7, 9, 10, 11, 12, 14, 17],
-            where: `{9.EX.${artist}} AND {17.EX.${true}}`,
-            sortBy: [{ fieldId: 10 }, { order: "DESC" }],
+            where: `{9.EX.${artist}}`,
+            sortBy: [{ fieldId: 11 }, { order: "DESC" }],
           }
         : { skip: !artist, refetchOnMountOrArgChange: true },
     );
@@ -200,6 +200,8 @@ const ArtistDocumentsPage = () => {
             },
           },
           6: { value: selectedType },
+          17: { value: false },
+          18: { value: false },
         },
       ],
     });
