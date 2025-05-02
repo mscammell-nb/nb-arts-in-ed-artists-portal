@@ -1,3 +1,5 @@
+import ContactCard from "@/components/ContactCard";
+import { DropZone } from "@/components/DropZone";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -38,11 +40,15 @@ import {
   X,
   XIcon,
 } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
-import { capitalizeString, downloadFile, formatCurrency } from "./utils";
-import { DropZone } from "@/components/DropZone";
+import {
+  capitalizeString,
+  downloadFile,
+  formatCurrency,
+  uploadFile,
+} from "./utils";
 
 const renderStatusIcon = (value) => {
   switch (value) {
@@ -1020,7 +1026,9 @@ export const baseContractColumns = [
     accessorKey: "programTitle",
     header: "Program Title",
     cell: ({ row }) => (
-      <div className="text-left font-medium">{row.getValue("programTitle")}</div>
+      <div className="text-left font-medium">
+        {row.getValue("programTitle")}
+      </div>
     ),
   },
   {
@@ -1047,12 +1055,26 @@ export const baseContractColumns = [
     ),
   },
   {
-    accessorKey: "requestedBy",
-    header: "Requested On/By",
+    accessorKey: "requestor",
+    header: "Requestor",
     cell: ({ row }) => (
-      <div>
-        <div className="text-sm text-gray-500">{row.original.requestedBy}</div>
-      </div>
+      <Dialog>
+        <DialogTrigger className="text-sm text-gray-500 hover:text-blue-400 hover:underline">
+          {row.original.requestor}
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Contact Information</DialogTitle>
+            <DialogDescription></DialogDescription>
+          </DialogHeader>
+          <ContactCard
+            name={row.original.requestor}
+            email={row.original.requestorEmail}
+            phone={row.original.requestorPhone}
+            inDialog
+          />
+        </DialogContent>
+      </Dialog>
     ),
   },
   {
@@ -1060,16 +1082,21 @@ export const baseContractColumns = [
     header: "Date of Service",
     cell: ({ row }) => (
       <div>
-        <div className="text-sm text-gray-500">{row.original.dateOfService}</div>
+        <div className="text-sm text-gray-500">
+          {row.original.dateOfService}
+        </div>
       </div>
     ),
   },
   {
     accessorKey: "invoiceMade",
     header: "Invoice Made",
-    cell: ({ row }) => row.original.invoiceDate != '' ?(
-      <Check className="text-emerald-400" />
-    ): (<XIcon  className="text-red-400" />),
+    cell: ({ row }) =>
+      row.original.invoiceDate != "" ? (
+        <Check className="text-emerald-400" />
+      ) : (
+        <XIcon className="text-red-400" />
+      ),
   },
 ];
 export const contractColumns = [
@@ -1081,7 +1108,7 @@ export const contractColumns = [
       <div className="text-left font-medium">{row.getValue("invoiceDate")}</div>
     ),
   },
-]
+];
 export const contractsThatRequireAnInvoiceColumns = [
   ...baseContractColumns,
   {
@@ -1089,25 +1116,50 @@ export const contractsThatRequireAnInvoiceColumns = [
     cell: ({ row }) => {
       const [isDialogOpen, setIsDialogOpen] = useState(false);
       const [uploadedFile, setUploadedFile] = useState(null);
-  
+      const [buttonLoading, setButtonLoading] = useState(false);
+      const [
+        addDocument,
+        {
+          isLoading: isAddDocumentLoading,
+          isSuccess: isAddDocumentSuccess,
+          isError: isAddDocumentError,
+          error: addDocumentError,
+        },
+      ] = useAddOrUpdateRecordMutation();
       const handleUpload = () => {
-        if (uploadedFile && uploadedFile.type === 'application/pdf') {
-          let invoiceDate = new Date().toISOString().split('T')[0];
-          let invoiceFile = uploadedFile;
-          
-          // TODO: Upload to quickbase
-
-          // Close dialog and reset state
-          setIsDialogOpen(false);
-          setUploadedFile(null);
+        if (uploadedFile && uploadedFile.type === "application/pdf") {
+          uploadFile(
+            uploadedFile,
+            import.meta.env.VITE_QUICKBASE_CONTRACTS_TABLE_ID,
+            addDocument,
+            row.original.id,
+          ).then(() => {
+            // Close dialog and reset state
+            if (isAddDocumentSuccess) {
+              toast({
+                variant: "success",
+                title: "Operation successful!",
+                description: "Your invoice has been submitted.",
+              });
+              setIsDialogOpen(false);
+              setUploadedFile(null);
+            } else if (isAddDocumentError) {
+              toast({
+                variant: "destructive",
+                title: "Error submitting invoice",
+                description: "There was an error submitting your invoice.",
+              });
+            }
+            setButtonLoading(false);
+          });
         }
       };
-  
+
       const handleCancel = () => {
         setIsDialogOpen(false);
         setUploadedFile(null);
       };
-  
+
       return (
         <div className="flex justify-center">
           <Tooltip>
@@ -1124,10 +1176,13 @@ export const contractsThatRequireAnInvoiceColumns = [
               <p>Add invoice</p>
             </TooltipContent>
           </Tooltip>
-  
-          <Dialog open={isDialogOpen} onOpenChange={(open) => {
-            if (!open) handleCancel();
-          }}>
+
+          <Dialog
+            open={isDialogOpen}
+            onOpenChange={(open) => {
+              if (!open) handleCancel();
+            }}
+          >
             <DialogContent className="sm:max-w-xl">
               <DialogHeader>
                 <DialogTitle>Upload Invoice</DialogTitle>
@@ -1135,23 +1190,18 @@ export const contractsThatRequireAnInvoiceColumns = [
                   Upload a PDF invoice for this record
                 </DialogDescription>
               </DialogHeader>
-              
-              <div className="space-y-4 mt-4">
+
+              <div className="mt-4 space-y-4">
                 {/* Use the DropZone component */}
                 <DropZone setUploadedFile={setUploadedFile} />
-  
+
                 {/* Only show upload button if there's a file */}
-                {uploadedFile && uploadedFile.type === 'application/pdf' && (
+                {uploadedFile && uploadedFile.type === "application/pdf" && (
                   <div className="flex justify-end gap-3">
-                    <Button 
-                      variant="outline" 
-                      onClick={handleCancel}
-                    >
+                    <Button variant="outline" onClick={handleCancel}>
                       Cancel
                     </Button>
-                    <Button 
-                      onClick={handleUpload}
-                    >
+                    <Button onClick={handleUpload} isLoading={buttonLoading}>
                       Upload Invoice
                     </Button>
                   </div>
@@ -1162,5 +1212,5 @@ export const contractsThatRequireAnInvoiceColumns = [
         </div>
       );
     },
-  }
-]
+  },
+];
