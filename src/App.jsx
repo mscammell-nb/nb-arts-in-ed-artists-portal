@@ -20,6 +20,7 @@ import RegistrationGate from "./pages/RegistrationGate";
 import RegistrationPage from "./pages/RegistrationPage";
 import RegistrationRenewalPage from "./pages/RegistrationRenewalPage";
 import store from "./redux/store";
+import ArtistInvoicesPage from "./pages/ArtistInvoicesPage";
 
 function App() {
   const title = "Arts in Education: Artists";
@@ -47,6 +48,10 @@ function App() {
             <Route
               path="/artist-registrations"
               element={<ArtistRegistrationsPage />}
+            />
+            <Route
+              path="/artist-invoices"
+              element={<ArtistInvoicesPage />}
             />
             <Route
               path="/keyword-list"

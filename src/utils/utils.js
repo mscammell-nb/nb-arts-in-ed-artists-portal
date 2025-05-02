@@ -1,3 +1,4 @@
+import { toast } from "@/components/ui/use-toast";
 import { FISCAL_YEAR_FIRST_MONTH } from "@/constants/constants";
 import { signOut } from "@/redux/slices/authSlice";
 
@@ -138,6 +139,49 @@ export const downloadFile = async (tableId, fieldId, id, versionNumber) => {
       console.error(err);
     });
 };
+
+export const uploadFile = async (fileUpload, tableId, addDocument, id) => {
+  if (fileUpload === null) {
+    toast({
+      variant: "destructive",
+      title: "Error submitting documents",
+      description: "Please upload a file.",
+    });
+    return;
+  }
+
+  let base64 = await fileToBase64(fileUpload);
+  base64 = base64.split("base64,")[1];
+
+  console.log(tableId, id);
+
+  await addDocument({
+    to: tableId,
+    data: [
+      {
+        3: { value: id },
+        31: {
+          value: {
+            fileName: fileUpload.name,
+            data: base64,
+          },
+        },
+        32: { value: "today" },
+      },
+    ],
+  });
+  return;
+};
+
+const fileToBase64 = (file) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = (error) => reject(error);
+  });
+};
+
 export const deleteRow = async (tableId, fieldId, rowId, refetch) => {
   let headers = {
     "QB-Realm-Hostname": import.meta.env.VITE_QB_REALM_HOSTNAME,
@@ -188,4 +232,11 @@ export const handleSignout = async (dispatch, navigate) => {
   await dispatch(signOut());
   localStorage.clear();
   navigate("/login");
+};
+
+export const formatCurrency = (value) => {
+  return value.toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+  });
 };
