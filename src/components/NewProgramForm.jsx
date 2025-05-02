@@ -12,7 +12,7 @@ import {
   useAddOrUpdateRecordMutation,
   useQueryForDataQuery,
 } from "@/redux/api/quickbaseApi";
-import { getCurrentFiscalYearKey } from "@/utils/utils";
+import { getCurrentFiscalYearKey, getNextFiscalYearKey } from "@/utils/utils";
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
@@ -310,6 +310,14 @@ function NewProgramForm({ selectedArtist = null, onSubmitSuccess = () => {} }) {
     setTempCategories([]);
     setSelectedKeywords([]);
 
+    const { programCutoffDate } = useSelector((state) => state.auth);
+    const tempCutoffDate = new Date(programCutoffDate);
+    const currDate = new Date();
+    const isDuringCutoff =
+      currDate.getMonth() > tempCutoffDate.getMonth() ||
+      (currDate.getMonth() == tempCutoffDate.getMonth() &&
+        currDate.getDate() >= tempCutoffDate.getDate());
+
     addProgram({
       to: import.meta.env.VITE_QUICKBASE_PROGRAMS_TABLE_ID,
       data: [
@@ -318,7 +326,9 @@ function NewProgramForm({ selectedArtist = null, onSubmitSuccess = () => {} }) {
             value: artistRecordId,
           },
           15: {
-            value: getCurrentFiscalYearKey(),
+            value: isDuringCutoff
+              ? getNextFiscalYearKey()
+              : getCurrentFiscalYearKey(),
           },
           11: {
             value: formValues.title,
