@@ -13,12 +13,12 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { VersionSwitcher } from "@/components/version-switcher";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
 import {
   TICKET_VENDOR,
   TICKET_VENDOR_EXCEPTION_SIDEBAR,
 } from "@/constants/constants";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
 import { HamburgerMenuIcon } from "@radix-ui/react-icons";
 import {
   BookText,
@@ -28,12 +28,20 @@ import {
   Drum,
   FileText,
   MonitorCog,
+  PiggyBank,
   UserRoundCog,
 } from "lucide-react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { Button } from "./ui/button";
-import { Sheet, SheetClose, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "./ui/sheet";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetTitle,
+  SheetTrigger,
+} from "./ui/sheet";
 
 const data = {
   versions: ["Email Help", "Sign Out"],
@@ -51,6 +59,11 @@ const data = {
           title: "Artist Registrations",
           url: "/artist-registrations",
           icon: <BookText />,
+        },
+        {
+          title: "Artist Invoices",
+          url: "/artist-invoices",
+          icon: <PiggyBank />,
         },
       ],
     },
@@ -111,7 +124,9 @@ export function AppSidebar({ ...props }) {
         </SheetTrigger>
         <SheetTitle className="hidden">Sidebar</SheetTitle>
         <SheetContent side="left" className="side-bar max-w-[66%] border-0">
-          <SheetDescription className="hidden">Arts in Education Sidebar</SheetDescription>
+          <SheetDescription className="hidden">
+            Arts in Education Sidebar
+          </SheetDescription>
           <SidebarHeader>
             <VersionSwitcher className={"side-bar"} />
             {/*<SearchForm />*/}

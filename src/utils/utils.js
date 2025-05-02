@@ -153,8 +153,6 @@ export const uploadFile = async (fileUpload, tableId, addDocument, id) => {
   let base64 = await fileToBase64(fileUpload);
   base64 = base64.split("base64,")[1];
 
-  console.log(tableId, id);
-
   await addDocument({
     to: tableId,
     data: [
