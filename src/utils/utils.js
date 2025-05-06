@@ -1,4 +1,3 @@
-import { toast } from "@/components/ui/use-toast";
 import { FISCAL_YEAR_FIRST_MONTH } from "@/constants/constants";
 import { signOut } from "@/redux/slices/authSlice";
 
@@ -140,35 +139,18 @@ export const downloadFile = async (tableId, fieldId, id, versionNumber) => {
     });
 };
 
-export const uploadFile = async (fileUpload, tableId, addDocument, id) => {
-  if (fileUpload === null) {
-    toast({
-      variant: "destructive",
-      title: "Error submitting documents",
-      description: "Please upload a file.",
-    });
-    return;
-  }
-
+export const uploadFile = async (fileUpload, field) => {
   let base64 = await fileToBase64(fileUpload);
   base64 = base64.split("base64,")[1];
 
-  await addDocument({
-    to: tableId,
-    data: [
-      {
-        3: { value: id },
-        31: {
-          value: {
-            fileName: fileUpload.name,
-            data: base64,
-          },
-        },
-        32: { value: "today" },
+  return {
+    [field]: {
+      value: {
+        fileName: fileUpload.name,
+        data: base64,
       },
-    ],
-  });
-  return;
+    },
+  };
 };
 
 const fileToBase64 = (file) => {
@@ -179,7 +161,6 @@ const fileToBase64 = (file) => {
     reader.onerror = (error) => reject(error);
   });
 };
-
 export const deleteRow = async (tableId, fieldId, rowId, refetch) => {
   let headers = {
     "QB-Realm-Hostname": import.meta.env.VITE_QB_REALM_HOSTNAME,

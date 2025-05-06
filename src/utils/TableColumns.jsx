@@ -1139,14 +1139,22 @@ export const contractsThatRequireAnInvoiceColumns = [
           error: addDocumentError,
         },
       ] = useAddOrUpdateRecordMutation();
-      const handleUpload = () => {
+
+      const handleUpload = async () => {
+        setButtonLoading(true);
         if (uploadedFile && uploadedFile.type === "application/pdf") {
-          uploadFile(
-            uploadedFile,
-            import.meta.env.VITE_QUICKBASE_CONTRACTS_TABLE_ID,
-            addDocument,
-            row.original.id,
-          ).then(() => {
+          const append = await uploadFile(uploadedFile, 31);
+
+          await addDocument({
+            to: import.meta.env.VITE_QUICKBASE_CONTRACTS_TABLE_ID,
+            data: [
+              {
+                3: { value: row.original.id },
+                32: { value: "today" },
+                ...append,
+              },
+            ],
+          }).then((res) => {
             // Close dialog and reset state
             if (isAddDocumentSuccess) {
               toast({
@@ -1163,7 +1171,6 @@ export const contractsThatRequireAnInvoiceColumns = [
                 description: "There was an error submitting your invoice.",
               });
             }
-            setButtonLoading(false);
           });
         }
       };
