@@ -28,7 +28,7 @@ const formatEvaluationsData = (
     let programName = "-";
     if (!isProgramsDataLoading && programData) {
       let filtered = programData.data.filter(
-        (d) => d[3].value === record[7].value,
+        (d) => d[3].value === record[25].value,
       );
       if (filtered.length > 0) programName = filtered[0][11].value;
     }
@@ -95,9 +95,9 @@ const ArtistEvaluationsPage = () => {
       ? {
           from: import.meta.env.VITE_QUICKBASE_EVALUATIONS_TABLE_ID,
           select: [
-            2, 3, 6, 7, 8, 9, 11, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
+            2, 3, 6, 7, 8, 9, 11, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 25,
           ],
-          where: `{8.EX.${artistRecordId}}`,
+          where: `{24.EX.${artistRecordId}}`,
         }
       : { skip: true, refetchOnMountOrArgChange: true },
   );
@@ -121,8 +121,8 @@ const ArtistEvaluationsPage = () => {
       artistRecordId
         ? {
             from: import.meta.env.VITE_QUICKBASE_CONTRACTS_TABLE_ID,
-            select: [1, 3, 8, 10, 12, 13, 15, 16],
-            where: `{9.EX.${artistRecordId}}AND{15.EX.${getCurrentFiscalYear()}}`,
+            select: [1, 3, 8, 10, 12, 13, 15, 16, 24, 46],
+            where: `{33.EX.${artistRecordId}}AND{24.EX.${getCurrentFiscalYear()}}`,
           }
         : { skip: true, refetchOnMountOrArgChange: true },
     );

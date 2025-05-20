@@ -18,7 +18,7 @@ function ColumnHeader({ header, table, noFilter, noSort }) {
       {column.getCanFilter() && !noFilter && (
         <FilterMenu column={column} table={table} />
       )}
-      <div>{title}</div>
+      <div className="text-nowrap font-semibold">{title}</div>
       {column.getCanSort() && !noSort && (
         <Button type="button" variant="ghost" className="px-2 py-1 text-center">
           {getSortIcon(column)}

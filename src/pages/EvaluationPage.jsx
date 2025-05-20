@@ -123,12 +123,12 @@ const EvaluationPage = ({ contractData, programData, closeSheet }) => {
 
   const formatContractData = (data) => {
     let copy = data.map((cd) => {
-      const programName = programData.filter(
-        (d) => d[3].value === cd[8].value,
-      )[0][11].value;
+      const programName = programData.filter((d) => {
+        return d[3].value === cd[46].value;
+      })[0][11].value;
       return {
         id: cd[3].value,
-        identifier: cd[15].value,
+        identifier: cd[24].value,
         name: programName,
       };
     });
