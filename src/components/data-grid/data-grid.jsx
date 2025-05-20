@@ -348,8 +348,8 @@ function DataGrid({
           </tbody>
         </table>
       </div>
-      {usePagination && <Pagination table={table} />}
       {legend && legend}
+      {usePagination && <Pagination table={table} />}
       {CustomAddComponent && (
         <CustomAddComponent
           open={sheetOpen}
