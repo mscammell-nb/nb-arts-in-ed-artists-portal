@@ -1,6 +1,5 @@
 import ContactCard from "@/components/ContactCard";
 import { DropZone } from "@/components/DropZone";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -37,280 +36,37 @@ import {
   FilePenLine,
   Loader2,
   Trash,
-  X,
   XIcon,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import {
-  capitalizeString,
-  downloadFile,
-  formatCurrency,
-  uploadFile,
-} from "./utils";
+  badgeColumn,
+  boardApprovalColumn,
+  checkColumn,
+  createColumns,
+  currencyColumn,
+  formattedColumn,
+} from "./createColumns";
+import { capitalizeString, downloadFile, uploadFile } from "./utils";
 
-const renderStatusIcon = (value) => {
-  switch (value) {
-    case true:
-      return <Check size={18} strokeWidth={1.75} />;
-    case false:
-      return <X size={18} strokeWidth={1.75} />;
-    default:
-      return "N/A";
-  }
-};
+export const evalTableColumns = createColumns(
+  ["programName", "evaluationDate", "approverName", "additionalComments"],
+  checkColumn("active"),
+  checkColumn("guideUsed"),
+  checkColumn("studentsAttentive"),
+  checkColumn("studentConduct"),
+  checkColumn("teacherRemained"),
+  checkColumn("spaceSetUp"),
+  checkColumn("equipmentUsed"),
+  checkColumn("onSchedule"),
+);
 
-export const evalTableColumns = [
-  {
-    accessorKey: "programName",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        className="text-xs font-semibold uppercase  text-gray-700"
-        onClick={() => column.toggleSorting()}
-      >
-        Program
-      </Button>
-    ),
-    cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
-  },
-  {
-    accessorKey: "evaluationDate",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        className="text-xs font-semibold uppercase  text-gray-700"
-        onClick={() => column.toggleSorting()}
-      >
-        Evaluation Date
-      </Button>
-    ),
-    cell: (info) => <p className="text-center">{info.getValue()}</p>,
-  },
-  {
-    accessorKey: "servicePerformed",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        className="text-xs font-semibold uppercase  text-gray-700"
-        onClick={() => column.toggleSorting()}
-      >
-        Service Performed
-      </Button>
-    ),
-    cell: (info) => <p className="text-center">{info.getValue()}</p>,
-  },
-  {
-    accessorKey: "approverName",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        className="text-xs font-semibold uppercase  text-gray-700"
-        onClick={() => column.toggleSorting()}
-      >
-        Approver Name
-      </Button>
-    ),
-    cell: (info) => <p className="text-center">{info.getValue()}</p>,
-  },
-  {
-    accessorKey: "guideUsed",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        className="text-xs font-semibold uppercase  text-gray-700"
-        onClick={() => column.toggleSorting()}
-      >
-        Guide Used
-      </Button>
-    ),
-    cell: (info) => <p className="text-center">{info.getValue()}</p>,
-  },
-  {
-    accessorKey: "studentsAttentive",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        className="text-xs font-semibold uppercase  text-gray-700"
-        onClick={() => column.toggleSorting()}
-      >
-        Attentive?
-      </Button>
-    ),
-    cell: (info) => <p className="text-center">{info.getValue()}</p>,
-  },
-  {
-    accessorKey: "studentConduct",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        className="text-xs font-semibold uppercase  text-gray-700"
-        onClick={() => column.toggleSorting()}
-      >
-        Conduct?
-      </Button>
-    ),
-    cell: (info) => <p className="text-center">{info.getValue()}</p>,
-  },
-  {
-    accessorKey: "teacherRemained",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        className="text-xs font-semibold uppercase  text-gray-700"
-        onClick={() => column.toggleSorting()}
-      >
-        Teacher Remained?
-      </Button>
-    ),
-    cell: (info) => <p className="text-center">{info.getValue()}</p>,
-  },
-  {
-    accessorKey: "spaceSetUp",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        className="text-xs font-semibold uppercase  text-gray-700"
-        onClick={() => column.toggleSorting()}
-      >
-        Space Set Up?
-      </Button>
-    ),
-    cell: (info) => <p className="text-center">{info.getValue()}</p>,
-  },
-  {
-    accessorKey: "equipmentUsed",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        className="text-xs font-semibold uppercase  text-gray-700"
-        onClick={() => column.toggleSorting()}
-      >
-        Equipment
-      </Button>
-    ),
-    cell: (info) => <p className="text-center">{info.getValue()}</p>,
-  },
-  {
-    accessorKey: "onSchedule",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        className="text-xs font-semibold uppercase  text-gray-700"
-        onClick={() => column.toggleSorting()}
-      >
-        On Schedule
-      </Button>
-    ),
-    cell: (info) => <p className="text-center">{info.getValue()}</p>,
-  },
-  {
-    accessorKey: "additionalComments",
-    header: ({ column }) => <p className="text-nowrap">Additional Comments</p>,
-    cell: (info) => <p className="text-left">{info.getValue()}</p>,
-  },
-];
-
-export const registrationColumns = [
-  {
-    accessorKey: "artist",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        className="text-xs font-semibold uppercase  text-gray-700"
-        onClick={() => column.toggleSorting()}
-      >
-        Artist/Organization
-      </Button>
-    ),
-    cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
-  },
-  {
-    accessorKey: "fiscalYear",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        className="text-xs font-semibold uppercase  text-gray-700"
-        onClick={() => column.toggleSorting()}
-      >
-        Fiscal Year
-      </Button>
-    ),
-    cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
-  },
-  {
-    accessorKey: "numPerformers",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        className="text-xs font-semibold uppercase  text-gray-700"
-        onClick={() => column.toggleSorting()}
-      >
-        Number of Performers
-      </Button>
-    ),
-    cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
-  },
-  {
-    accessorKey: "phone",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        className="text-xs font-semibold uppercase  text-gray-700"
-        onClick={() => column.toggleSorting()}
-      >
-        Phone Number
-      </Button>
-    ),
-    cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
-  },
-  {
-    accessorKey: "altPhone",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        className="text-xs font-semibold uppercase  text-gray-700"
-        onClick={() => column.toggleSorting()}
-      >
-        Alternate Phone Number
-      </Button>
-    ),
-    cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
-  },
-  {
-    accessorKey: "email",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        className="text-xs font-semibold uppercase  text-gray-700"
-        onClick={() => column.toggleSorting()}
-      >
-        Email
-      </Button>
-    ),
-    cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
-  },
-  {
-    accessorKey: "approved",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        className="text-xs font-semibold uppercase text-gray-700"
-        onClick={() => column.toggleSorting()}
-      >
-        Approved
-      </Button>
-    ),
-    cell: (info) => {
-      return (
-        <p className="flex justify-center">
-          {renderStatusIcon(info.getValue())}
-        </p>
-      );
-    },
-  },
-];
+export const registrationColumns = createColumns(
+  ["artist", "fiscalYear", "numPerformers", "phone", "email", "approved"],
+  formattedColumn("numPerformers", "Number of Performers"),
+);
 
 export const documentColumns = (
   allowDownload = true,
@@ -417,139 +173,20 @@ export const documentColumns = (
 };
 
 export const performersColumns = [
-  {
-    accessorKey: "firstName",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        className="text-xs font-semibold uppercase text-gray-700"
-        onClick={() => column.toggleSorting()}
-      >
-        First Name
-      </Button>
-    ),
-    cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
-  },
-  {
-    accessorKey: "middleInitial",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        className="text-xs font-semibold uppercase text-gray-700"
-        onClick={() => column.toggleSorting()}
-      >
-        Middle Initial
-      </Button>
-    ),
-    cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
-  },
-  {
-    accessorKey: "lastName",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        className="text-xs font-semibold uppercase text-gray-700"
-        onClick={() => column.toggleSorting()}
-      >
-        Last Name
-      </Button>
-    ),
-    cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
-  },
-  {
-    accessorKey: "stageName",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        className="text-xs font-semibold uppercase text-gray-700"
-        onClick={() => column.toggleSorting()}
-      >
-        Stage Name
-      </Button>
-    ),
-    cell: ({ row }) => {
-      if (row.original.stageName === "") {
-        return <p>N/A</p>;
-      } else return <p>{row.original.stageName}</p>;
-    },
-  },
-  {
-    accessorKey: "printed",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        className="text-xs font-semibold uppercase text-gray-700"
-        onClick={() => column.toggleSorting()}
-      >
-        Fingerprinted
-      </Button>
-    ),
-    cell: ({ row }) => {
-      if (row.original.printed === "Yes") {
-        return <Check size={20} className="text-emerald-400" />;
-      } else if (row.original.printed === "No") {
-        return <X size={20} className="text-red-400" />;
-      } else
-        return (
-          <Badge variant="outline" className={"border-gray-400 bg-gray-200"}>
-            N/A
-          </Badge>
-        );
-    },
-  },
-  {
-    accessorKey: "cleared",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        className="text-xs font-semibold uppercase text-gray-700"
-        onClick={() => column.toggleSorting()}
-      >
-        Cleared
-      </Button>
-    ),
-    cell: ({ row }) => {
-      if (row.original.cleared === "Yes") {
-        return <Check size={20} className="text-emerald-400" />;
-      } else if (row.original.cleared === "No") {
-        return <X size={20} className="text-red-400" />;
-      } else
-        return (
-          <Badge variant="outline" className={"border-gray-400 bg-gray-200"}>
-            N/A
-          </Badge>
-        );
-    },
-  },
-  {
-    accessorKey: "active",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        className="text-xs font-semibold uppercase text-gray-700"
-        onClick={() => column.toggleSorting()}
-      >
-        Active
-      </Button>
-    ),
-    cell: ({ row }) => {
-      if (row.original.active === true) {
-        return (
-          <Badge
-            variant="outline"
-            className={"border-emerald-400 bg-emerald-200"}
-          >
-            Active
-          </Badge>
-        );
-      } else
-        return (
-          <Badge variant="outline" className={"border-gray-400 bg-gray-200"}>
-            Inactive
-          </Badge>
-        );
-    },
-  },
+  ...createColumns(
+    [
+      "firstName",
+      "middleInitial",
+      "lastName",
+      "stageName",
+      "printed",
+      "cleared",
+      "active",
+    ],
+    checkColumn("printed"),
+    checkColumn("cleared"),
+    checkColumn("active"),
+  ),
   {
     header: ({ column }) => <p className="font-semibold"> </p>,
     id: "edit",
@@ -798,328 +435,93 @@ export const performersColumns = [
 ];
 
 export const programTableColumns = [
-  {
-    accessorKey: "fiscalYear",
-    header: ({ column }) => (
-      <Button variant="ghost" onClick={() => column.toggleSorting()}>
-        Fiscal Year
-      </Button>
-    ),
-    cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
-  },
-  {
-    accessorKey: "dateCreated",
-    header: ({ column }) => (
-      <Button variant="ghost" onClick={() => column.toggleSorting()}>
-        Date Created
-      </Button>
-    ),
-    cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
-  },
-  {
-    accessorKey: "program",
-    header: ({ column }) => (
-      <Button variant="ghost" onClick={() => column.toggleSorting()}>
-        Program
-      </Button>
-    ),
-    cell: (info) => (
-      <p className="max-w-48 text-wrap font-semibold">{info.getValue()}</p>
-    ),
-  },
-  {
-    accessorKey: "description",
-    header: ({ column }) => (
-      <Button variant="ghost" onClick={() => column.toggleSorting()}>
-        Description
-      </Button>
-    ),
-    cell: (info) => (
-      <p className="max-w-48 text-wrap font-semibold">{info.getValue()}</p>
-    ),
-  },
-  {
-    accessorKey: "keywords",
-    header: ({ column }) => (
-      <Button variant="ghost" onClick={() => column.toggleSorting()}>
-        Keywords
-      </Button>
-    ),
-    cell: (info) => (
-      <div
-        className="flex flex-wrap gap-1"
-        style={{ wordBreak: "auto-phrase" }}
-      >
-        {info.getValue().map((element, idx) => {
-          return (
-            <Badge
-              key={idx}
-              variant="outline"
-              className="w-full border-teal-700 bg-teal-300"
-            >
-              {element
-                .replaceAll("-", " ")
-                .split(" ")
-                .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                .join(" ")}
-            </Badge>
-          );
-        })}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "category",
-    header: ({ column }) => (
-      <Button variant="ghost" onClick={() => column.toggleSorting()}>
-        Categories
-      </Button>
-    ),
-    cell: (info) => (
-      <div
-        className="flex min-w-fit flex-col gap-1"
-        style={{ wordBreak: "auto-phrase" }}
-      >
-        {info.getValue().map((element, idx) => {
-          return (
-            <Badge
-              key={idx}
-              variant="outline"
-              className="min-w-fit border-blue-700 bg-blue-300"
-            >
-              {element}
-            </Badge>
-          );
-        })}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "length",
-    header: ({ column }) => (
-      <Button variant="ghost" onClick={() => column.toggleSorting()}>
-        Length
-      </Button>
-    ),
-    cell: (info) => <p className="font-semibold">{info.getValue()}</p>,
-  },
-  {
-    accessorKey: "grades",
-    header: ({ column }) => (
-      <Button variant="ghost" onClick={() => column.toggleSorting()}>
-        Grades
-      </Button>
-    ),
-    cell: (info) => (
-      <div className="flex flex-wrap gap-1">
-        {info.getValue().map((element, idx) => {
-          return (
-            <Badge
-              key={idx}
-              variant="outline"
-              className="border-fuchsia-700 bg-fuchsia-300"
-            >
-              {element
-                .replaceAll("-", " ")
-                .split(" ")
-                .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                .join(" ")}
-            </Badge>
-          );
-        })}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "serviceType",
-    header: ({ column }) => (
-      <Button variant="ghost" onClick={() => column.toggleSorting()}>
-        Service Type
-      </Button>
-    ),
-    cell: (info) => <p className="font-semibold">{info.getValue()}</p>,
-  },
-  {
-    accessorKey: "cost",
-    header: ({ column }) => (
-      <Button variant="ghost" onClick={() => column.toggleSorting()}>
-        Cost
-      </Button>
-    ),
-    cell: (info) => (
-      <p className="font-semibold"> {formatCurrency(info.getValue())}</p>
-    ),
-  },
-  {
-    accessorKey: "costDetails",
-    header: ({ column }) => (
-      <Button variant="ghost" onClick={() => column.toggleSorting()}>
-        Cost Details
-      </Button>
-    ),
-    cell: (info) => (
-      <div className="max-w-48 text-wrap font-semibold">{info.getValue()}</div>
-    ),
-  },
-  {
-    accessorKey: "performers",
-    header: ({ column }) => (
-      <Button variant="ghost" onClick={() => column.toggleSorting()}>
-        Performers
-      </Button>
-    ),
-    cell: (info) => <p className="font-semibold">{info.getValue()}</p>,
-  },
-  {
-    accessorKey: "status",
-    header: ({ column }) => (
-      <Button variant="ghost" onClick={() => column.toggleSorting()}>
-        Status
-      </Button>
-    ),
-    cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
-  },
+  ...createColumns(
+    [
+      "fiscalYear",
+      "dateCreated",
+      "program",
+      "description",
+      "keywords",
+      "category",
+      "grades",
+      "length",
+      "serviceType",
+      "cost",
+      "costDetails",
+      "performers",
+      "status",
+    ],
+    badgeColumn("keywords", "teal"),
+    badgeColumn("category", "blue"),
+    badgeColumn("grades", "fuchsia"),
+    currencyColumn("cost"),
+    boardApprovalColumn("status"),
+  ),
 ];
-export const referencesColumns = [
-  {
-    accessorKey: "firstName",
-    header: ({ column }) => (
-      <Button variant="ghost" onClick={() => column.toggleSorting()}>
-        First Name
-      </Button>
-    ),
-    cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
-  },
-  {
-    accessorKey: "lastName",
-    header: ({ column }) => (
-      <Button variant="ghost" onClick={() => column.toggleSorting()}>
-        Last Name
-      </Button>
-    ),
-    cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
-  },
-  {
-    accessorKey: "email",
-    header: ({ column }) => (
-      <Button variant="ghost" onClick={() => column.toggleSorting()}>
-        Email
-      </Button>
-    ),
-    cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
-  },
-  {
-    accessorKey: "phone",
-    header: ({ column }) => (
-      <Button variant="ghost" onClick={() => column.toggleSorting()}>
-        Phone
-      </Button>
-    ),
-    cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
-  },
-  {
-    accessorKey: "district",
-    header: ({ column }) => (
-      <Button variant="ghost" onClick={() => column.toggleSorting()}>
-        District
-      </Button>
-    ),
-    cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
-  },
-];
+
+export const referencesColumns = createColumns([
+  "firstName",
+  "lastName",
+  "email",
+  "phone",
+  "district",
+]);
+
 export const baseContractColumns = [
-  {
-    accessorKey: "id",
-    header: "ID",
-    cell: ({ row }) => (
-      <span className="font-medium">{row.getValue("id")}</span>
-    ),
-  },
-  {
-    accessorKey: "programTitle",
-    header: "Program Title",
-    cell: ({ row }) => (
-      <div className="text-left font-medium">
-        {row.getValue("programTitle")}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "fiscalYear",
-    header: "Fiscal Year",
-    cell: ({ row }) => (
-      <div className="text-left font-medium">{row.getValue("fiscalYear")}</div>
-    ),
-  },
-  {
-    accessorKey: "cost",
-    header: "Amount",
-    cell: ({ row }) => (
-      <div className="text-left font-medium">
-        {formatCurrency(row.getValue("cost"))}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "district",
-    header: "District",
-    cell: ({ row }) => (
-      <div className="text-left font-medium">{row.getValue("district")}</div>
-    ),
-  },
-  {
-    accessorKey: "requestor",
-    header: "Requestor",
-    cell: ({ row }) => (
-      <Dialog>
-        <DialogTrigger className="text-sm text-gray-500 hover:text-blue-400 hover:underline">
-          {row.original.requestor}
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Contact Information</DialogTitle>
-            <DialogDescription></DialogDescription>
-          </DialogHeader>
-          <ContactCard
-            name={row.original.requestor}
-            email={row.original.requestorEmail}
-            phone={row.original.requestorPhone}
-            inDialog
-          />
-        </DialogContent>
-      </Dialog>
-    ),
-  },
-  {
-    accessorKey: "dateOfService",
-    header: "Date of Service",
-    cell: ({ row }) => (
-      <div>
-        <div className="text-sm text-gray-500">
-          {row.original.dateOfService}
-        </div>
-      </div>
-    ),
-  },
-  {
-    accessorKey: "invoiceMade",
-    header: "Invoice Made",
-    cell: ({ row }) =>
-      row.original.invoiceDate != "" ? (
-        <Check className="text-emerald-400" />
-      ) : (
-        <XIcon className="text-red-400" />
+  ...createColumns(
+    [
+      "id",
+      "programTitle",
+      "fiscalYear",
+      "cost",
+      "district",
+      "requestor",
+      "invoiceMade",
+      "dateOfService",
+    ],
+    currencyColumn("cost"),
+    {
+      accessorKey: "requestor",
+      header: "Requestor",
+      cell: ({ row }) => (
+        <Dialog>
+          <DialogTrigger className="text-sm text-gray-500 hover:text-blue-400 hover:underline">
+            {row.original.requestor}
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Contact Information</DialogTitle>
+              <DialogDescription></DialogDescription>
+            </DialogHeader>
+            <ContactCard
+              name={row.original.requestor}
+              email={row.original.requestorEmail}
+              phone={row.original.requestorPhone}
+              inDialog
+            />
+          </DialogContent>
+        </Dialog>
       ),
-  },
+    },
+    {
+      id: "invoiceMade",
+      accessorKey: "invoiceMade",
+      header: "Invoice Made",
+      cell: ({ row }) =>
+        row.original.invoiceDate != "" ? (
+          <Check className="text-emerald-400" />
+        ) : (
+          <XIcon className="text-red-400" />
+        ),
+    },
+  ),
 ];
 export const contractColumns = [
   ...baseContractColumns,
   {
+    id: "invoiceDate", // Add explicit ID
     accessorKey: "invoiceDate",
     header: "Invoice Date",
-    cell: ({ row }) => (
-      <div className="text-left font-medium">{row.getValue("invoiceDate")}</div>
-    ),
   },
 ];
 export const contractsThatRequireAnInvoiceColumns = [
