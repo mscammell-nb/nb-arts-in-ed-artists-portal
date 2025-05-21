@@ -157,14 +157,7 @@ const ProgramsPage = () => {
         }
       });
     });
-    const updatedFields = groupByIdAndField(acceptedChanges).map((element) => {
-      return {
-        ...element,
-        32: {
-          value: "Pending Review",
-        },
-      };
-    });
+    const updatedFields = groupByIdAndField(acceptedChanges);
     updateRecord({
       to: import.meta.env.VITE_QUICKBASE_PROGRAMS_TABLE_ID,
       data: updatedFields,
