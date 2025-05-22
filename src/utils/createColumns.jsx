@@ -289,24 +289,36 @@ export const checkColumn = (key, options = {}) => ({
 export const badgeColumn = (key, color, options = {}) => ({
   accessorKey: key,
   header: options.header || formatHeader(key),
-  cell: (info) => (
-    <div
-      className="flex min-w-fit flex-col gap-1"
-      style={{ wordBreak: "normal" }}
-    >
-      {info.getValue().map((element) => {
-        return (
-          <Badge
-            key={element}
-            variant="outline"
-            className={cn(`min-w-fit border-${color}-700 bg-${color}-300`)}
-          >
-            {element}
-          </Badge>
-        );
-      })}
-    </div>
-  ),
+  cell: (info) => {
+    const colorMap = {
+      teal: "border-teal-700 bg-teal-300",
+      blue: "border-blue-700 bg-blue-300",
+      green: "border-green-700 bg-green-300",
+      red: "border-red-700 bg-red-300",
+      yellow: "border-yellow-700 bg-yellow-300",
+      purple: "border-purple-700 bg-purple-300",
+      fuchsia: "border-fuchsia-700 bg-fuchsia-300",
+    };
+    return (
+      <div
+        className="flex min-w-fit flex-col gap-1"
+        style={{ wordBreak: "normal" }}
+      >
+        {info.getValue().map((element) => {
+          const colorClass = colorMap[color] || "border-gray-700 bg-gray-300";
+          return (
+            <Badge
+              key={element}
+              variant="outline"
+              className={cn("min-w-fit", colorClass)}
+            >
+              {element}
+            </Badge>
+          );
+        })}
+      </div>
+    );
+  },
 });
 
 export const currencyColumn = (key, options = {}) => ({
