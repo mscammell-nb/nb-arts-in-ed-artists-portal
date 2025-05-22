@@ -57,8 +57,6 @@ export const createColumns = (standardCols = [], ...customCols) => {
     };
   });
 
-  console.log(standardColDefs);
-
   // Create ID column if needed
   let idColumn = null;
   if (hasIdInStandard || customIdColumn) {

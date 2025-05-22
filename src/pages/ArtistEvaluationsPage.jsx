@@ -1,4 +1,5 @@
 import DataGrid from "@/components/data-grid/data-grid";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   Sheet,
   SheetContent,
@@ -12,8 +13,10 @@ import {
   useAddOrUpdateRecordMutation,
   useQueryForDataQuery,
 } from "@/redux/api/quickbaseApi";
-import { evalTableColumns } from "@/utils/TableColumns";
+import { contractColumns, evalTableColumns } from "@/utils/TableColumns";
 import { getCurrentFiscalYear, groupByIdAndField } from "@/utils/utils";
+import { AlertCircle } from "lucide-react";
+import React from "react";
 import { useSelector } from "react-redux";
 import EvaluationPage from "./EvaluationPage";
 
@@ -49,6 +52,23 @@ const formatEvaluationsData = (
     };
   });
 };
+
+const formatContractsData = (contractsData) => {
+  return contractsData.map((record) => ({
+    id: record[3]?.value,
+    coser: record[28]?.value,
+    requestor: record[35].value + " " + record[36].value,
+    requestorEmail: record[34].value,
+    requestorPhone: record[37].value,
+    programTitle: record[20]?.value,
+    fiscalYear: record[24]?.value,
+    cost: record[22]?.value,
+    dateOfService: record[30]?.value,
+    district: record[23]?.value,
+    invoiceDate: record[32]?.value,
+  }));
+};
+
 const formatDate = (timestamp) => {
   if (!timestamp) return "-";
   const date = new Date(timestamp);
@@ -85,6 +105,8 @@ const AddSheet = ({ open, onOpenChange, sheetProps }) => {
 };
 
 const ArtistEvaluationsPage = () => {
+  const [contractsMissingEvaluations, setContractsMissingEvaluations] =
+    React.useState([]);
   const artistRecordId = useSelector((state) => state.auth.artistRecordId);
   const {
     data: evaluationData,
@@ -121,7 +143,9 @@ const ArtistEvaluationsPage = () => {
       artistRecordId
         ? {
             from: import.meta.env.VITE_QUICKBASE_CONTRACTS_TABLE_ID,
-            select: [1, 3, 8, 10, 12, 13, 15, 16, 24, 46],
+            // select: [1, 3, 8, 10, 12, 13, 15, 16, 24, 46, 30],
+            select: [3, 20, 22, 23, 24, 28, 30, 32, 34, 35, 36, 37, 46],
+
             where: `{33.EX.${artistRecordId}}AND{24.EX.${getCurrentFiscalYear()}}`,
           }
         : { skip: true, refetchOnMountOrArgChange: true },
@@ -160,7 +184,44 @@ const ArtistEvaluationsPage = () => {
     });
   };
 
-  if (evaluationDataLoading || isEditArtistEvaluationLoading) {
+  React.useEffect(() => {
+    if (
+      !isContractsLoading &&
+      contractData?.data &&
+      !evaluationDataLoading &&
+      evaluationData?.data
+    ) {
+      const contractsMissingEvaluations = contractData.data.filter(
+        (contract) => {
+          const dateParts = contract[30].value.split("-");
+          const year = parseInt(dateParts[0]);
+          const month = parseInt(dateParts[1]) - 1;
+          const day = parseInt(dateParts[2]);
+          const serviceDate = new Date(year, month, day);
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          serviceDate.setHours(0, 0, 0, 0);
+
+          // Only continue if service date is in the past
+          if (serviceDate >= today) {
+            return false;
+          }
+          console.log(contract[3].value);
+          // Check if contract doesn't have an evaluation
+          return !evaluationData.data.some(
+            (evaluation) => evaluation[6].value === contract[3].value,
+          );
+        },
+      );
+      setContractsMissingEvaluations(contractsMissingEvaluations);
+    }
+  }, [contractData, isContractsLoading, evaluationDataLoading, evaluationData]);
+
+  if (
+    evaluationDataLoading ||
+    isEditArtistEvaluationLoading ||
+    isContractsLoading
+  ) {
     return (
       <div className="flex h-full w-full justify-center pt-24">
         <Spinner />
@@ -169,7 +230,40 @@ const ArtistEvaluationsPage = () => {
   }
 
   return (
-    <div className="w-full">
+    <div className="flex w-full flex-col gap-4">
+      {contractsMissingEvaluations.length > 0 && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Missing Evaluations!</AlertTitle>
+          <AlertDescription>
+            There are contracts that require an Evaluation. Please complete the
+            Evaluation for these contracts.{" "}
+            <span className="font-bold">
+              No payment will be made until the evaluation is completed.
+            </span>
+          </AlertDescription>
+        </Alert>
+      )}
+      {evaluationData && (
+        <DataGrid
+          tableTitle={"Contracts that require an Evaluation"}
+          data={formatContractsData(contractsMissingEvaluations)}
+          columns={contractColumns}
+          CustomAddComponent={AddSheet}
+          addButtonText="Add Evaluation"
+          sheetProps={{
+            title: "Add Evaluation",
+            programsData,
+            isProgramsDataLoading,
+            contractData: { data: contractsMissingEvaluations },
+            isContractsLoading,
+            loading: isProgramsDataLoading || isContractsLoading,
+          }}
+          usePagination
+          allowExport
+          readOnly
+        />
+      )}
       {evaluationData && (
         <DataGrid
           tableTitle={"Artist Evaluations"}
@@ -185,7 +279,7 @@ const ArtistEvaluationsPage = () => {
             title: "Add Evaluation",
             programsData,
             isProgramsDataLoading,
-            contractData,
+            contractData: { data: contractsMissingEvaluations },
             isContractsLoading,
             loading: isProgramsDataLoading || isContractsLoading,
           }}
