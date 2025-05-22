@@ -144,7 +144,7 @@ const ArtistEvaluationsPage = () => {
         ? {
             from: import.meta.env.VITE_QUICKBASE_CONTRACTS_TABLE_ID,
             // select: [1, 3, 8, 10, 12, 13, 15, 16, 24, 46, 30],
-            select: [3, 20, 22, 23, 24, 28, 30, 32, 34, 35, 36, 37, 46],
+            select: [3, 20, 22, 23, 24, 28, 30, 32, 34, 35, 36, 37, 46, 49],
 
             where: `{33.EX.${artistRecordId}}AND{24.EX.${getCurrentFiscalYear()}}`,
           }
@@ -202,15 +202,11 @@ const ArtistEvaluationsPage = () => {
           today.setHours(0, 0, 0, 0);
           serviceDate.setHours(0, 0, 0, 0);
 
-          // Only continue if service date is in the past
-          if (serviceDate >= today) {
+          // Only continue if service date is in the past or evaluation is completed
+          if (serviceDate >= today || contract[49].value) {
             return false;
           }
-          console.log(contract[3].value);
-          // Check if contract doesn't have an evaluation
-          return !evaluationData.data.some(
-            (evaluation) => evaluation[6].value === contract[3].value,
-          );
+          return true;
         },
       );
       setContractsMissingEvaluations(contractsMissingEvaluations);
