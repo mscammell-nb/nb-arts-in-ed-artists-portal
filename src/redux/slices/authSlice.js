@@ -67,6 +67,7 @@ const initialState = {
   artistRecordId: null,
   cutoffDate: null,
   programCutoffDate: null,
+  has3References: false,
 };
 
 export const authSlice = createSlice({
@@ -80,11 +81,18 @@ export const authSlice = createSlice({
       state.error = null;
     },
     setArtist: (state, action) => {
-      const { artistOrg, artistRecordId, cutoffDate, programCutoffDate } = action.payload;
+      const {
+        artistOrg,
+        artistRecordId,
+        cutoffDate,
+        programCutoffDate,
+        has3References,
+      } = action.payload;
       state.artistOrg = artistOrg;
       state.artistRecordId = artistRecordId;
       state.cutoffDate = cutoffDate;
       state.programCutoffDate = programCutoffDate;
+      state.has3References = has3References;
     },
     clearError: (state) => {
       state.error = null;

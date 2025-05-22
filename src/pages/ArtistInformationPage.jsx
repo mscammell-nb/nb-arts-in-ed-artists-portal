@@ -1,4 +1,5 @@
 import DataGrid from "@/components/data-grid/data-grid";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -54,7 +55,7 @@ import { referencesColumns } from "@/utils/TableColumns";
 import { getCurrentFiscalYear } from "@/utils/utils";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { signInWithEmailAndPassword, updatePassword } from "firebase/auth";
-import { CircleAlert, Pencil } from "lucide-react";
+import { AlertCircle, CircleAlert, Pencil } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
@@ -314,6 +315,7 @@ const ArtistInformationPage = () => {
   const [changePasswordOpen, setChangePasswordOpen] = useState(false);
 
   const artistRecordId = useSelector((state) => state.auth.artistRecordId);
+  const has3References = useSelector((state) => state.auth.has3References);
 
   const schema = yup.object({
     currentPassword: yup
@@ -541,6 +543,16 @@ const ArtistInformationPage = () => {
             <span className="font-bold">Pending Approval</span>
           </p>
         </div>
+      )}
+      {!has3References && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Not enough references!</AlertTitle>
+          <AlertDescription>
+            You are required to have at least 3 references to submit a new
+            program.
+          </AlertDescription>
+        </Alert>
       )}
 
       <div className="flex w-full items-center justify-between rounded border border-gray-200 bg-white p-2.5">

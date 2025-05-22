@@ -1,5 +1,6 @@
 import DataGrid from "@/components/data-grid/data-grid";
 import NewProgramForm from "@/components/NewProgramForm";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { buttonVariants } from "@/components/ui/button";
 import {
   Dialog,
@@ -25,6 +26,7 @@ import {
   getNextFiscalYear,
   groupByIdAndField,
 } from "@/utils/utils";
+import { AlertCircle } from "lucide-react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
@@ -91,7 +93,9 @@ const ProgramsPage = () => {
   const artistRecordId = useSelector((state) => state.auth.artistRecordId);
   const fiscalYear = getCurrentFiscalYear();
   const nextFiscalYear = getNextFiscalYear();
-  const { programCutoffDate } = useSelector((state) => state.auth);
+  const { programCutoffDate, has3References } = useSelector(
+    (state) => state.auth,
+  );
   const tempCutoffDate = new Date(programCutoffDate);
   const currDate = new Date();
   const isDuringCutoff =
@@ -168,6 +172,16 @@ const ProgramsPage = () => {
 
   return (
     <div className="w-full">
+      {!has3References && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Not enough references!</AlertTitle>
+          <AlertDescription>
+            You are required to have at least 3 references to submit a new
+            program.
+          </AlertDescription>
+        </Alert>
+      )}
       {isDuringCutoff && (
         <Tabs defaultValue={fiscalYear} className="w-full">
           <TabsContent value={fiscalYear}>
@@ -267,9 +281,11 @@ const ProgramsPage = () => {
                 )}
                 updateFunction={updateFunction}
                 editableFields={PROGRAMS_EDITABLE_FIELDS}
-                addButtonText="Add New Program"
-                CustomAddComponent={AddProgramSheet}
-                sheetProps={{ title: "Add New Program" }}
+                {...(has3References && {
+                  CustomAddComponent: AddProgramSheet,
+                  sheetProps: { title: "Add New Program" },
+                  addButtonText: "Add New Program",
+                })}
               />
             </div>
           </TabsContent>
@@ -303,9 +319,11 @@ const ProgramsPage = () => {
           updateFunction={updateFunction}
           editableFields={PROGRAMS_EDITABLE_FIELDS}
           rowSpecificEditing
-          addButtonText="Add New Program"
-          CustomAddComponent={AddProgramSheet}
-          sheetProps={{ title: "Add New Program" }}
+          {...(has3References && {
+            CustomAddComponent: AddProgramSheet,
+            sheetProps: { title: "Add New Program" },
+            addButtonText: "Add New Program",
+          })}
         />
       )}
     </div>

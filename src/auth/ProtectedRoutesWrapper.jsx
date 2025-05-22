@@ -15,7 +15,7 @@ const ProtectedRoutesWrapper = () => {
     user
       ? {
           from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
-          select: [3, 6, 29, 30, 48, 58],
+          select: [3, 6, 29, 30, 48, 58, 59],
           where: `{10.EX.${user.uid}}`,
         }
       : { skip: true, refetchOnMountOrArgChange: true },
@@ -29,6 +29,7 @@ const ProtectedRoutesWrapper = () => {
           artistRecordId: artistsData.data[0][3].value,
           cutoffDate: artistsData.data[0][48].value,
           programCutoffDate: artistsData.data[0][58].value,
+          has3References: artistsData.data[0][59].value,
         }),
       );
       setApproved(artistsData.data[0][29].value);
