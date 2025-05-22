@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
-import { setArtist } from "@/redux/slices/authSlice";
+import { setArtistData } from "@/redux/slices/artistSlice";
+import { selectUser } from "@/redux/slices/authSlice";
 import { isRegistrationExpiring } from "@/utils/isRegistrationExpiring";
 import { getCurrentFiscalYear, handleSignout } from "@/utils/utils";
 import { useEffect } from "react";
@@ -9,7 +10,7 @@ import { Link, Navigate, useNavigate } from "react-router-dom";
 import Spinner from "../components/ui/Spinner";
 
 const RegistrationGate = () => {
-  const { user } = useSelector((state) => state.auth);
+  const user = useSelector(selectUser);
   const registeredNextYear = !isRegistrationExpiring(user);
   const currFiscalYear = getCurrentFiscalYear();
 
@@ -49,7 +50,7 @@ const RegistrationGate = () => {
   useEffect(() => {
     if (artistData?.data && !isArtistDataLoading) {
       dispatch(
-        setArtist({
+        setArtistData({
           artistOrg: artistData.data[0][6].value,
           artistRecordId: artistData.data[0][3].value,
           cutoffDate: artistData.data[0][48].value,

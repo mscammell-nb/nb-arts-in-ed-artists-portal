@@ -24,6 +24,7 @@ import {
   useAddOrUpdateRecordMutation,
   useQueryForDataQuery,
 } from "@/redux/api/quickbaseApi";
+import { selectArtistRecordId } from "@/redux/slices/artistSlice";
 import { performersColumns } from "@/utils/TableColumns";
 import {
   capitalizeString,
@@ -148,20 +149,22 @@ const AddSheet = ({ open, onOpenChange, sheetProps }) => {
 };
 
 const PerformersPage = () => {
-  const artistRecordId = useSelector((state) => state.auth.artistRecordId);
+  const artistRecordId = useSelector(selectArtistRecordId);
   const {
     data: performersData,
     isLoading: isPerformersLoading,
     isError: isPerformersError,
     error: performersError,
   } = useQueryForDataQuery(
-    artistRecordId
-      ? {
-          from: import.meta.env.VITE_QUICKBASE_PERFORMERS_TABLE_ID,
-          select: [3, 7, 8, 9, 10, 11, 14, 18, 20, 22, 23],
-          where: `{14.EX.${artistRecordId}} AND {13.EX.${getCurrentFiscalYear()}}`,
-        }
-      : { skip: true, refetchOnMountOrArgChange: true },
+    {
+      from: import.meta.env.VITE_QUICKBASE_PERFORMERS_TABLE_ID,
+      select: [3, 7, 8, 9, 10, 11, 14, 18, 20, 22, 23],
+      where: `{14.EX.${artistRecordId}} AND {13.EX.${getCurrentFiscalYear()}}`,
+    },
+    {
+      skip: !artistRecordId, // Move skip to options object
+      refetchOnMountOrArgChange: true,
+    },
   );
   const [
     addPerformerRecord,

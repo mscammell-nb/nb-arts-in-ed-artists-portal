@@ -8,6 +8,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { selectUser } from "@/redux/slices/authSlice";
 import { isRegistrationExpiring } from "@/utils/isRegistrationExpiring";
 import React from "react";
 import { useSelector } from "react-redux";
@@ -16,7 +17,7 @@ import { useNavigate } from "react-router-dom";
 const RenewRegistrationModal = (openProp) => {
   const [open, setOpen] = React.useState(openProp);
   const navigate = useNavigate();
-  const {user} = useSelector(state => state.auth);
+  const user = useSelector(selectUser);
   const expiring = isRegistrationExpiring(user);
 
   if (!expiring) return <></>;

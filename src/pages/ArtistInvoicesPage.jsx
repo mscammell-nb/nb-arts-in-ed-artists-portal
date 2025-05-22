@@ -2,6 +2,7 @@ import DataGrid from "@/components/data-grid/data-grid";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import Spinner from "@/components/ui/Spinner";
 import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
+import { selectArtistRecordId } from "@/redux/slices/artistSlice";
 import {
   contractColumns,
   contractsThatRequireAnInvoiceColumns,
@@ -11,7 +12,7 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
 export default function ArtistInvoicesPage() {
-  const artistRecordId = useSelector((state) => state.auth.artistRecordId);
+  const artistRecordId = useSelector(selectArtistRecordId);
   const [contractsThatRequireAnInvoice, setContractsThatRequireAnInvoice] =
     useState([]);
   const {
