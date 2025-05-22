@@ -267,7 +267,7 @@ function DataGrid({
       {(tableTitle || (!noSearch && extraButtons)) && (
         <div className="flex w-full items-center justify-between">
           {tableTitle && (
-            <p className="mb-3 text-2xl font-bold">{tableTitle}</p>
+            <span className="mb-3 text-2xl font-bold">{tableTitle}</span>
           )}
           {noSearch && extraButtons}
         </div>

@@ -30,6 +30,7 @@ import { Label } from "@radix-ui/react-dropdown-menu";
 import { DownloadIcon, Loader2, UploadIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
+import { selectArtistData } from "@/redux/slices/artistSlice";
 import { handleSignout } from "@/utils/utils";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -46,12 +47,10 @@ const FileUploadPage = () => {
   const [selectedType, setSelectedType] = useState("");
   const [fileUploads, setFileUploads] = useState(null);
   const [open, setOpen] = useState(false);
-  const artist = useSelector((state) => state.auth.artistOrg);
+  const { artist, cutoffDate } = useSelector(selectArtistData);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-  const cutoffDate = useSelector((state) => state.auth.cutoffDate);
 
   const { data: fileTypes, isLoading: isFileTypesLoading } =
     useQueryForDataQuery({
@@ -158,7 +157,6 @@ const FileUploadPage = () => {
       });
       return;
     }
-    const artist = useSelector((state) => state.auth.artistOrg);
     let base64 = await fileToBase64(fileUploads);
     base64 = base64.split("base64,")[1];
     addDocument({

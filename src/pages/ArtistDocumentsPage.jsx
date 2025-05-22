@@ -29,6 +29,8 @@ import {
   useAddOrUpdateRecordMutation,
   useQueryForDataQuery,
 } from "@/redux/api/quickbaseApi";
+import { selectArtistOrg } from "@/redux/slices/artistSlice";
+import { selectUser } from "@/redux/slices/authSlice";
 import { documentColumns } from "@/utils/TableColumns";
 import {
   downloadFile,
@@ -46,9 +48,8 @@ const ArtistDocumentsPage = () => {
   const [open, setOpen] = useState(false);
   const [selectedType, setSelectedType] = useState("");
   const [missingFiles, setMissingFiles] = useState([]);
-  const artist = useSelector((state) => state.auth.artistOrg);
-
-  const { user } = useSelector((state) => state.auth);
+  const artistOrg = useSelector(selectArtistOrg);
+  const user = useSelector(selectUser);
 
   const { data: artistsData, isLoading: isArtistDataLoading } =
     useQueryForDataQuery(
@@ -68,14 +69,14 @@ const ArtistDocumentsPage = () => {
     });
   const { data: documentsData, isLoading: isDocumentsDataLoading } =
     useQueryForDataQuery(
-      artist
+      artistOrg
         ? {
             from: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
             select: [3, 6, 7, 9, 10, 11, 12, 14],
-            where: `{9.EX.${artist}}`,
+            where: `{9.EX.${artistOrg}}`,
             sortBy: [{ fieldId: 11 }, { order: "DESC" }],
           }
-        : { skip: !artist, refetchOnMountOrArgChange: true },
+        : { skip: !artistOrg, refetchOnMountOrArgChange: true },
     );
 
   const [

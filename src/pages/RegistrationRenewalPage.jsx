@@ -52,6 +52,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
+import { selectArtistOrg } from "@/redux/slices/artistSlice";
+import { selectUser } from "@/redux/slices/authSlice";
 import { formatDocData } from "@/utils/formatDocData";
 import { toBase64 } from "@/utils/toBase64";
 import { Label } from "@radix-ui/react-dropdown-menu";
@@ -97,14 +99,14 @@ const schema = yup.object({
 });
 
 const RegistrationRenewalPage = () => {
-  const { user } = useSelector((state) => state.auth);
+  const user = useSelector(selectUser);
   const navigate = useNavigate();
   const { toast } = useToast();
   const [fileUploads, setFileUploads] = useState(null);
   const [documentTypes, setDocumentTypes] = useState(null);
   const [selectedType, setSelectedType] = useState("");
   const [open, setOpen] = useState(false);
-  const artist = useSelector((state) => state.auth.artistOrg);
+  const artist = useSelector(selectArtistOrg);
   const [fiscalYearKey, setFiscalYearKey] = useState(getNextFiscalYearKey());
 
   const {

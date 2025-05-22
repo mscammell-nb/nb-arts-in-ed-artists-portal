@@ -1,6 +1,7 @@
 import DataGrid from "@/components/data-grid/data-grid";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import Spinner from "@/components/ui/Spinner";
+import { selectUser } from "@/redux/slices/authSlice";
 import { isRegistrationExpiring } from "@/utils/isRegistrationExpiring";
 import { registrationColumns } from "@/utils/TableColumns";
 import { useSelector } from "react-redux";
@@ -23,7 +24,7 @@ const formatData = (unformattedData) => {
 };
 
 const ArtistRegistrationsPage = () => {
-  const { user } = useSelector((state) => state.auth);
+  const user = useSelector(selectUser);
   const expired = isRegistrationExpiring(user);
 
   const {

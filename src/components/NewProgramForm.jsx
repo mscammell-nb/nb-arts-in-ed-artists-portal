@@ -12,6 +12,10 @@ import {
   useAddOrUpdateRecordMutation,
   useQueryForDataQuery,
 } from "@/redux/api/quickbaseApi";
+import {
+  selectArtistRecordId,
+  selectProgramCutoffDate,
+} from "@/redux/slices/artistSlice";
 import { getCurrentFiscalYearKey, getNextFiscalYearKey } from "@/utils/utils";
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
@@ -39,7 +43,7 @@ function NewProgramForm({ selectedArtist = null, onSubmitSuccess = () => {} }) {
   const { toast } = useToast();
   const artistRecordId = selectedArtist
     ? selectedArtist[3].value
-    : useSelector((state) => state.auth.artistRecordId);
+    : useSelector(selectArtistRecordId);
 
   const [selectedKeywords, setSelectedKeywords] = useState([]);
   const [tempCategories, setTempCategories] = useState([]);
@@ -310,7 +314,7 @@ function NewProgramForm({ selectedArtist = null, onSubmitSuccess = () => {} }) {
     setTempCategories([]);
     setSelectedKeywords([]);
 
-    const { programCutoffDate } = useSelector((state) => state.auth);
+    const programCutoffDate = selectProgramCutoffDate;
     const tempCutoffDate = new Date(programCutoffDate);
     const currDate = new Date();
     const isDuringCutoff =

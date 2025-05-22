@@ -2,10 +2,10 @@ import FileUpload from "@/components/FileUpload";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { useAddOrUpdateRecordMutation } from "@/redux/api/quickbaseApi";
+import { selectCutoffDate } from "@/redux/slices/artistSlice";
 import { toBase64 } from "@/utils/toBase64";
 import { getCutoffFiscalYearKey } from "@/utils/utils";
 import { useEffect, useMemo } from "react";
-import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Spinner from "./ui/Spinner";
 
@@ -17,7 +17,7 @@ const FileUploadForm = ({
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const cutoffDate = useSelector((state) => state.auth.cutoffDate);
+  const cutoffDate = selectCutoffDate;
 
   const fiscalYearKey = useMemo(() => {
     const cutoffMonth = new Date(cutoffDate).getMonth();

@@ -20,6 +20,7 @@ import {
   useAddOrUpdateRecordMutation,
   useQueryForDataQuery,
 } from "@/redux/api/quickbaseApi";
+import { selectArtistData } from "@/redux/slices/artistSlice";
 import { programTableColumns } from "@/utils/TableColumns";
 import {
   getCurrentFiscalYear,
@@ -90,12 +91,10 @@ const formatProgramsData = (programsData) => {
 };
 
 const ProgramsPage = () => {
-  const artistRecordId = useSelector((state) => state.auth.artistRecordId);
+  const { artistRecordId, programCutoffDate, has3References } =
+    useSelector(selectArtistData);
   const fiscalYear = getCurrentFiscalYear();
   const nextFiscalYear = getNextFiscalYear();
-  const { programCutoffDate, has3References } = useSelector(
-    (state) => state.auth,
-  );
   const tempCutoffDate = new Date(programCutoffDate);
   const currDate = new Date();
   const isDuringCutoff =
