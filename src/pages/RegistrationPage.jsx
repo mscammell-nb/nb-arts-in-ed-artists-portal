@@ -476,7 +476,6 @@ const RegistrationPage = () => {
             title: "Error Registering",
             description: error.message,
           });
-          console.log(error)
           return null;
         }
       },
