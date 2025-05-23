@@ -455,7 +455,7 @@ const RegistrationPage = () => {
           const artistRecordId = response.data.data[0][3].value;
           dispatch(
             setArtist({
-              artistOrg: response.data.data[0][6].value,
+              // artistOrg: response.data.data[0][6].value,
               artistRecordId,
             }),
           );

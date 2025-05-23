@@ -60,14 +60,16 @@ const FileUploadPage = () => {
     });
   const { data: documentsData, isLoading: isDocumentsDataLoading } =
     useQueryForDataQuery(
-      artist
-        ? {
-            from: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
-            select: [3, 6, 7, 9, 10, 11, 12, 14],
-            where: `{9.EX.${artist}}`,
-            sortBy: [{ fieldId: 11 }, { order: "DESC" }],
-          }
-        : { skip: !artist, refetchOnMountOrArgChange: true },
+      {
+        from: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
+        select: [3, 6, 7, 9, 10, 11, 12, 14],
+        where: `{9.EX.${artist}}`,
+        sortBy: [{ fieldId: 11 }, { order: "DESC" }],
+      },
+      {
+        skip: !artist, // Move skip to options object
+        refetchOnMountOrArgChange: true,
+      },
     );
 
   const {
@@ -91,25 +93,6 @@ const FileUploadPage = () => {
     },
   ] = useAddOrUpdateRecordMutation();
 
-  useEffect(() => {
-    if (isAddDocumentError) {
-      toast({
-        variant: "destructive",
-        title: "Error submitting documents",
-        description: addArtistDocumentRecordError.data.message,
-      });
-      setOpen(false);
-    } else if (isAddDocumentSuccess) {
-      toast({
-        variant: "success",
-        title: "Operation successful!",
-        description: "Your documents have been submitted.",
-      });
-      setOpen(false);
-      setSelectedType("");
-    }
-  }, [isAddDocumentError, isAddDocumentSuccess]);
-
   const formatData = (docData) => {
     const { data } = docData;
     return data.map((record) => {
@@ -126,14 +109,6 @@ const FileUploadPage = () => {
       };
     });
   };
-
-  if (isDocumentTypesLoading || isDocumentTypesLoading || isArtistDataLoading) {
-    return (
-      <div className="pt-20">
-        <Spinner />
-      </div>
-    );
-  }
 
   const fiscalYearKey = useMemo(() => {
     const cutoffMonth = new Date(cutoffDate).getMonth();
@@ -158,7 +133,6 @@ const FileUploadPage = () => {
       });
       return;
     }
-    const artist = useSelector((state) => state.auth.artistOrg);
     let base64 = await fileToBase64(fileUploads);
     base64 = base64.split("base64,")[1];
     addDocument({
@@ -198,6 +172,25 @@ const FileUploadPage = () => {
     );
   };
 
+  useEffect(() => {
+    if (isAddDocumentError) {
+      toast({
+        variant: "destructive",
+        title: "Error submitting documents",
+        description: addArtistDocumentRecordError.data.message,
+      });
+      setOpen(false);
+    } else if (isAddDocumentSuccess) {
+      toast({
+        variant: "success",
+        title: "Operation successful!",
+        description: "Your documents have been submitted.",
+      });
+      setOpen(false);
+      setSelectedType("");
+    }
+  }, [isAddDocumentError, isAddDocumentSuccess]);
+
   if (isDocumentTypesError) {
     console.error(documentTypesError);
     return <p>There was an error querying the document types.</p>;
@@ -217,6 +210,13 @@ const FileUploadPage = () => {
       acc[documentType[6].value] = [];
       return acc;
     }, {});
+  }
+  if (isDocumentTypesLoading || isDocumentTypesLoading) {
+    return (
+      <div className="pt-20">
+        <Spinner />
+      </div>
+    );
   }
 
   if (isDocumentsDataLoading || isFileTypesLoading) {
