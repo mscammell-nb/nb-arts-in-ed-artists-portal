@@ -211,13 +211,6 @@ const FileUploadPage = () => {
       return acc;
     }, {});
   }
-  if (isDocumentTypesLoading || isDocumentTypesLoading) {
-    return (
-      <div className="pt-20">
-        <Spinner />
-      </div>
-    );
-  }
 
   if (isDocumentsDataLoading || isFileTypesLoading) {
     return (
