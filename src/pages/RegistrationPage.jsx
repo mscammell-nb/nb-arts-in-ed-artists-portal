@@ -445,9 +445,12 @@ const RegistrationPage = () => {
 
   const onSubmit = async (data) => {
     let uid;
-    await dispatch(signUp({ email: data.email, password: data.password }))
-      .then(async (res) => {
-        if (signUp.fulfilled.match(res)) {
+    await dispatch(signUp({ email: data.email, password: data.password })).then(
+      async (res) => {
+        try {
+          if (!signUp.fulfilled.match(res)) {
+            throw res.error;
+          }
           uid = res.payload.uid;
           const response = await addArtist(
             formatDataForTheArtistTable(data, uid),
@@ -467,10 +470,17 @@ const RegistrationPage = () => {
 
           addPerformers(formatDataForThePerformersTable(data, artistRecordId));
           return null;
+        } catch (error) {
+          toast({
+            variant: "destructive",
+            title: "Error Registering",
+            description: error.message,
+          });
+          console.log(error)
+          return null;
         }
-        return null;
-      })
-      .catch((err) => console.error(err));
+      },
+    );
   };
 
   return (
