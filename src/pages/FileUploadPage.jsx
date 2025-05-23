@@ -127,7 +127,7 @@ const FileUploadPage = () => {
     });
   };
 
-  if (isDocumentTypesLoading || isDocumentTypesLoading || isArtistDataLoading) {
+  if (isDocumentTypesLoading || isDocumentTypesLoading) {
     return (
       <div className="pt-20">
         <Spinner />
@@ -140,6 +140,7 @@ const FileUploadPage = () => {
     const cutoffDay = new Date(cutoffDate).getDate() + 1;
     return getCutoffFiscalYearKey(cutoffMonth, cutoffDay);
   }, [cutoffDate]);
+
 
   const uploadFile = async () => {
     if (fileUploads === null) {
@@ -158,7 +159,6 @@ const FileUploadPage = () => {
       });
       return;
     }
-    const artist = useSelector((state) => state.auth.artistOrg);
     let base64 = await fileToBase64(fileUploads);
     base64 = base64.split("base64,")[1];
     addDocument({
