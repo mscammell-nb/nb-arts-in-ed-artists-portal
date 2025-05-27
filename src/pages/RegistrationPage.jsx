@@ -33,7 +33,7 @@ import { setArtist, signUp } from "@/redux/slices/authSlice";
 import { capitalizeString, getCutoffFiscalYearKey } from "@/utils/utils";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Plus, Trash2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
@@ -107,12 +107,40 @@ const RegistrationPage = () => {
     select: [6, 9],
   });
 
+  const { data: artistOrgsData } = useQueryForDataQuery({
+    from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
+    select: [3, 6, 7],
+  });
+
+  const artistOrgs = React.useMemo(() => {
+    if (artistOrgsData) {
+      console.log(artistOrgsData.data.map((record) => record[6].value));
+      return artistOrgsData.data.map((record) => record[6].value);
+    }
+    return [];
+  }, [artistOrgsData]);
+
+  const artistEmails = React.useMemo(() => {
+    if (artistOrgsData) {
+      console.log(artistOrgsData.data.map((record) => record[7].value));
+      return artistOrgsData.data.map((record) => record[7].value);
+    }
+    return [];
+  }, [artistOrgsData]);
+
   const getCurrentStepSchema = () => {
     switch (formStep) {
       case 0:
         return yup.object({
-          artistOrg: yup.string().required(),
-          email: yup.string().email().required(),
+          artistOrg: yup
+            .string()
+            .notOneOf(artistOrgs, "Organization name already in use")
+            .required(),
+          email: yup
+            .string()
+            .email()
+            .notOneOf(artistEmails, "Email already in use")
+            .required(),
           password: yup.string().required(),
           confirmPassword: yup
             .string()
@@ -131,7 +159,7 @@ const RegistrationPage = () => {
             ),
           website: yup
             .string()
-            .nullable()
+            .required()
             .matches(VALID_WEBSITE_URL_REGEX, "Invalid website format")
             .transform((value, originalValue) =>
               String(originalValue).trim() === "" ? null : value,
