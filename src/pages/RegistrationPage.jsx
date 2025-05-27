@@ -25,6 +25,7 @@ import {
 import Spinner from "@/components/ui/Spinner";
 import { useToast } from "@/components/ui/use-toast";
 import { STATES, VALID_WEBSITE_URL_REGEX } from "@/constants/constants";
+import { cn } from "@/lib/utils";
 import {
   useAddOrUpdateRecordMutation,
   useQueryForDataQuery,
@@ -114,7 +115,6 @@ const RegistrationPage = () => {
 
   const artistOrgs = React.useMemo(() => {
     if (artistOrgsData) {
-      console.log(artistOrgsData.data.map((record) => record[6].value));
       return artistOrgsData.data.map((record) => record[6].value);
     }
     return [];
@@ -122,7 +122,6 @@ const RegistrationPage = () => {
 
   const artistEmails = React.useMemo(() => {
     if (artistOrgsData) {
-      console.log(artistOrgsData.data.map((record) => record[7].value));
       return artistOrgsData.data.map((record) => record[7].value);
     }
     return [];
@@ -208,6 +207,8 @@ const RegistrationPage = () => {
       ],
     },
   });
+
+  console.log(form.getValues());
 
   const {
     control,
@@ -825,7 +826,9 @@ const RegistrationPage = () => {
                         variant="destructive"
                         type="button"
                         size="sm"
-                        className="mt-3 flex gap-1 self-end lg:mt-0"
+                        className={cn("mt-3 hidden gap-1 self-end lg:mt-0", {
+                          flex: form.getValues().performers.length > 1,
+                        })}
                       >
                         <Trash2 size="16px" />
                         Remove
