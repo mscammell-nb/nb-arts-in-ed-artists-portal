@@ -774,6 +774,7 @@ const RegistrationPage = () => {
                               <Input
                                 {...field}
                                 placeholder="Performer's middle initial"
+                                maxLength={1}
                               />
                             </FormControl>
                             <FormMessage />
