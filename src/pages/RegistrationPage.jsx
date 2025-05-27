@@ -208,8 +208,6 @@ const RegistrationPage = () => {
     },
   });
 
-  console.log(form.getValues());
-
   const {
     control,
     handleSubmit,
