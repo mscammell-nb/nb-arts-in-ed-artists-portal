@@ -27,6 +27,7 @@ import {
 import { performersColumns } from "@/utils/TableColumns";
 import {
   capitalizeString,
+  getCurrentFiscalYear,
   getCurrentFiscalYearKey,
   groupByIdAndField,
 } from "@/utils/utils";
@@ -158,7 +159,7 @@ const PerformersPage = () => {
       ? {
           from: import.meta.env.VITE_QUICKBASE_PERFORMERS_TABLE_ID,
           select: [3, 7, 8, 9, 10, 11, 14, 18, 20, 22, 23],
-          where: `{14.EX.${artistRecordId}}`,
+          where: `{14.EX.${artistRecordId}} AND {13.EX.${getCurrentFiscalYear()}}`,
         }
       : { skip: true, refetchOnMountOrArgChange: true },
   );
