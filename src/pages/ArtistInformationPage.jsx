@@ -573,7 +573,7 @@ const ArtistInformationPage = () => {
           </AlertDescription>
         </Alert>
       )}
-      {registrationData.data[0][36].value != "" && (
+      {registrationData && registrationData.data[0][36].value != "" && (
         <Alert variant="info">
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>Changes Pending</AlertTitle>
