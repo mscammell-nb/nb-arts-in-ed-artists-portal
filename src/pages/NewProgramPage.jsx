@@ -45,7 +45,7 @@ import { Link } from "react-router-dom";
 
 const NewProgramPage = () => {
   const { toast } = useToast();
-  const artistRecordId = useSelector((state) => state.auth.artistRecordId);
+  const artistRecordId = useSelector((state) => state.artist?.artistRecordId);
 
   const [selectedKeywords, setSelectedKeywords] = useState([]);
   const [tempCategories, setTempCategories] = useState([]);

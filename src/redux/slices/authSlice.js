@@ -6,6 +6,14 @@ import {
   signInWithEmailAndPassword,
 } from "firebase/auth";
 
+// Helper function to extract user data
+const extractUserData = (userCredential) => ({
+  email: userCredential.user.email,
+  uid: userCredential.user.uid,
+  accessToken: userCredential.user.accessToken,
+});
+
+// Async thunks
 export const signIn = createAsyncThunk(
   "auth/signIn",
   async ({ email, password }, { rejectWithValue }) => {
@@ -15,11 +23,7 @@ export const signIn = createAsyncThunk(
         email,
         password,
       );
-      return {
-        email: userCredential.user.email,
-        uid: userCredential.user.uid,
-        accessToken: userCredential.user.accessToken,
-      };
+      return extractUserData(userCredential);
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -35,11 +39,7 @@ export const signUp = createAsyncThunk(
         email,
         password,
       );
-      return {
-        email: userCredential.user.email,
-        uid: userCredential.user.uid,
-        accessToken: userCredential.user.accessToken,
-      };
+      return extractUserData(userCredential);
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -58,16 +58,30 @@ export const signOut = createAsyncThunk(
   },
 );
 
+// Initial state - now focused only on authentication
 const initialState = {
   user: null,
-  loading: true,
+  loading: false,
   authReady: false,
   error: null,
-  artistOrg: null,
-  artistRecordId: null,
-  cutoffDate: null,
-  programCutoffDate: null,
-  has3References: false,
+};
+
+// Helper functions for loading states
+const setPending = (state) => {
+  state.loading = true;
+  state.error = null;
+};
+
+const setFulfilled = (state, user = null) => {
+  state.loading = false;
+  state.user = user;
+  state.error = null;
+  if (user) state.authReady = true;
+};
+
+const setRejected = (state, error) => {
+  state.loading = false;
+  state.error = error;
 };
 
 export const authSlice = createSlice({
@@ -80,67 +94,50 @@ export const authSlice = createSlice({
       state.authReady = true;
       state.error = null;
     },
-    setArtist: (state, action) => {
-      const {
-        artistOrg,
-        artistRecordId,
-        cutoffDate,
-        programCutoffDate,
-        has3References,
-      } = action.payload;
-      state.artistOrg = artistOrg;
-      state.artistRecordId = artistRecordId;
-      state.cutoffDate = cutoffDate;
-      state.programCutoffDate = programCutoffDate;
-      state.has3References = has3References;
-    },
+
     clearError: (state) => {
       state.error = null;
     },
+
+    resetAuthState: (state) => {
+      return initialState;
+    },
+
+    setAuthReady: (state, action) => {
+      state.authReady = action.payload;
+    },
   },
+
   extraReducers: (builder) => {
     builder
-      .addCase(signIn.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(signIn.fulfilled, (state, action) => {
-        state.user = action.payload;
-        state.loading = false;
-        state.error = null;
-      })
-      .addCase(signIn.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message;
-      })
-      .addCase(signUp.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(signUp.fulfilled, (state, action) => {
-        state.user = action.payload;
-        state.loading = false;
-        state.error = null;
-      })
-      .addCase(signUp.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message;
-      })
-      .addCase(signOut.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(signOut.fulfilled, (state) => {
-        state.loading = false;
-        state.user = null;
-      })
-      .addCase(signOut.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      });
+      // Sign In
+      .addCase(signIn.pending, setPending)
+      .addCase(signIn.fulfilled, (state, action) =>
+        setFulfilled(state, action.payload),
+      )
+      .addCase(signIn.rejected, (state, action) =>
+        setRejected(state, action.payload),
+      )
+
+      // Sign Up
+      .addCase(signUp.pending, setPending)
+      .addCase(signUp.fulfilled, (state, action) =>
+        setFulfilled(state, action.payload),
+      )
+      .addCase(signUp.rejected, (state, action) =>
+        setRejected(state, action.payload),
+      )
+
+      // Sign Out
+      .addCase(signOut.pending, setPending)
+      .addCase(signOut.fulfilled, (state) => setFulfilled(state, null))
+      .addCase(signOut.rejected, (state, action) =>
+        setRejected(state, action.payload),
+      );
   },
 });
 
-export const { setUser, clearError, setArtist } = authSlice.actions;
+export const { setUser, clearError, resetAuthState, setAuthReady } =
+  authSlice.actions;
 
 export default authSlice.reducer;

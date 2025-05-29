@@ -101,7 +101,7 @@ const data = {
 export function AppSidebar({ ...props }) {
   const { open, setOpen } = useSidebar();
 
-  const { user } = useSelector((state) => state.auth);
+  const user = useSelector((state) => state.auth.user);
 
   const { data: artistsData, isLoading: isArtistDataLoading } =
     useQueryForDataQuery(

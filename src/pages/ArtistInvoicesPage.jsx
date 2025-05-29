@@ -11,7 +11,7 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
 export default function ArtistInvoicesPage() {
-  const artistRecordId = useSelector((state) => state.auth.artistRecordId);
+  const artistRecordId = useSelector((state) => state.artist?.artistRecordId);
   const [contractsThatRequireAnInvoice, setContractsThatRequireAnInvoice] =
     useState([]);
   const {

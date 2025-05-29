@@ -12,25 +12,26 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
-import { CaretSortIcon } from "@radix-ui/react-icons";
-import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { signOut } from "@/redux/slices/authSlice";
 import { handleSignout } from "@/utils/utils";
+import { CaretSortIcon } from "@radix-ui/react-icons";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 export function VersionSwitcher({ versions, defaultVersion }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const {user} = useSelector(state => state.auth);
+  const user = useSelector((state) => state.auth.user);
 
-  const {
-    data: artistsData,
-  } = useQueryForDataQuery(user?{
-    from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
-    select: [3, 6, 29, 30],
-    where: `{10.EX.${user.uid}}`,
-  }: {skip: !user, refetchOnMountOrArgChange: true});
+  const { data: artistsData } = useQueryForDataQuery(
+    user
+      ? {
+          from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
+          select: [3, 6, 29, 30],
+          where: `{10.EX.${user.uid}}`,
+        }
+      : { skip: !user, refetchOnMountOrArgChange: true },
+  );
 
   return (
     <SidebarMenu>

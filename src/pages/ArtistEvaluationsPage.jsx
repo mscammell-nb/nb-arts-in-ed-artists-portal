@@ -107,7 +107,7 @@ const AddSheet = ({ open, onOpenChange, sheetProps }) => {
 const ArtistEvaluationsPage = () => {
   const [contractsMissingEvaluations, setContractsMissingEvaluations] =
     React.useState([]);
-  const artistRecordId = useSelector((state) => state.auth.artistRecordId);
+  const artistRecordId = useSelector((state) => state.artist?.artistRecordId);
   const {
     data: evaluationData,
     isLoading: evaluationDataLoading,

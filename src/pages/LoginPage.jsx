@@ -21,6 +21,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { signIn } from "@/redux/slices/authSlice";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
@@ -28,7 +29,6 @@ import { Link, useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import { PasswordInput } from "../components/ui/password-input";
 import { useToast } from "../components/ui/use-toast";
-import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 
 const schema = yup.object({
   email: yup.string().email().required(),
@@ -80,7 +80,7 @@ const LoginPage = () => {
   };
 
   const onForgotPassword = () => {
-    const email = document.getElementById("resetPasswordEmail").value
+    const email = document.getElementById("resetPasswordEmail").value;
     const auth = getAuth();
     if (email) {
       sendPasswordResetEmail(auth, email)
@@ -168,7 +168,9 @@ const LoginPage = () => {
                     </div>
                   </div>
                   <DialogFooter className="sm:justify-center">
-                    <Button onClick={onForgotPassword}>Send password reset</Button>
+                    <Button onClick={onForgotPassword}>
+                      Send password reset
+                    </Button>
                   </DialogFooter>
                 </DialogContent>
               </Dialog>
