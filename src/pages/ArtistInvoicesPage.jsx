@@ -2,7 +2,6 @@ import DataGrid from "@/components/data-grid/data-grid";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import Spinner from "@/components/ui/Spinner";
 import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
-import { selectArtistRecordId } from "@/redux/slices/artistSlice";
 import {
   contractColumns,
   contractsThatRequireAnInvoiceColumns,

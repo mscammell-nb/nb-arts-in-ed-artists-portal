@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useNavigate } from "react-router-dom";
 
 const ProtectedRoutesWrapper = () => {
-  const { user, authReady } = useSelector(selectAuth);
+  const { user, authReady } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [expired, setExpired] = useState(null);

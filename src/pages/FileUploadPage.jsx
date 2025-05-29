@@ -30,7 +30,6 @@ import { Label } from "@radix-ui/react-dropdown-menu";
 import { DownloadIcon, Loader2, UploadIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
-import { selectArtistData } from "@/redux/slices/artistSlice";
 import { handleSignout } from "@/utils/utils";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";

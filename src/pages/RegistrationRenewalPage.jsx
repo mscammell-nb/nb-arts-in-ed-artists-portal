@@ -52,8 +52,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import { selectArtistOrg } from "@/redux/slices/artistSlice";
-import { selectUser } from "@/redux/slices/authSlice";
 import { formatDocData } from "@/utils/formatDocData";
 import { toBase64 } from "@/utils/toBase64";
 import { Label } from "@radix-ui/react-dropdown-menu";

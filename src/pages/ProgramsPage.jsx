@@ -20,7 +20,6 @@ import {
   useAddOrUpdateRecordMutation,
   useQueryForDataQuery,
 } from "@/redux/api/quickbaseApi";
-import { selectArtistData } from "@/redux/slices/artistSlice";
 import { programTableColumns } from "@/utils/TableColumns";
 import {
   getCurrentFiscalYear,

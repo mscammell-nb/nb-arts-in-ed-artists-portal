@@ -24,7 +24,6 @@ import {
   useAddOrUpdateRecordMutation,
   useQueryForDataQuery,
 } from "@/redux/api/quickbaseApi";
-import { selectArtistRecordId } from "@/redux/slices/artistSlice";
 import { performersColumns } from "@/utils/TableColumns";
 import {
   capitalizeString,

@@ -13,7 +13,6 @@ import {
   useAddOrUpdateRecordMutation,
   useQueryForDataQuery,
 } from "@/redux/api/quickbaseApi";
-import { selectArtistRecordId } from "@/redux/slices/artistSlice";
 import { contractColumns, evalTableColumns } from "@/utils/TableColumns";
 import { getCurrentFiscalYear, groupByIdAndField } from "@/utils/utils";
 import { AlertCircle } from "lucide-react";

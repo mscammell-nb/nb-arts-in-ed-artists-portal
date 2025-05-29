@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { selectAuth, signIn } from "@/redux/slices/authSlice";
+import { signIn } from "@/redux/slices/authSlice";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import { useEffect } from "react";
@@ -37,7 +37,11 @@ const schema = yup.object({
 
 const LoginPage = () => {
   const dispatch = useDispatch();
-  const { user, loading, error: authError } = useSelector(selectAuth);
+  const {
+    user,
+    loading,
+    error: authError,
+  } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const { toast } = useToast();
 
