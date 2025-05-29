@@ -37,7 +37,6 @@ import {
   useAddOrUpdateRecordMutation,
   useQueryForDataQuery,
 } from "@/redux/api/quickbaseApi";
-import { selectArtistRecordId } from "@/redux/slices/artistSlice";
 import { getCurrentFiscalYearKey } from "@/utils/utils";
 import { ArrowLeftIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -46,7 +45,7 @@ import { Link } from "react-router-dom";
 
 const NewProgramPage = () => {
   const { toast } = useToast();
-  const artistRecordId = useSelector(selectArtistRecordId);
+  const artistRecordId = useSelector((state) => state.artist?.artistRecordId);
 
   const [selectedKeywords, setSelectedKeywords] = useState([]);
   const [tempCategories, setTempCategories] = useState([]);

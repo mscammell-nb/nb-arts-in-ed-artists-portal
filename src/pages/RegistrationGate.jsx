@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
 import { setArtistData } from "@/redux/slices/artistSlice";
-import { selectUser } from "@/redux/slices/authSlice";
 import { isRegistrationExpiring } from "@/utils/isRegistrationExpiring";
 import { getCurrentFiscalYear, handleSignout } from "@/utils/utils";
 import { useEffect } from "react";
@@ -10,7 +9,7 @@ import { Link, Navigate, useNavigate } from "react-router-dom";
 import Spinner from "../components/ui/Spinner";
 
 const RegistrationGate = () => {
-  const user = useSelector(selectUser);
+  const user = useSelector((state) => state.auth.user);
   const registeredNextYear = !isRegistrationExpiring(user);
   const currFiscalYear = getCurrentFiscalYear();
 
@@ -25,7 +24,7 @@ const RegistrationGate = () => {
     user
       ? {
           from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
-          select: [3, 6, 29, 30, 48],
+          select: [3, 6, 29, 30, 48, 58],
           where: `{10.EX.${user.uid}}`,
         }
       : { skip: !user, refetchOnMountOrArgChange: true },
@@ -55,6 +54,12 @@ const RegistrationGate = () => {
           artistRecordId: artistData.data[0][3].value,
           cutoffDate: artistData.data[0][48].value,
         }),
+        dispatch(
+          updateCutoffDates({
+            cutoffDate: artistData.data[0][48].value,
+            programCutoffDate: artistData.data[0][58].value,
+          }),
+        ),
       );
     }
   }, [artistData, isArtistDataLoading]);

@@ -50,7 +50,6 @@ import {
   useAddOrUpdateRecordMutation,
   useQueryForDataQuery,
 } from "@/redux/api/quickbaseApi";
-import { selectArtistData } from "@/redux/slices/artistSlice";
 import { listFirebaseErrors } from "@/utils/listFirebaseErrors";
 import { referencesColumns } from "@/utils/TableColumns";
 import { getCurrentFiscalYear } from "@/utils/utils";
@@ -315,7 +314,9 @@ const ArtistInformationPage = () => {
   const [payeeName, setPayeeName] = useState("");
   const [changePasswordOpen, setChangePasswordOpen] = useState(false);
 
-  const { artistRecordId, has3References } = useSelector(selectArtistData);
+  const { artistRecordId, has3References } = useSelector(
+    (state) => state.artist,
+  );
 
   const schema = yup.object({
     currentPassword: yup

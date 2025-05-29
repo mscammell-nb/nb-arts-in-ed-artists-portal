@@ -19,7 +19,6 @@ import {
 } from "@/constants/constants";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
-import { selectUser } from "@/redux/slices/authSlice";
 import { HamburgerMenuIcon } from "@radix-ui/react-icons";
 import {
   BookText,
@@ -102,7 +101,7 @@ const data = {
 export function AppSidebar({ ...props }) {
   const { open, setOpen } = useSidebar();
 
-  const user = useSelector(selectUser);
+  const user = useSelector((state) => state.auth.user);
 
   const { data: artistsData, isLoading: isArtistDataLoading } =
     useQueryForDataQuery(

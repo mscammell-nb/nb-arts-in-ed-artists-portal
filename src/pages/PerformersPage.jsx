@@ -24,7 +24,6 @@ import {
   useAddOrUpdateRecordMutation,
   useQueryForDataQuery,
 } from "@/redux/api/quickbaseApi";
-import { selectArtistRecordId } from "@/redux/slices/artistSlice";
 import { performersColumns } from "@/utils/TableColumns";
 import {
   capitalizeString,
@@ -149,7 +148,7 @@ const AddSheet = ({ open, onOpenChange, sheetProps }) => {
 };
 
 const PerformersPage = () => {
-  const artistRecordId = useSelector(selectArtistRecordId);
+  const artistRecordId = useSelector((state) => state.artist?.artistRecordId);
   const {
     data: performersData,
     isLoading: isPerformersLoading,

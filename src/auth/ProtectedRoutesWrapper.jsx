@@ -1,13 +1,13 @@
 import Spinner from "@/components/ui/Spinner";
 import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
 import { setArtistData } from "@/redux/slices/artistSlice";
-import { selectAuth } from "@/redux/slices/authSlice";
+import { updateCutoffDates } from "@/redux/slices/cutoffSlice";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useNavigate } from "react-router-dom";
 
 const ProtectedRoutesWrapper = () => {
-  const { user, authReady } = useSelector(selectAuth);
+  const { user, authReady } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [expired, setExpired] = useState(null);
@@ -28,9 +28,13 @@ const ProtectedRoutesWrapper = () => {
         setArtistData({
           artistOrg: artistsData.data[0][6].value,
           artistRecordId: artistsData.data[0][3].value,
+          has3References: artistsData.data[0][59].value,
+        }),
+      );
+      dispatch(
+        updateCutoffDates({
           cutoffDate: artistsData.data[0][48].value,
           programCutoffDate: artistsData.data[0][58].value,
-          has3References: artistsData.data[0][59].value,
         }),
       );
       setApproved(artistsData.data[0][29].value);

@@ -29,8 +29,6 @@ import {
   useAddOrUpdateRecordMutation,
   useQueryForDataQuery,
 } from "@/redux/api/quickbaseApi";
-import { selectArtistOrg } from "@/redux/slices/artistSlice";
-import { selectUser } from "@/redux/slices/authSlice";
 import { documentColumns } from "@/utils/TableColumns";
 import {
   downloadFile,
@@ -48,8 +46,8 @@ const ArtistDocumentsPage = () => {
   const [open, setOpen] = useState(false);
   const [selectedType, setSelectedType] = useState("");
   const [missingFiles, setMissingFiles] = useState([]);
-  const artistOrg = useSelector(selectArtistOrg);
-  const user = useSelector(selectUser);
+  const artistOrg = useSelector((state = state.artist.artistOrg));
+  const user = useSelector((state) => state.auth.user);
 
   const { data: artistsData, isLoading: isArtistDataLoading } =
     useQueryForDataQuery(
