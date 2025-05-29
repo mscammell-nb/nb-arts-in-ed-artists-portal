@@ -81,7 +81,7 @@ const ArtistItem = ({
   if (dropdown) {
     item = (
       <Select onValueChange={(val) => setValue(val)}>
-        <SelectTrigger className="w-[400px]">
+        <SelectTrigger className="max-w-[400px]">
           <SelectValue placeholder="Number of Performers" />
         </SelectTrigger>
         <SelectContent>
