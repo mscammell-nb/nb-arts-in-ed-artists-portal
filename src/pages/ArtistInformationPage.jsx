@@ -314,8 +314,9 @@ const ArtistInformationPage = () => {
   const [payeeName, setPayeeName] = useState("");
   const [changePasswordOpen, setChangePasswordOpen] = useState(false);
 
-  const artistRecordId = useSelector((state) => state.auth.artistRecordId);
-  const has3References = useSelector((state) => state.auth.has3References);
+  const { artistRecordId, has3References } = useSelector(
+    (state) => state.artist,
+  );
 
   const schema = yup.object({
     currentPassword: yup

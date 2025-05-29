@@ -46,12 +46,11 @@ const FileUploadPage = () => {
   const [selectedType, setSelectedType] = useState("");
   const [fileUploads, setFileUploads] = useState(null);
   const [open, setOpen] = useState(false);
-  const artist = useSelector((state) => state.auth.artistOrg);
+  const artist = useSelector((state) => state.artist.artistData);
+  const cutoffDate = useSelector((state) => state.cutoff.cutoffDate);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-  const cutoffDate = useSelector((state) => state.auth.cutoffDate);
 
   const { data: fileTypes, isLoading: isFileTypesLoading } =
     useQueryForDataQuery({

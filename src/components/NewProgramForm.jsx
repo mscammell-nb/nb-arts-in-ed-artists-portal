@@ -39,7 +39,7 @@ function NewProgramForm({ selectedArtist = null, onSubmitSuccess = () => {} }) {
   const { toast } = useToast();
   const artistRecordId = selectedArtist
     ? selectedArtist[3].value
-    : useSelector((state) => state.auth.artistRecordId);
+    : useSelector((state) => state.artist?.artistRecordId);
 
   const [selectedKeywords, setSelectedKeywords] = useState([]);
   const [tempCategories, setTempCategories] = useState([]);
@@ -310,7 +310,9 @@ function NewProgramForm({ selectedArtist = null, onSubmitSuccess = () => {} }) {
     setTempCategories([]);
     setSelectedKeywords([]);
 
-    const { programCutoffDate } = useSelector((state) => state.auth);
+    const programCutoffDate = useSelector(
+      (state) => state.cutoff.programCutoffDate,
+    );
     const tempCutoffDate = new Date(programCutoffDate);
     const currDate = new Date();
     const isDuringCutoff =

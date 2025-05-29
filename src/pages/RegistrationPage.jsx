@@ -30,7 +30,8 @@ import {
   useAddOrUpdateRecordMutation,
   useQueryForDataQuery,
 } from "@/redux/api/quickbaseApi";
-import { setArtist, signUp } from "@/redux/slices/authSlice";
+import { setArtistData } from "@/redux/slices/artistSlice";
+import { signUp } from "@/redux/slices/authSlice";
 import { capitalizeString, getCutoffFiscalYearKey } from "@/utils/utils";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Plus, Trash2 } from "lucide-react";

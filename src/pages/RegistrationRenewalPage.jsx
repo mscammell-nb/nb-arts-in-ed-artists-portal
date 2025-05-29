@@ -97,14 +97,14 @@ const schema = yup.object({
 });
 
 const RegistrationRenewalPage = () => {
-  const { user } = useSelector((state) => state.auth);
+  const user = useSelector((state) => state.auth.user);
   const navigate = useNavigate();
   const { toast } = useToast();
   const [fileUploads, setFileUploads] = useState(null);
   const [documentTypes, setDocumentTypes] = useState(null);
   const [selectedType, setSelectedType] = useState("");
   const [open, setOpen] = useState(false);
-  const artist = useSelector((state) => state.auth.artistOrg);
+  const artist = useSelector((state) => state.artist.artistOrg);
   const [fiscalYearKey, setFiscalYearKey] = useState(getNextFiscalYearKey());
 
   const {

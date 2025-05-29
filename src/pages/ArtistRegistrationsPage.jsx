@@ -23,7 +23,7 @@ const formatData = (unformattedData) => {
 };
 
 const ArtistRegistrationsPage = () => {
-  const { user } = useSelector((state) => state.auth);
+  const user = useSelector((state) => state.auth.user);
   const expired = isRegistrationExpiring(user);
 
   const {

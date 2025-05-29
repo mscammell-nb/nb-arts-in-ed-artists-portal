@@ -90,12 +90,14 @@ const formatProgramsData = (programsData) => {
 };
 
 const ProgramsPage = () => {
-  const artistRecordId = useSelector((state) => state.auth.artistRecordId);
+  const { artistRecordId, has3References } = useSelector(
+    (state) => state.artist,
+  );
+  const programCutoffDate = useSelector(
+    (state) => state.cutoff.programCutoffDate,
+  );
   const fiscalYear = getCurrentFiscalYear();
   const nextFiscalYear = getNextFiscalYear();
-  const { programCutoffDate, has3References } = useSelector(
-    (state) => state.auth,
-  );
   const tempCutoffDate = new Date(programCutoffDate);
   const currDate = new Date();
   const isDuringCutoff =
