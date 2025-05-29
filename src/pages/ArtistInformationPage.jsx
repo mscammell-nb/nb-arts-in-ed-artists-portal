@@ -86,7 +86,7 @@ const ArtistItem = ({
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="Less than Five">Less than 5</SelectItem>
-          <SelectItem value="Five or More">More than 5</SelectItem>
+          <SelectItem value="Five or More">5 or More</SelectItem>
         </SelectContent>
       </Select>
     );
