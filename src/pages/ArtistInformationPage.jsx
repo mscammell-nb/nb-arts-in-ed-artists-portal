@@ -50,6 +50,7 @@ import {
   useAddOrUpdateRecordMutation,
   useQueryForDataQuery,
 } from "@/redux/api/quickbaseApi";
+import { selectArtistData } from "@/redux/slices/artistSlice";
 import { listFirebaseErrors } from "@/utils/listFirebaseErrors";
 import { referencesColumns } from "@/utils/TableColumns";
 import { getCurrentFiscalYear } from "@/utils/utils";

@@ -12,6 +12,10 @@ import {
   useAddOrUpdateRecordMutation,
   useQueryForDataQuery,
 } from "@/redux/api/quickbaseApi";
+import {
+  selectArtistRecordId,
+  selectProgramCutoffDate,
+} from "@/redux/slices/artistSlice";
 import { getCurrentFiscalYearKey, getNextFiscalYearKey } from "@/utils/utils";
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";

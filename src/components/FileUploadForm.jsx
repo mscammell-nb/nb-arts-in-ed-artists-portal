@@ -2,10 +2,10 @@ import FileUpload from "@/components/FileUpload";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { useAddOrUpdateRecordMutation } from "@/redux/api/quickbaseApi";
+import { selectCutoffDate } from "@/redux/slices/artistSlice";
 import { toBase64 } from "@/utils/toBase64";
 import { getCutoffFiscalYearKey } from "@/utils/utils";
 import { useEffect, useMemo } from "react";
-import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Spinner from "./ui/Spinner";
 

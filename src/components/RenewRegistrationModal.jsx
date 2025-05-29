@@ -8,6 +8,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { selectUser } from "@/redux/slices/authSlice";
 import { isRegistrationExpiring } from "@/utils/isRegistrationExpiring";
 import React from "react";
 import { useSelector } from "react-redux";
