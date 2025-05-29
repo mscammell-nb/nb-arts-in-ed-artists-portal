@@ -404,22 +404,40 @@ const ArtistInformationPage = () => {
   ] = useAddOrUpdateRecordMutation();
   // SHOW ARTIST_INFO TABLE BUT UPDATE REGISTRATION
   let {
-    data: artistsData,
-    isLoading: isArtistsLoading,
-    isError: isArtistsError,
-    error: artistsError,
+    data: registrationData,
+    isLoading: isRegistrationLoading,
+    isError: isRegistrationError,
+    error: registrationError,
   } = useQueryForDataQuery(
     artistRecordId
       ? {
           from: import.meta.env.VITE_QUICKBASE_ARTIST_REGISTRATIONS_TABLE_ID,
           select: [
             3, 6, 7, 8, 9, 11, 12, 14, 15, 16, 17, 18, 19, 21, 23, 24, 25, 30,
-            31,
+            31, 36,
           ],
           where: `{7.EX.${artistRecordId}} AND {25.EX.${getCurrentFiscalYear()}}`,
         }
       : { skip: true, refetchOnMountOrArgChange: true },
   );
+
+  let {
+    data: artistData,
+    isLoading: isArtistLoading,
+    isError: isArtistError,
+    error: artistError,
+  } = useQueryForDataQuery(
+    artistRecordId
+      ? {
+          from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
+          select: [
+            3, 6, 7, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 29, 30, 31, 50, 51,
+          ],
+          where: `{3.EX.${artistRecordId}}`,
+        }
+      : { skip: true, refetchOnMountOrArgChange: true },
+  );
+
   const { data: referencesData, isLoading: isReferencesLoading } =
     useQueryForDataQuery(
       artistRecordId
@@ -431,10 +449,10 @@ const ArtistInformationPage = () => {
         : { skip: true, refetchOnMountOrArgChange: true },
     );
   useEffect(() => {
-    if (artistsData) {
+    if (artistData) {
       resetInformation();
     }
-  }, [artistsData]);
+  }, [artistData]);
 
   useEffect(() => {
     if (isUpdateArtistSuccess) {
@@ -460,7 +478,7 @@ const ArtistInformationPage = () => {
       data: [
         {
           3: {
-            value: artistsData.data[0][3].value,
+            value: registrationData.data[0][3].value,
           },
           8: {
             value: artistVal,
@@ -496,21 +514,21 @@ const ArtistInformationPage = () => {
   };
 
   const resetInformation = () => {
-    setArtistVal(artistsData.data[0][8].value);
-    setPerformersVal(artistsData.data[0][21].value);
-    setEmailVal(artistsData.data[0][9].value);
-    setPhoneVal(artistsData.data[0][11].value);
-    setAddressVal(artistsData.data[0][14].value);
-    setWebsiteVal(artistsData.data[0][23].value);
+    setArtistVal(artistData.data[0][6].value);
+    setPerformersVal(artistData.data[0][19].value);
+    setEmailVal(artistData.data[0][7].value);
+    setPhoneVal(artistData.data[0][9].value);
+    setAddressVal(artistData.data[0][12].value);
+    setWebsiteVal(artistData.data[0][31].value);
     setAddressObject({
-      street1: artistsData.data[0][15].value,
-      street2: artistsData.data[0][16].value,
-      city: artistsData.data[0][17].value,
-      state: artistsData.data[0][18].value,
-      zipCode: artistsData.data[0][19].value,
+      street1: artistData.data[0][13].value,
+      street2: artistData.data[0][14].value,
+      city: artistData.data[0][15].value,
+      state: artistData.data[0][16].value,
+      zipCode: artistData.data[0][17].value,
     });
-    setPaymentType(artistsData.data[0][30].value);
-    setPayeeName(artistsData.data[0][31].value);
+    setPaymentType(artistData.data[0][50].value);
+    setPayeeName(artistData.data[0][51].value);
   };
   const formatData = (d) => {
     const { data } = d;
@@ -526,7 +544,7 @@ const ArtistInformationPage = () => {
     });
   };
 
-  if (isArtistsLoading || isReferencesLoading) {
+  if (isArtistLoading || isRegistrationLoading || isReferencesLoading) {
     return (
       <div className="flex h-screen w-full items-center justify-center">
         <Spinner />
@@ -536,7 +554,7 @@ const ArtistInformationPage = () => {
 
   return (
     <div className="flex w-full max-w-[1200px] flex-col gap-3">
-      {artistsData && !artistsData.data[0][6] && (
+      {registrationData && !registrationData.data[0][6] && (
         <div className="flex w-full items-center justify-start gap-3 border border-yellow-500 bg-yellow-100 p-2 text-yellow-700">
           <CircleAlert size={20} />
           <p>
@@ -552,6 +570,16 @@ const ArtistInformationPage = () => {
           <AlertDescription>
             You are required to have at least 3 references to submit a new
             program.
+          </AlertDescription>
+        </Alert>
+      )}
+      {registrationData.data[0][36].value != "" && (
+        <Alert variant="info">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Changes Pending</AlertTitle>
+          <AlertDescription>
+            You have changes to your account information pending. You will see
+            the changes once they are approved.
           </AlertDescription>
         </Alert>
       )}
@@ -575,7 +603,7 @@ const ArtistInformationPage = () => {
           </Tooltip>
         </TooltipProvider>
       </div>
-      {isArtistsLoading ? (
+      {isArtistLoading ? (
         <div className="flex w-full flex-col items-start gap-4 rounded border border-gray-200 bg-white p-2.5">
           <Skeleton className="h-[20px] w-[300px] rounded-full" />
           <Skeleton className="h-[20px] w-[200px] rounded-full" />
