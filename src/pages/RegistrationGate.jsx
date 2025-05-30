@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import Spinner from "../components/ui/Spinner";
+import { updateCutoffDates } from "@/redux/slices/cutoffSlice";
 
 const RegistrationGate = () => {
   const user = useSelector((state) => state.auth.user);
