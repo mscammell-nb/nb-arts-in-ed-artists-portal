@@ -626,7 +626,13 @@ const ArtistInformationPage = () => {
                 label="Artist / Org"
                 value={artistVal}
                 setValue={setArtistVal}
-                editing={editing}
+                editing={false}
+              />
+              <ArtistItem
+                label="Email"
+                value={emailVal}
+                setValue={setEmailVal}
+                editing={false}
               />
               <ArtistItem
                 label="Number of Performers"
@@ -635,12 +641,7 @@ const ArtistInformationPage = () => {
                 editing={editing}
                 dropdown={true}
               />
-              <ArtistItem
-                label="Email"
-                value={emailVal}
-                setValue={setEmailVal}
-                editing={editing}
-              />
+
               <ArtistItem
                 label="Phone"
                 value={phoneVal}
