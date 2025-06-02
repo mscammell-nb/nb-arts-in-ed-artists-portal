@@ -26,7 +26,6 @@ import {
   downloadFile,
   getCutoffFiscalYear,
   getCutoffFiscalYearKey,
-  getNextFiscalYearKey,
   parsePhoneNumber,
 } from "@/utils/utils";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -107,7 +106,7 @@ const RegistrationRenewalPage = () => {
   const [selectedType, setSelectedType] = useState("");
   const [open, setOpen] = useState(false);
   const artist = useSelector((state) => state.artist.artistOrg);
-  const [fiscalYearKey, setFiscalYearKey] = useState(getNextFiscalYearKey());
+  const [fiscalYearKey, setFiscalYearKey] = useState(null);
 
   const {
     data: artistData,
@@ -162,6 +161,7 @@ const RegistrationRenewalPage = () => {
       const tempFiscalYear = getCutoffFiscalYear(cutoffMonth, cutoffDay);
       const tempFiscalYearKey = getCutoffFiscalYearKey(cutoffMonth, cutoffDay);
       setFiscalYearKey(tempFiscalYearKey);
+
       const defaultValues = {
         artistOrg: data[6].value,
         email: data[7].value,
@@ -186,6 +186,8 @@ const RegistrationRenewalPage = () => {
     const cutoffMonth = new Date(artistData.data[0][48].value).getMonth();
     const cutoffDay = new Date(artistData.data[0][48].value).getDate() + 1;
     const tempFiscalYearKey = getCutoffFiscalYearKey(cutoffMonth, cutoffDay);
+
+    console.log("TEMP IN FORMAT", tempFiscalYearKey);
     if (artistData?.data[0][7].value !== data.email) {
       let body = {};
       console.log("Email changed");
