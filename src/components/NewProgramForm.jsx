@@ -12,7 +12,7 @@ import {
   useAddOrUpdateRecordMutation,
   useQueryForDataQuery,
 } from "@/redux/api/quickbaseApi";
-import { getCurrentFiscalYearKey, getNextFiscalYearKey } from "@/utils/utils";
+import { getCutoffFiscalYearKey } from "@/utils/utils";
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
@@ -310,15 +310,18 @@ function NewProgramForm({ selectedArtist = null, onSubmitSuccess = () => {} }) {
     setTempCategories([]);
     setSelectedKeywords([]);
 
-    const programCutoffDate = useSelector(
-      (state) => state.cutoff.programCutoffDate,
+    const programCutoffStartDate = useSelector(
+      (state) => state.cutoff.programCutoffStartDate,
     );
-    const tempCutoffDate = new Date(programCutoffDate);
-    const currDate = new Date();
-    const isDuringCutoff =
-      currDate.getMonth() > tempCutoffDate.getMonth() ||
-      (currDate.getMonth() == tempCutoffDate.getMonth() &&
-        currDate.getDate() >= tempCutoffDate.getDate());
+    const programCutoffEndDate = useSelector(
+      (state) => state.cutoff.programCutoffEndDate,
+    );
+    const tempCutoffStartDate = new Date(programCutoffStartDate);
+    const startMonth = tempCutoffStartDate.getMonth();
+    const startDay = tempCutoffStartDate.getDate();
+    const tempCutoffEndDate = new Date(programCutoffEndDate);
+    const endMonth = tempCutoffEndDate.getMonth();
+    const endDay = tempCutoffEndDate.getDate();
 
     addProgram({
       to: import.meta.env.VITE_QUICKBASE_PROGRAMS_TABLE_ID,
@@ -328,9 +331,12 @@ function NewProgramForm({ selectedArtist = null, onSubmitSuccess = () => {} }) {
             value: artistRecordId,
           },
           15: {
-            value: isDuringCutoff
-              ? getNextFiscalYearKey()
-              : getCurrentFiscalYearKey(),
+            value: getCutoffFiscalYearKey(
+              startMonth,
+              startDay,
+              endMonth,
+              endDay,
+            ),
           },
           11: {
             value: formValues.title,

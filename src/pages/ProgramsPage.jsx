@@ -25,6 +25,7 @@ import {
   getCurrentFiscalYear,
   getNextFiscalYear,
   groupByIdAndField,
+  isDuringCutoff,
 } from "@/utils/utils";
 import { AlertCircle } from "lucide-react";
 import { useSelector } from "react-redux";
@@ -93,17 +94,23 @@ const ProgramsPage = () => {
   const { artistRecordId, has3References } = useSelector(
     (state) => state.artist,
   );
-  const programCutoffDate = useSelector(
-    (state) => state.cutoff.programCutoffDate,
+  const programCutoffStartDate = useSelector(
+    (state) => state.cutoff.programCutoffStartDate,
   );
+
+  const programCutoffEndDate = useSelector(
+    (state) => state.cutoff.programCutoffEndDate,
+  );
+
   const fiscalYear = getCurrentFiscalYear();
   const nextFiscalYear = getNextFiscalYear();
-  const tempCutoffDate = new Date(programCutoffDate);
-  const currDate = new Date();
-  const isDuringCutoff =
-    currDate.getMonth() > tempCutoffDate.getMonth() ||
-    (currDate.getMonth() == tempCutoffDate.getMonth() &&
-      currDate.getDate() >= tempCutoffDate.getDate());
+  const tempCutoffStartDate = new Date(programCutoffStartDate);
+  const startMonth = tempCutoffStartDate.getMonth();
+  const startDay = tempCutoffStartDate.getDate();
+  const tempCutoffEndDate = new Date(programCutoffEndDate);
+  const endMonth = tempCutoffEndDate.getMonth();
+  const endDay = tempCutoffEndDate.getDate();
+  const duringCutoff = isDuringCutoff(startMonth, startDay, endMonth, endDay);
 
   const {
     data: programsData,
@@ -184,7 +191,7 @@ const ProgramsPage = () => {
           </AlertDescription>
         </Alert>
       )}
-      {isDuringCutoff && (
+      {duringCutoff && (
         <Tabs defaultValue={fiscalYear} className="w-full">
           <TabsContent value={fiscalYear}>
             <div className="flex w-full flex-col justify-center gap-5 pb-10">
@@ -293,7 +300,7 @@ const ProgramsPage = () => {
           </TabsContent>
         </Tabs>
       )}
-      {!isDuringCutoff && (
+      {!duringCutoff && (
         <DataGrid
           columns={programTableColumns}
           data={formatProgramsData({
