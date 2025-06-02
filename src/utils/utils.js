@@ -164,13 +164,33 @@ export const getNextFiscalYear = () => {
     : year.toString().slice(2) + "/" + (year + 1).toString().slice(2);
 };
 
-export const getCutoffFiscalYearKey = (cutoffStartMonth, cutoffStartDay) => {
-  const isCutoff = isDuringCutoff(cutoffStartMonth, cutoffStartDay);
+export const getCutoffFiscalYearKey = (
+  cutoffStartMonth,
+  cutoffStartDay,
+  cutoffEndMonth = FISCAL_YEAR_FIRST_MONTH,
+  cutoffEndDay = FISCAL_YEAR_FIRST_DAY,
+) => {
+  const isCutoff = isDuringCutoff(
+    cutoffStartMonth,
+    cutoffStartDay,
+    cutoffEndMonth,
+    cutoffEndDay,
+  );
   return isCutoff ? getSecondFiscalYearKey() : getFirstFiscalYearKey();
 };
 
-export const getCutoffFiscalYear = (cutoffStartMonth, cutoffStartDay) => {
-  const isCutoff = isDuringCutoff(cutoffStartMonth, cutoffStartDay);
+export const getCutoffFiscalYear = (
+  cutoffStartMonth,
+  cutoffStartDay,
+  cutoffEndMonth = FISCAL_YEAR_FIRST_MONTH,
+  cutoffEndDay = FISCAL_YEAR_FIRST_DAY,
+) => {
+  const isCutoff = isDuringCutoff(
+    cutoffStartMonth,
+    cutoffStartDay,
+    cutoffEndMonth,
+    cutoffEndDay,
+  );
   const isSecond = isSecondFiscalYear();
   if (isSecond) return getSecondFiscalYear();
   return isCutoff ? getSecondFiscalYear() : getFirstFiscalYear();
