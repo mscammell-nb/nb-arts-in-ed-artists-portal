@@ -152,7 +152,7 @@ export const getSecondFiscalYearKey = () => {
 
 export const getCurrentFiscalYear = () => {
   const isSecond = isSecondFiscalYear();
-  return isSecond ? getFirstFiscalYear() : getSecondFiscalYear();
+  return isSecond ? getSecondFiscalYear() : getFirstFiscalYear();
 };
 
 export const getNextFiscalYear = () => {
