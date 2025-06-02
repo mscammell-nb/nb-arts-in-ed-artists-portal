@@ -156,6 +156,8 @@ export const getCurrentFiscalYear = () => {
 };
 
 export const getNextFiscalYear = () => {
+  const d = new Date();
+  const year = d.getFullYear();
   const isSecond = isSecondFiscalYear();
   return isSecond
     ? getSecondFiscalYear()
