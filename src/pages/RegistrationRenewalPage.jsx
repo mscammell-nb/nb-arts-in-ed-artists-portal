@@ -107,6 +107,7 @@ const RegistrationRenewalPage = () => {
   const [open, setOpen] = useState(false);
   const artist = useSelector((state) => state.artist.artistOrg);
   const [fiscalYearKey, setFiscalYearKey] = useState(null);
+  const [existingTypes, setExistingTypes] = useState([]);
 
   const {
     data: artistData,
@@ -133,6 +134,36 @@ const RegistrationRenewalPage = () => {
       error: newArtistRegistrationError,
     },
   ] = useAddOrUpdateRecordMutation();
+
+  const {
+    data: documentTypesData,
+    isLoading: isDocumentTypesLoading,
+    isSuccess: isDocumentTypesSuccess,
+    isError: isDocumentTypesError,
+    error: documentTypesError,
+  } = useQueryForDataQuery({
+    from: import.meta.env.VITE_QUICKBASE_DOCUMENT_TYPES_TABLE_ID,
+    select: [3, 6, 12],
+    where: "{'13'.EX.'true'}",
+  });
+
+  const { data: fileTypes, isLoading: isFileTypesLoading } =
+    useQueryForDataQuery({
+      from: import.meta.env.VITE_QUICKBASE_DOCUMENT_TYPES_TABLE_ID,
+      select: [3, 7, 31],
+    });
+  // TODO UPDATE DOCUMENTS CURRENT COL
+  const { data: documentsData, isLoading: isDocumentsDataLoading } =
+    useQueryForDataQuery(
+      artist
+        ? {
+            from: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
+            select: [3, 6, 7, 9, 10, 11, 12, 14],
+            where: `{9.EX.'${artist}'} AND {10.EX.${fiscalYearKey}}`,
+            sortBy: [{ fieldId: 10 }, { order: "DESC" }],
+          }
+        : { skip: !artist || !fiscalYearKey, refetchOnMountOrArgChange: true },
+    );
 
   const form = useForm({
     resolver: yupResolver(schema),
@@ -181,13 +212,20 @@ const RegistrationRenewalPage = () => {
     }
   }, [artistData, reset, setValue]);
 
+  useEffect(() => {
+    if (!isDocumentsDataLoading && documentsData) {
+      // Extract each unique document type, field [6]
+      const types = documentsData.data.map((doc) => doc[6].value);
+      const uniqueTypes = Array.from(new Set(types));
+      setExistingTypes(uniqueTypes);
+    }
+  }, [documentsData, isDocumentsDataLoading]);
+
   const formatDataForQuickbase = async (data) => {
-    // TODO: Check if email changes, if it does, call updateEmail from firebase, THEN add the updated email field in quickbase call
     const cutoffMonth = new Date(artistData.data[0][48].value).getMonth();
     const cutoffDay = new Date(artistData.data[0][48].value).getDate() + 1;
     const tempFiscalYearKey = getCutoffFiscalYearKey(cutoffMonth, cutoffDay);
 
-    console.log("TEMP IN FORMAT", tempFiscalYearKey);
     if (artistData?.data[0][7].value !== data.email) {
       let body = {};
       // updateFirebaseFirst, then update quickbase
@@ -344,6 +382,7 @@ const RegistrationRenewalPage = () => {
   };
 
   const uploadFile = async () => {
+    // Need to check if file already exists, by type, if so, update, else create
     if (fileUploads === null) {
       toast({
         variant: "destructive",
@@ -360,24 +399,48 @@ const RegistrationRenewalPage = () => {
       });
       return;
     }
+
     let base64 = await toBase64(fileUploads);
     base64 = base64.split("base64,")[1];
-    addDocument({
-      to: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
-      data: [
-        {
-          10: { value: fiscalYearKey },
-          9: { value: artist },
-          7: {
-            value: {
-              fileName: fileUploads.name,
-              data: base64,
+
+    console.log(fileUploads, selectedType, documentsData);
+    if (existingTypes.includes(selectedType)) {
+      // Find the existing record for this type
+      const existingRecord = documentsData.data.find(
+        (doc) => doc[6]?.value === selectedType,
+      );
+      addDocument({
+        to: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
+        data: [
+          {
+            3: { value: existingRecord[3]?.value },
+            7: {
+              value: {
+                fileName: fileUploads.name,
+                data: base64,
+              },
             },
           },
-          6: { value: selectedType },
-        },
-      ],
-    });
+        ],
+      });
+    } else {
+      addDocument({
+        to: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
+        data: [
+          {
+            10: { value: fiscalYearKey },
+            9: { value: artist },
+            7: {
+              value: {
+                fileName: fileUploads.name,
+                data: base64,
+              },
+            },
+            6: { value: selectedType },
+          },
+        ],
+      });
+    }
   };
 
   const [
@@ -418,36 +481,6 @@ const RegistrationRenewalPage = () => {
       versionNumber,
     );
   };
-
-  const {
-    data: documentTypesData,
-    isLoading: isDocumentTypesLoading,
-    isSuccess: isDocumentTypesSuccess,
-    isError: isDocumentTypesError,
-    error: documentTypesError,
-  } = useQueryForDataQuery({
-    from: import.meta.env.VITE_QUICKBASE_DOCUMENT_TYPES_TABLE_ID,
-    select: [3, 6, 12],
-    where: "{'13'.EX.'true'}",
-  });
-
-  const { data: fileTypes, isLoading: isFileTypesLoading } =
-    useQueryForDataQuery({
-      from: import.meta.env.VITE_QUICKBASE_DOCUMENT_TYPES_TABLE_ID,
-      select: [3, 7, 31],
-    });
-  // TODO UPDATE DOCUMENTS CURRENT COL
-  const { data: documentsData, isLoading: isDocumentsDataLoading } =
-    useQueryForDataQuery(
-      artist
-        ? {
-            from: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
-            select: [3, 6, 7, 9, 10, 11, 12, 14],
-            where: `{9.EX.'${artist}'} AND {10.EX.${fiscalYearKey}}`,
-            sortBy: [{ fieldId: 10 }, { order: "DESC" }],
-          }
-        : { skip: !artist || !fiscalYearKey, refetchOnMountOrArgChange: true },
-    );
 
   if (
     isArtistLoading ||
