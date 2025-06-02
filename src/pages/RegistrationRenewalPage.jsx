@@ -190,7 +190,6 @@ const RegistrationRenewalPage = () => {
     console.log("TEMP IN FORMAT", tempFiscalYearKey);
     if (artistData?.data[0][7].value !== data.email) {
       let body = {};
-      console.log("Email changed");
       // updateFirebaseFirst, then update quickbase
       await updateEmail(auth.currentUser, data.email)
         .then(() => {
@@ -248,7 +247,6 @@ const RegistrationRenewalPage = () => {
           }
         })
         .catch((error) => {
-          console.log("error", error);
           toast({
             variant: "destructive",
             title: "Failed to change email",
@@ -257,7 +255,6 @@ const RegistrationRenewalPage = () => {
         });
       return body;
     } else {
-      console.log("No Email changed");
       // update quickbase
       const body = {
         to: import.meta.env.VITE_QUICKBASE_ARTIST_REGISTRATIONS_TABLE_ID,
@@ -327,7 +324,6 @@ const RegistrationRenewalPage = () => {
     }
 
     if (isNewArtistRegistrationError && newArtistRegistrationError) {
-      console.log("REGISTRATION ERROR", newArtistRegistrationError);
       toast({
         variant: "destructive",
         title: "Uh oh! Something went wrong.",
@@ -447,10 +443,10 @@ const RegistrationRenewalPage = () => {
         ? {
             from: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
             select: [3, 6, 7, 9, 10, 11, 12, 14],
-            where: `{9.EX.${artist}} AND {10.EX.${fiscalYearKey}}`,
+            where: `{9.EX.'${artist}'} AND {10.EX.${fiscalYearKey}}`,
             sortBy: [{ fieldId: 10 }, { order: "DESC" }],
           }
-        : { skip: !artist, refetchOnMountOrArgChange: true },
+        : { skip: !artist || !fiscalYearKey, refetchOnMountOrArgChange: true },
     );
 
   if (
