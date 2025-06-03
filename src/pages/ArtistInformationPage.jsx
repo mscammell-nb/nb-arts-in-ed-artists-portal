@@ -52,7 +52,7 @@ import {
 } from "@/redux/api/quickbaseApi";
 import { listFirebaseErrors } from "@/utils/listFirebaseErrors";
 import { referencesColumns } from "@/utils/TableColumns";
-import { getCurrentFiscalYear } from "@/utils/utils";
+import { getCurrentFiscalYear, parsePhoneNumber } from "@/utils/utils";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { signInWithEmailAndPassword, updatePassword } from "firebase/auth";
 import { AlertCircle, CircleAlert, Pencil } from "lucide-react";
@@ -378,7 +378,10 @@ const ArtistInformationPage = () => {
     };
     return (
       <Form {...informationForm}>
-        <form className="flex w-full flex-col gap-3">
+        <form
+          className="flex w-full flex-col gap-3"
+          onSubmit={informationForm.handleSubmit(onSave)}
+        >
           <FormField
             control={informationForm.control}
             name="artistOrg"
@@ -435,7 +438,7 @@ const ArtistInformationPage = () => {
               <FormItem>
                 <FormLabel>Phone</FormLabel>
                 <FormControl>
-                  <Input placeholder="Phone" {...field} />
+                  <Input placeholder="(123) 456-7890" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -448,12 +451,38 @@ const ArtistInformationPage = () => {
               <FormItem>
                 <FormLabel>Alt Phone</FormLabel>
                 <FormControl>
-                  <Input placeholder="Alt Phone" {...field} />
+                  <Input placeholder="(123) 456-7890" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
+          <FormField
+            control={informationForm.control}
+            name="website"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Website</FormLabel>
+                <FormControl>
+                  <Input placeholder="www.Google.com" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <div className="flex gap-3">
+            <Button
+              type="button"
+              className="w-fit"
+              variant="secondary"
+              onClick={() => cancelEdit()}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" className="w-fit">
+              Save
+            </Button>
+          </div>
         </form>
       </Form>
     );
@@ -876,20 +905,6 @@ const ArtistInformationPage = () => {
                 </Form>
               </SheetContent>
             </Sheet>
-            {editing && (
-              <div className="flex gap-3">
-                <Button
-                  className="w-fit"
-                  variant="secondary"
-                  onClick={() => cancelEdit()}
-                >
-                  Cancel
-                </Button>
-                <Button className="w-fit" onClick={() => onSave()}>
-                  Save
-                </Button>
-              </div>
-            )}
           </CardContent>
         </Card>
         <Card>
