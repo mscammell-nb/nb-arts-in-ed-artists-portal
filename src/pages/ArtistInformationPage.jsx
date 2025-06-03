@@ -382,7 +382,7 @@ const ArtistInformationPage = () => {
           />
           <FormField
             control={informationForm.control}
-            name="referenceEmail"
+            name="email"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Email</FormLabel>
