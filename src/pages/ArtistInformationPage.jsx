@@ -21,13 +21,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PasswordInput } from "@/components/ui/password-input";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   Sheet,
   SheetContent,
   SheetDescription,
@@ -349,25 +342,6 @@ const ArtistInformationPage = () => {
               23: {
                 value: websiteVal,
               },
-              36: {
-                value: (() => {
-                  const keys = Object.keys(artistData);
-                  const changedKeys = keys.filter(
-                    (key) =>
-                      artistData[key] !==
-                      registrationData.data[0][Number(key)].value,
-                  );
-                  if (changedKeys.length === 0) return "";
-                  return changedKeys
-                    .map(
-                      (key) =>
-                        `${registrationData.data[0][Number(key)].label} ${
-                          registrationData.data[0][Number(key)].value
-                        } --> ${artistData[key]}`,
-                    )
-                    .join("\n");
-                })(),
-              },
             },
           ],
         });
@@ -413,19 +387,20 @@ const ArtistInformationPage = () => {
             name="numOfPerformers"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Number of Performers</FormLabel>
                 <FormControl>
-                  <Select onValueChange={(val) => setValue(val)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Number of Performers" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Less than Five">
-                        Less than 5
-                      </SelectItem>
-                      <SelectItem value="Five or More">5 or More</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <CustomSelect
+                    data={[
+                      {
+                        id: "Less than Five",
+                        name: "Less than Five",
+                      },
+                    ]}
+                    label={"Number of Performers"}
+                    placeholder={"Select a number"}
+                    value={field.value}
+                    setValue={field.onChange}
+                    search={false}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
