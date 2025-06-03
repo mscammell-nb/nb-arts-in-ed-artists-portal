@@ -47,7 +47,12 @@ const FileUploadPage = () => {
   const [fileUploads, setFileUploads] = useState(null);
   const [open, setOpen] = useState(false);
   const artist = useSelector((state) => state.artist.artistData);
-  const cutoffDate = useSelector((state) => state.cutoff.cutoffDate);
+  const cutoffStartDate = useSelector(
+    (state) => state.cutoff.registrationCutoffStartDate,
+  );
+  const cutoffEndDate = useSelector(
+    (state) => state.cutoff.registrationCutoffEndDate,
+  );
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -110,10 +115,17 @@ const FileUploadPage = () => {
   };
 
   const fiscalYearKey = useMemo(() => {
-    const cutoffMonth = new Date(cutoffDate).getMonth();
-    const cutoffDay = new Date(cutoffDate).getDate() + 1;
-    return getCutoffFiscalYearKey(cutoffMonth, cutoffDay);
-  }, [cutoffDate]);
+    const cutoffMonth = new Date(cutoffStartDate).getMonth();
+    const cutoffDay = new Date(cutoffStartDate).getDate();
+    const cutoffEndMonth = new Date(cutoffEndDate).getMonth();
+    const cutoffEndDay = new Date(cutoffEndDate).getDate();
+    return getCutoffFiscalYearKey(
+      cutoffMonth,
+      cutoffDay,
+      cutoffEndMonth,
+      cutoffEndDay,
+    );
+  }, [cutoffStartDate, cutoffEndDate]);
 
   const uploadFile = async () => {
     if (fileUploads === null) {

@@ -2,7 +2,6 @@ import FileUpload from "@/components/FileUpload";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { useAddOrUpdateRecordMutation } from "@/redux/api/quickbaseApi";
-import { selectCutoffDate } from "@/redux/slices/artistSlice";
 import { toBase64 } from "@/utils/toBase64";
 import { getCutoffFiscalYearKey } from "@/utils/utils";
 import { useEffect, useMemo } from "react";
@@ -17,13 +16,26 @@ const FileUploadForm = ({
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const cutoffDate = useSelector((state) => state.cutoff.cutoffDate);
+  const cutoffStartDate = useSelector(
+    (state) => state.cutoff.registrationCutoffStartDate,
+  );
+  const cutoffEndDate = useSelector(
+    (state) => state.cutoff.registrationCutoffEndDate,
+  );
 
   const fiscalYearKey = useMemo(() => {
-    const cutoffMonth = new Date(cutoffDate).getMonth();
-    const cutoffDay = new Date(cutoffDate).getDate() + 1;
-    return getCutoffFiscalYearKey(cutoffMonth, cutoffDay);
-  }, [cutoffDate]);
+    const cutoffMonth = new Date(cutoffStartDate).getMonth();
+    const cutoffDay = new Date(cutoffStartDate).getDate();
+    const cutoffEndMonth = new Date(cutoffEndDate).getMonth();
+    const cutoffEndDay = new Date(cutoffEndDate).getDate();
+    return getCutoffFiscalYearKey(
+      cutoffMonth,
+      cutoffDay,
+      cutoffEndMonth,
+      cutoffEndDay,
+    );
+  }, [cutoffStartDate, cutoffEndDate]);
+
   const [
     addArtistDocumentRecord,
     {

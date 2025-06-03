@@ -2,8 +2,10 @@ import { createSlice } from "@reduxjs/toolkit";
 import { signOut } from "./authSlice";
 
 const initialState = {
-  cutoffDate: null,
-  programCutoffDate: null,
+  registrationCutoffStartDate: null,
+  registrationCutoffEndDate: null,
+  programCutoffStartDate: null,
+  programCutoffEndDate: null,
 };
 
 const cutoffSlice = createSlice({
@@ -11,9 +13,16 @@ const cutoffSlice = createSlice({
   initialState,
   reducers: {
     updateCutoffDates: (state, action) => {
-      const { cutoffDate, programCutoffDate } = action.payload;
-      state.cutoffDate = cutoffDate;
-      state.programCutoffDate = programCutoffDate;
+      const {
+        registrationCutoffStartDate,
+        registrationCutoffEndDate,
+        programCutoffStartDate,
+        programCutoffEndDate,
+      } = action.payload;
+      state.programCutoffStartDate = programCutoffStartDate;
+      state.programCutoffEndDate = programCutoffEndDate;
+      state.registrationCutoffStartDate = registrationCutoffStartDate;
+      state.registrationCutoffEndDate = registrationCutoffEndDate;
     },
     clearCutoffDates: (state) => {
       return initialState;

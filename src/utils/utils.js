@@ -1,4 +1,7 @@
-import { FISCAL_YEAR_FIRST_MONTH } from "@/constants/constants";
+import {
+  FISCAL_YEAR_FIRST_DAY,
+  FISCAL_YEAR_FIRST_MONTH,
+} from "@/constants/constants";
 import { signOut } from "@/redux/slices/authSlice";
 
 export const capitalizeString = (str) => {
@@ -14,79 +17,187 @@ export const formatAuthErrorMessage = (message) => {
   return capitalized;
 };
 
-// Calculates the key of the current fiscal year
+/**
+ * isDuringCutoff returns true if the current date is within the cutoff period.
+ *
+ * The cutoff period is the period between the first day of the fiscal year
+ * and the specified cutoff end date. If no cutoff end date is specified,
+ * the default is the first day of the fiscal year.
+ *
+ * @param  {number} [cutoffEndMonth=FISCAL_YEAR_FIRST_MONTH]
+ * @param  {number} [cutoffEndDay=FISCAL_YEAR_FIRST_DAY]
+ * @return {boolean}
+ */
+export const isDuringCutoff = (
+  cutoffStartMonth,
+  cutoffStartDay,
+  cutoffEndMonth = FISCAL_YEAR_FIRST_MONTH,
+  cutoffEndDay = FISCAL_YEAR_FIRST_DAY,
+) => {
+  const date = new Date();
+  const currMonth = date.getMonth();
+  const currDay = date.getDate();
+
+  return (
+    (currMonth > cutoffStartMonth && currMonth < cutoffEndMonth) ||
+    (currMonth == cutoffStartMonth && currDay >= cutoffStartDay) ||
+    (currMonth == cutoffEndMonth && currDay <= cutoffEndDay)
+  );
+};
+
+/**
+ * isSecondFiscalYear returns true if the current date is in the second part of
+ * the fiscal year.
+ *
+ * The second part of the fiscal year is the period after the first day of the
+ * fiscal year.
+ *
+ * @return {boolean}
+ */
+export const isSecondFiscalYear = () => {
+  const d = new Date();
+  const month = d.getMonth();
+  const day = d.getDate();
+  return (
+    month > FISCAL_YEAR_FIRST_MONTH ||
+    (month == FISCAL_YEAR_FIRST_MONTH && day >= FISCAL_YEAR_FIRST_DAY)
+  );
+};
+
+/**
+ * getCurrentFiscalYearKey returns the current fiscal year key.
+ *
+ * The current fiscal year key is the year of the current fiscal year
+ * minus 2000 minus the start year (2013).
+ *
+ * For example, if the current year is 2023, the current fiscal year
+ * key is 10.
+ *
+ * @return {number} The current fiscal year key.
+ */
 export const getCurrentFiscalYearKey = () => {
   const d = new Date();
   const year = d.getFullYear();
-  const month = d.getMonth() + 1;
   const START_YEAR = 13;
-  const fiscalYearKey =
-    month >= FISCAL_YEAR_FIRST_MONTH
-      ? year - 2000 - START_YEAR + 1
-      : year - 2000 - START_YEAR;
-  return fiscalYearKey;
+
+  const isSecond = isSecondFiscalYear();
+  return isSecond ? year - 2000 - START_YEAR + 1 : year - 2000 - START_YEAR;
 };
 
 export const getNextFiscalYearKey = () => {
   return getCurrentFiscalYearKey() + 1;
 };
 
-// Parses a phone number in this format: (123) 456-7890 -> 1234567890
-export const parsePhoneNumber = (phoneNumber) => phoneNumber.replace(/\D/g, "");
-
-export const getCurrentFiscalYear = () => {
+/**
+ * getFirstFiscalYear returns the first fiscal year as a string.
+ *
+ * The first fiscal year is the previous year and the current year, separated by a slash.
+ * For example, if the current year is 2023, the first fiscal year will be '22/23'.
+ *
+ * @return {string} The first fiscal year as a string.
+ */
+export const getFirstFiscalYear = () => {
   const d = new Date();
   const year = d.getFullYear();
-  const month = d.getMonth() + 1;
-  const fiscalYear =
-    month >= FISCAL_YEAR_FIRST_MONTH
-      ? year.toString().slice(2) + "/" + (year + 1).toString().slice(2)
-      : (year - 1).toString().slice(2) + "/" + year.toString().slice(2);
+  return (year - 1).toString().slice(2) + "/" + year.toString().slice(2);
+};
 
-  return fiscalYear;
+/**
+ * getSecondFiscalYear returns the second fiscal year as a string.
+ *
+ * The second fiscal year is the current year and the next year, separated by a slash.
+ * For example, if the current year is 2023, the second fiscal year will be '23/24'.
+ *
+ * @return {string} The second fiscal year as a string.
+ */
+export const getSecondFiscalYear = () => {
+  const d = new Date();
+  const year = d.getFullYear();
+  return year.toString().slice(2) + "/" + (year + 1).toString().slice(2);
+};
+
+/**
+ * getFirstFiscalYearKey returns the first fiscal year key.
+ *
+ * The first fiscal year key is the year of the current fiscal year minus 2000 minus the start year (2013).
+ * This function is useful for determining the fiscal year key of the current year.
+ *
+ * For example, if the current year is 2023, the first fiscal year key will be 10.
+ *
+ * @return {number} The first fiscal year key.
+ */
+export const getFirstFiscalYearKey = () => {
+  const d = new Date();
+  const year = d.getFullYear();
+  const START_YEAR = 13;
+  return year - 2000 - START_YEAR;
+};
+
+/**
+ * getSecondFiscalYearKey returns the second fiscal year key.
+ *
+ * The second fiscal year key is the year of the current fiscal year minus 2000 minus the start year (2013) plus one.
+ * This function is useful for determining the fiscal year key of the year after the current year.
+ *
+ * For example, if the current year is 2023, the second fiscal year key will be 11.
+ *
+ * @return {number} The second fiscal year key.
+ */
+export const getSecondFiscalYearKey = () => {
+  const d = new Date();
+  const year = d.getFullYear();
+  const START_YEAR = 13;
+  return year - 2000 - START_YEAR + 1;
+};
+
+export const getCurrentFiscalYear = () => {
+  const isSecond = isSecondFiscalYear();
+  return isSecond ? getSecondFiscalYear() : getFirstFiscalYear();
 };
 
 export const getNextFiscalYear = () => {
   const d = new Date();
   const year = d.getFullYear();
-  const month = d.getMonth() + 1;
-  const fiscalYear =
-    month >= FISCAL_YEAR_FIRST_MONTH
-      ? (year + 1).toString().slice(2) + "/" + (year + 2).toString().slice(2)
-      : year.toString().slice(2) + "/" + (year + 1).toString().slice(2);
-
-  return fiscalYear;
+  const isSecond = isSecondFiscalYear();
+  return isSecond
+    ? getSecondFiscalYear()
+    : year.toString().slice(2) + "/" + (year + 1).toString().slice(2);
 };
 
-export const getCutoffFiscalYearKey = (cutoffMonth, cutoffDay) => {
-  const date = new Date();
-  const currMonth = date.getMonth();
-  const currDay = date.getDate();
-
-  if (
-    (currMonth > cutoffMonth && currMonth < FISCAL_YEAR_FIRST_MONTH) ||
-    (currMonth == cutoffMonth && currDay >= cutoffDay)
-  ) {
-    return getNextFiscalYearKey();
-  } else {
-    return getCurrentFiscalYearKey();
-  }
+export const getCutoffFiscalYearKey = (
+  cutoffStartMonth,
+  cutoffStartDay,
+  cutoffEndMonth = FISCAL_YEAR_FIRST_MONTH,
+  cutoffEndDay = FISCAL_YEAR_FIRST_DAY,
+) => {
+  const isCutoff = isDuringCutoff(
+    cutoffStartMonth,
+    cutoffStartDay,
+    cutoffEndMonth,
+    cutoffEndDay,
+  );
+  return isCutoff ? getSecondFiscalYearKey() : getFirstFiscalYearKey();
 };
 
-export const getCutoffFiscalYear = (cutoffMonth, cutoffDay) => {
-  const date = new Date();
-  const currMonth = date.getMonth();
-  const currDay = date.getDate();
-
-  if (
-    (currMonth > cutoffMonth && currMonth < FISCAL_YEAR_FIRST_MONTH) ||
-    (currMonth == cutoffMonth && currDay >= cutoffDay)
-  ) {
-    return getNextFiscalYear();
-  } else {
-    return getCurrentFiscalYear();
-  }
+export const getCutoffFiscalYear = (
+  cutoffStartMonth,
+  cutoffStartDay,
+  cutoffEndMonth = FISCAL_YEAR_FIRST_MONTH,
+  cutoffEndDay = FISCAL_YEAR_FIRST_DAY,
+) => {
+  const isCutoff = isDuringCutoff(
+    cutoffStartMonth,
+    cutoffStartDay,
+    cutoffEndMonth,
+    cutoffEndDay,
+  );
+  const isSecond = isSecondFiscalYear();
+  if (isSecond) return getSecondFiscalYear();
+  return isCutoff ? getSecondFiscalYear() : getFirstFiscalYear();
 };
+
+// Parses a phone number in this format: (123) 456-7890 -> 1234567890
+export const parsePhoneNumber = (phoneNumber) => phoneNumber.replace(/\D/g, "");
 
 const getFileName = (contentDisposition) => {
   if (!contentDisposition) return null;

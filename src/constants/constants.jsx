@@ -1,6 +1,7 @@
 import { SelectItem } from "@/components/ui/select";
 
-export const FISCAL_YEAR_FIRST_MONTH = 6; // June
+export const FISCAL_YEAR_FIRST_MONTH = 6; // July
+export const FISCAL_YEAR_FIRST_DAY = 1; // 1st
 
 export const MIN_INPUT_LENGTH = 8;
 export const MIN_TEXTAREA_LENGTH = 15;

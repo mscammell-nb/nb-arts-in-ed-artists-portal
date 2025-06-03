@@ -1,13 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
 import { setArtistData } from "@/redux/slices/artistSlice";
+import { updateCutoffDates } from "@/redux/slices/cutoffSlice";
 import { isRegistrationExpiring } from "@/utils/isRegistrationExpiring";
 import { getCurrentFiscalYear, handleSignout } from "@/utils/utils";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import Spinner from "../components/ui/Spinner";
-import { updateCutoffDates } from "@/redux/slices/cutoffSlice";
 
 const RegistrationGate = () => {
   const user = useSelector((state) => state.auth.user);
@@ -25,7 +25,7 @@ const RegistrationGate = () => {
     user
       ? {
           from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
-          select: [3, 6, 29, 30, 48, 58],
+          select: [3, 6, 29, 30, 48, 58, 62, 63],
           where: `{10.EX.${user.uid}}`,
         }
       : { skip: !user, refetchOnMountOrArgChange: true },
@@ -53,12 +53,13 @@ const RegistrationGate = () => {
         setArtistData({
           artistOrg: artistData.data[0][6].value,
           artistRecordId: artistData.data[0][3].value,
-          cutoffDate: artistData.data[0][48].value,
         }),
         dispatch(
           updateCutoffDates({
-            cutoffDate: artistData.data[0][48].value,
-            programCutoffDate: artistData.data[0][58].value,
+            registrationCutoffStartDate: artistData.data[0][48].value,
+            registrationCutoffEndDate: artistData.data[0][63].value,
+            programCutoffStartDate: artistData.data[0][58].value,
+            programCutoffEndDate: artistData.data[0][62].value,
           }),
         ),
       );

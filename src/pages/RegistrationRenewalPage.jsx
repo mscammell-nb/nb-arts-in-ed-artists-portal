@@ -26,7 +26,6 @@ import {
   downloadFile,
   getCutoffFiscalYear,
   getCutoffFiscalYearKey,
-  getNextFiscalYearKey,
   parsePhoneNumber,
 } from "@/utils/utils";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -55,6 +54,7 @@ import { Separator } from "@/components/ui/separator";
 import { formatDocData } from "@/utils/formatDocData";
 import { toBase64 } from "@/utils/toBase64";
 import { Label } from "@radix-ui/react-dropdown-menu";
+import { getAuth, updateEmail } from "firebase/auth";
 import { DownloadIcon, Loader2, UploadIcon } from "lucide-react";
 
 const schema = yup.object({
@@ -97,6 +97,7 @@ const schema = yup.object({
 });
 
 const RegistrationRenewalPage = () => {
+  const auth = getAuth();
   const user = useSelector((state) => state.auth.user);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -105,7 +106,8 @@ const RegistrationRenewalPage = () => {
   const [selectedType, setSelectedType] = useState("");
   const [open, setOpen] = useState(false);
   const artist = useSelector((state) => state.artist.artistOrg);
-  const [fiscalYearKey, setFiscalYearKey] = useState(getNextFiscalYearKey());
+  const [fiscalYearKey, setFiscalYearKey] = useState(null);
+  const [existingTypes, setExistingTypes] = useState([]);
 
   const {
     data: artistData,
@@ -132,6 +134,36 @@ const RegistrationRenewalPage = () => {
       error: newArtistRegistrationError,
     },
   ] = useAddOrUpdateRecordMutation();
+
+  const {
+    data: documentTypesData,
+    isLoading: isDocumentTypesLoading,
+    isSuccess: isDocumentTypesSuccess,
+    isError: isDocumentTypesError,
+    error: documentTypesError,
+  } = useQueryForDataQuery({
+    from: import.meta.env.VITE_QUICKBASE_DOCUMENT_TYPES_TABLE_ID,
+    select: [3, 6, 12],
+    where: "{'13'.EX.'true'}",
+  });
+
+  const { data: fileTypes, isLoading: isFileTypesLoading } =
+    useQueryForDataQuery({
+      from: import.meta.env.VITE_QUICKBASE_DOCUMENT_TYPES_TABLE_ID,
+      select: [3, 7, 31],
+    });
+  // TODO UPDATE DOCUMENTS CURRENT COL
+  const { data: documentsData, isLoading: isDocumentsDataLoading } =
+    useQueryForDataQuery(
+      artist
+        ? {
+            from: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
+            select: [3, 6, 7, 9, 10, 11, 12, 14],
+            where: `{9.EX.'${artist}'} AND {10.EX.${fiscalYearKey}}`,
+            sortBy: [{ fieldId: 10 }, { order: "DESC" }],
+          }
+        : { skip: !artist || !fiscalYearKey, refetchOnMountOrArgChange: true },
+    );
 
   const form = useForm({
     resolver: yupResolver(schema),
@@ -160,6 +192,7 @@ const RegistrationRenewalPage = () => {
       const tempFiscalYear = getCutoffFiscalYear(cutoffMonth, cutoffDay);
       const tempFiscalYearKey = getCutoffFiscalYearKey(cutoffMonth, cutoffDay);
       setFiscalYearKey(tempFiscalYearKey);
+
       const defaultValues = {
         artistOrg: data[6].value,
         email: data[7].value,
@@ -179,61 +212,143 @@ const RegistrationRenewalPage = () => {
     }
   }, [artistData, reset, setValue]);
 
-  const formatDataForQuickbase = (data) => {
+  useEffect(() => {
+    if (!isDocumentsDataLoading && documentsData) {
+      // Extract each unique document type, field [6]
+      const types = documentsData.data.map((doc) => doc[6].value);
+      const uniqueTypes = Array.from(new Set(types));
+      setExistingTypes(uniqueTypes);
+    }
+  }, [documentsData, isDocumentsDataLoading]);
+
+  const formatDataForQuickbase = async (data) => {
     const cutoffMonth = new Date(artistData.data[0][48].value).getMonth();
     const cutoffDay = new Date(artistData.data[0][48].value).getDate() + 1;
     const tempFiscalYearKey = getCutoffFiscalYearKey(cutoffMonth, cutoffDay);
-    const body = {
-      to: import.meta.env.VITE_QUICKBASE_ARTIST_REGISTRATIONS_TABLE_ID,
-      data: [
-        {
-          7: {
-            value: artistData.data[0][3].value,
-          },
-          9: {
-            value: artistData.data[0][7].value,
-          },
-          11: {
-            value: data.phone,
-          },
-          13: {
-            value: user.uid,
-          },
-          15: {
-            value: data.street1,
-          },
-          17: {
-            value: data.city,
-          },
-          18: {
-            value: data.state,
-          },
-          19: {
-            value: data.zipCode,
-          },
-          20: {
-            value: "United States",
-          },
-          24: {
-            value: tempFiscalYearKey,
-          },
-        },
-      ],
-    };
 
-    if (data.altPhone !== null) {
-      body.data[0][12] = { value: data.altPhone };
+    if (artistData?.data[0][7].value !== data.email) {
+      let body = {};
+      // updateFirebaseFirst, then update quickbase
+      await updateEmail(auth.currentUser, data.email)
+        .then(() => {
+          body = {
+            to: import.meta.env.VITE_QUICKBASE_ARTIST_REGISTRATIONS_TABLE_ID,
+            data: [
+              {
+                7: {
+                  value: artistData.data[0][3].value,
+                },
+                9: {
+                  value: data.email,
+                },
+                11: {
+                  value: data.phone,
+                },
+                13: {
+                  value: user.uid,
+                },
+                15: {
+                  value: data.street1,
+                },
+                17: {
+                  value: data.city,
+                },
+                18: {
+                  value: data.state,
+                },
+                19: {
+                  value: data.zipCode,
+                },
+                20: {
+                  value: "United States",
+                },
+                24: {
+                  value: tempFiscalYearKey,
+                },
+                46: {
+                  value: data.artistOrg,
+                },
+              },
+            ],
+          };
+
+          if (data.altPhone !== null) {
+            body.data[0][12] = { value: data.altPhone };
+          }
+
+          if (data.street2 !== null) {
+            body.data[0][16] = { value: data.street2 };
+          }
+
+          if (data.website !== null) {
+            body.data[0][23] = { value: data.website };
+          }
+        })
+        .catch((error) => {
+          toast({
+            variant: "destructive",
+            title: "Failed to change email",
+            description: error.message,
+          });
+        });
+      return body;
+    } else {
+      // update quickbase
+      const body = {
+        to: import.meta.env.VITE_QUICKBASE_ARTIST_REGISTRATIONS_TABLE_ID,
+        data: [
+          {
+            7: {
+              value: artistData.data[0][3].value,
+            },
+            9: {
+              value: artistData.data[0][7].value,
+            },
+            11: {
+              value: data.phone,
+            },
+            13: {
+              value: user.uid,
+            },
+            15: {
+              value: data.street1,
+            },
+            17: {
+              value: data.city,
+            },
+            18: {
+              value: data.state,
+            },
+            19: {
+              value: data.zipCode,
+            },
+            20: {
+              value: "United States",
+            },
+            24: {
+              value: tempFiscalYearKey,
+            },
+            46: {
+              value: artistData.data[0][6].value,
+            },
+          },
+        ],
+      };
+
+      if (data.altPhone !== null) {
+        body.data[0][12] = { value: data.altPhone };
+      }
+
+      if (data.street2 !== null) {
+        body.data[0][16] = { value: data.street2 };
+      }
+
+      if (data.website !== null) {
+        body.data[0][23] = { value: data.website };
+      }
+
+      return body;
     }
-
-    if (data.street2 !== null) {
-      body.data[0][16] = { value: data.street2 };
-    }
-
-    if (data.website !== null) {
-      body.data[0][23] = { value: data.website };
-    }
-
-    return body;
   };
 
   useEffect(() => {
@@ -261,11 +376,13 @@ const RegistrationRenewalPage = () => {
     toast,
   ]);
 
-  const onSubmit = (data) => {
-    addOrUpdateRecord(formatDataForQuickbase(data));
+  const onSubmit = async (data) => {
+    const body = await formatDataForQuickbase(data);
+    addOrUpdateRecord(body);
   };
 
   const uploadFile = async () => {
+    // Need to check if file already exists, by type, if so, update, else create
     if (fileUploads === null) {
       toast({
         variant: "destructive",
@@ -282,24 +399,48 @@ const RegistrationRenewalPage = () => {
       });
       return;
     }
+
     let base64 = await toBase64(fileUploads);
     base64 = base64.split("base64,")[1];
-    addDocument({
-      to: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
-      data: [
-        {
-          10: { value: fiscalYearKey },
-          9: { value: artist },
-          7: {
-            value: {
-              fileName: fileUploads.name,
-              data: base64,
+
+    console.log(fileUploads, selectedType, documentsData);
+    if (existingTypes.includes(selectedType)) {
+      // Find the existing record for this type
+      const existingRecord = documentsData.data.find(
+        (doc) => doc[6]?.value === selectedType,
+      );
+      addDocument({
+        to: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
+        data: [
+          {
+            3: { value: existingRecord[3]?.value },
+            7: {
+              value: {
+                fileName: fileUploads.name,
+                data: base64,
+              },
             },
           },
-          6: { value: selectedType },
-        },
-      ],
-    });
+        ],
+      });
+    } else {
+      addDocument({
+        to: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
+        data: [
+          {
+            10: { value: fiscalYearKey },
+            9: { value: artist },
+            7: {
+              value: {
+                fileName: fileUploads.name,
+                data: base64,
+              },
+            },
+            6: { value: selectedType },
+          },
+        ],
+      });
+    }
   };
 
   const [
@@ -340,36 +481,6 @@ const RegistrationRenewalPage = () => {
       versionNumber,
     );
   };
-
-  const {
-    data: documentTypesData,
-    isLoading: isDocumentTypesLoading,
-    isSuccess: isDocumentTypesSuccess,
-    isError: isDocumentTypesError,
-    error: documentTypesError,
-  } = useQueryForDataQuery({
-    from: import.meta.env.VITE_QUICKBASE_DOCUMENT_TYPES_TABLE_ID,
-    select: [3, 6, 12],
-    where: "{'13'.EX.'true'}",
-  });
-
-  const { data: fileTypes, isLoading: isFileTypesLoading } =
-    useQueryForDataQuery({
-      from: import.meta.env.VITE_QUICKBASE_DOCUMENT_TYPES_TABLE_ID,
-      select: [3, 7, 31],
-    });
-  // TODO UPDATE DOCUMENTS CURRENT COL
-  const { data: documentsData, isLoading: isDocumentsDataLoading } =
-    useQueryForDataQuery(
-      artist
-        ? {
-            from: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
-            select: [3, 6, 7, 9, 10, 11, 12, 14],
-            where: `{9.EX.${artist}} AND {10.EX.${fiscalYearKey}}`,
-            sortBy: [{ fieldId: 10 }, { order: "DESC" }],
-          }
-        : { skip: !artist, refetchOnMountOrArgChange: true },
-    );
 
   if (
     isArtistLoading ||
@@ -441,11 +552,7 @@ const RegistrationRenewalPage = () => {
                   <FormItem>
                     <FormLabel>Artist / Organization</FormLabel>
                     <FormControl>
-                      <Input
-                        {...field}
-                        placeholder="Artist / Organization"
-                        disabled
-                      />
+                      <Input {...field} placeholder="Artist / Organization" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -459,7 +566,7 @@ const RegistrationRenewalPage = () => {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="Email" disabled />
+                      <Input {...field} placeholder="Email" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
