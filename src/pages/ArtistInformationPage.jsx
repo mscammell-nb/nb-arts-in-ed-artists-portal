@@ -459,6 +459,71 @@ const ArtistInformationPage = () => {
           />
           <FormField
             control={informationForm.control}
+            name="street1"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Street 1</FormLabel>
+                <FormControl>
+                  <Input placeholder="123 Main Street" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={informationForm.control}
+            name="street2"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Street 2</FormLabel>
+                <FormControl>
+                  <Input placeholder="123 Main Street" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={informationForm.control}
+            name="city"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>City</FormLabel>
+                <FormControl>
+                  <Input placeholder="City" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={informationForm.control}
+            name="state"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>State</FormLabel>
+                <FormControl>
+                  <Input placeholder="State" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={informationForm.control}
+            name="zipCode"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Zip Code</FormLabel>
+                <FormControl>
+                  <Input placeholder="12345" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={informationForm.control}
             name="website"
             render={({ field }) => (
               <FormItem>
