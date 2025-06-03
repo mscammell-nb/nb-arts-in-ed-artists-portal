@@ -234,15 +234,27 @@ const informationSchema = yup.object({
   email: yup.string().email("Invalid email").required("Email is required"),
   numOfPerformers: yup
     .string()
-    .oneOf(["Less than Five", "Five or More"], "Invalid number"),
+    .nullable()
+    .transform((value, originalValue) => {
+      return originalValue === "" ? null : value;
+    })
+    .oneOf(["Less than Five", "Five or More"], "Invalid option"),
   phone: yup
     .string()
+    .transform((value, originalValue) => {
+      const parsed = parsePhoneNumber(originalValue);
+      return parsed === "" ? null : parsed;
+    })
     .matches(/^\d{10}$/, "Phone number must be exactly 10 digits")
     .required(),
   altPhone: yup
     .string()
+    .transform((value, originalValue) => {
+      const parsed = parsePhoneNumber(originalValue);
+      return parsed === "" ? null : parsed;
+    })
     .matches(/^\d{10}$/, "Phone number must be exactly 10 digits")
-    .required(),
+    .notRequired(),
   street1: yup.string().required(),
   street2: yup.string(),
   city: yup.string().required(),
