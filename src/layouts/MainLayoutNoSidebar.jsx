@@ -24,7 +24,7 @@ const MainLayout = () => {
         </nav>
       </header>
 
-      <main className="grow bg-slate-50 p-14">
+      <main className="grow bg-slate-50 p-14 flex flex-col">
         <Outlet />
       </main>
 
