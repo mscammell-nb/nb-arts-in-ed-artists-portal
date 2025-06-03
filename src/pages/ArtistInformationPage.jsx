@@ -35,7 +35,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Skeleton } from "@/components/ui/skeleton";
 import Spinner from "@/components/ui/Spinner";
 import {
   Tooltip,
@@ -44,6 +43,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { toast } from "@/components/ui/use-toast";
+import { STATES, VALID_WEBSITE_URL_REGEX } from "@/constants/constants";
 import { ALL_DISTRICTS } from "@/constants/districts";
 import { auth } from "@/firebaseConfig";
 import {
@@ -62,84 +62,11 @@ import { useSelector } from "react-redux";
 import * as yup from "yup";
 import "yup-phone-lite";
 
-const ArtistItem = ({
-  label,
-  value,
-  setValue,
-  editing,
-  dropdown = false,
-  address = false,
-}) => {
-  let item = (
-    <Input
-      type="text"
-      value={value}
-      className="max-w-[400px]"
-      onChange={(e) => setValue(e.target.value)}
-    />
-  );
-  if (dropdown) {
-    item = (
-      <Select onValueChange={(val) => setValue(val)}>
-        <SelectTrigger className="max-w-[400px]">
-          <SelectValue placeholder="Number of Performers" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="Less than Five">Less than 5</SelectItem>
-          <SelectItem value="Five or More">5 or More</SelectItem>
-        </SelectContent>
-      </Select>
-    );
-  } else if (address) {
-    item = (
-      <>
-        <Label>Street line 1</Label>
-        <Input
-          className="max-w-[400px]"
-          value={address.street1}
-          onChange={(e) =>
-            setValue((prev) => ({ ...prev, street1: e.target.value }))
-          }
-        />
-        <Label>Street line 2</Label>
-        <Input
-          className="max-w-[400px]"
-          value={address.street2}
-          onChange={(e) =>
-            setValue((prev) => ({ ...prev, street2: e.target.value }))
-          }
-        />
-        <Label>City</Label>
-        <Input
-          className="max-w-[400px]"
-          value={address.city}
-          onChange={(e) =>
-            setValue((prev) => ({ ...prev, city: e.target.value }))
-          }
-        />
-        <Label>State</Label>
-        <Input
-          className="max-w-[400px]"
-          value={address.state}
-          onChange={(e) =>
-            setValue((prev) => ({ ...prev, state: e.target.value }))
-          }
-        />
-        <Label>Postal Code</Label>
-        <Input
-          className="max-w-[400px]"
-          value={address.zipCode}
-          onChange={(e) =>
-            setValue((prev) => ({ ...prev, zipCode: e.target.value }))
-          }
-        />
-      </>
-    );
-  }
+const ArtistItem = ({ label, value }) => {
   return (
     <div className="flex flex-col gap-1">
       <Label className="font-semibold">{label}</Label>
-      {editing ? <>{item}</> : <p>{value || "-"}</p>}
+      <p>{value || "-"}</p>
     </div>
   );
 };
@@ -171,6 +98,7 @@ const referenceSchema = yup.object({
     .required("A Phone number is required"),
   district: yup.object().required("District is required"),
 });
+
 const AddReferenceForm = ({ sheetProps, onOpenChange }) => {
   const [addReference, { isLoading }] = useAddOrUpdateRecordMutation();
   const referenceForm = useForm({
@@ -301,12 +229,44 @@ const AddReferenceForm = ({ sheetProps, onOpenChange }) => {
   );
 };
 
+const informationSchema = yup.object({
+  artistOrg: yup.string().required("Artist Organization is required"),
+  email: yup.string().email("Invalid email").required("Email is required"),
+  numOfPerformers: yup
+    .string()
+    .oneOf(["Less than Five", "Five or More"], "Invalid number"),
+  phone: yup
+    .string()
+    .matches(/^\d{10}$/, "Phone number must be exactly 10 digits")
+    .required(),
+  altPhone: yup
+    .string()
+    .matches(/^\d{10}$/, "Phone number must be exactly 10 digits")
+    .required(),
+  street1: yup.string().required(),
+  street2: yup.string(),
+  city: yup.string().required(),
+  state: yup.string().oneOf(STATES, "Invalid state").required(),
+  zipCode: yup
+    .number()
+    .typeError("Zip code must be a number")
+    .required("zip code is a required field"),
+  website: yup
+    .string()
+    .required()
+    .matches(VALID_WEBSITE_URL_REGEX, "Invalid website format")
+    .transform((value, originalValue) =>
+      String(originalValue).trim() === "" ? null : value,
+    ),
+});
+
 const ArtistInformationPage = () => {
   const [editing, setEditing] = useState(false);
   const [artistVal, setArtistVal] = useState("");
   const [performersVal, setPerformersVal] = useState("");
   const [emailVal, setEmailVal] = useState("");
   const [phoneVal, setPhoneVal] = useState("");
+  const [altPhoneVal, setAltPhoneVal] = useState("");
   const [addressVal, setAddressVal] = useState("");
   const [websiteVal, setWebsiteVal] = useState("");
   const [addressObject, setAddressObject] = useState({});
@@ -317,6 +277,175 @@ const ArtistInformationPage = () => {
   const { artistRecordId, has3References } = useSelector(
     (state) => state.artist,
   );
+
+  const [
+    updateArtist,
+    {
+      isLoading: isUpdateArtistLoading,
+      isSuccess: isUpdateArtistSuccess,
+      isError: isUpdateArtistError,
+      error: updateArtistError,
+    },
+  ] = useAddOrUpdateRecordMutation();
+
+  const ArtistInformationForm = ({ sheetProps }) => {
+    const informationForm = useForm({
+      resolver: yupResolver(informationSchema),
+      defaultValues: {
+        artistOrg: artistVal,
+        email: emailVal,
+        numOfPerformers: performersVal,
+        phone: phoneVal,
+        altPhone: altPhoneVal,
+        street1: addressObject.street1,
+        street2: addressObject.street2,
+        city: addressObject.city,
+        state: addressObject.state,
+        zipcode: addressObject.zipCode,
+        website: websiteVal,
+      },
+    });
+    const addReferenceSubmit = async (data) => {
+      try {
+        updateArtist({
+          to: import.meta.env.VITE_QUICKBASE_ARTIST_REGISTRATIONS_TABLE_ID,
+          data: [
+            {
+              3: {
+                value: registrationData.data[0][3].value,
+              },
+              8: {
+                value: artistVal,
+              },
+              21: {
+                value: performersVal,
+              },
+              9: {
+                value: emailVal,
+              },
+              11: {
+                value: phoneVal,
+              },
+              15: { value: addressObject.street1 },
+              16: { value: addressObject.street2 },
+              17: { value: addressObject.city },
+              18: { value: addressObject.state },
+              19: { value: addressObject.zipCode },
+              20: {
+                value: "United States",
+              },
+              23: {
+                value: websiteVal,
+              },
+              36: {
+                value: (() => {
+                  const keys = Object.keys(artistData);
+                  const changedKeys = keys.filter(
+                    (key) =>
+                      artistData[key] !==
+                      registrationData.data[0][Number(key)].value,
+                  );
+                  if (changedKeys.length === 0) return "";
+                  return changedKeys
+                    .map(
+                      (key) =>
+                        `${registrationData.data[0][Number(key)].label} ${
+                          registrationData.data[0][Number(key)].value
+                        } --> ${artistData[key]}`,
+                    )
+                    .join("\n");
+                })(),
+              },
+            },
+          ],
+        });
+        setEditing(false);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    return (
+      <Form {...informationForm}>
+        <form className="flex w-full flex-col gap-3">
+          <FormField
+            control={informationForm.control}
+            name="artistOrg"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Artist / Org</FormLabel>
+                <FormControl>
+                  <Input placeholder="Artist / Org" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={informationForm.control}
+            name="referenceEmail"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input placeholder="Email" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={informationForm.control}
+            name="numOfPerformers"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Number of Performers</FormLabel>
+                <FormControl>
+                  <Select onValueChange={(val) => setValue(val)}>
+                    <SelectTrigger className="max-w-[400px]">
+                      <SelectValue placeholder="Number of Performers" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Less than Five">
+                        Less than 5
+                      </SelectItem>
+                      <SelectItem value="Five or More">5 or More</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={informationForm.control}
+            name="phone"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Phone</FormLabel>
+                <FormControl>
+                  <Input placeholder="Phone" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={informationForm.control}
+            name="altPhone"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Alt Phone</FormLabel>
+                <FormControl>
+                  <Input placeholder="Alt Phone" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </form>
+      </Form>
+    );
+  };
 
   const schema = yup.object({
     currentPassword: yup
@@ -393,15 +522,6 @@ const ArtistInformationPage = () => {
     }
   };
 
-  const [
-    updateArtist,
-    {
-      isLoading: isUpdateArtistLoading,
-      isSuccess: isUpdateArtistSuccess,
-      isError: isUpdateArtistError,
-      error: updateArtistError,
-    },
-  ] = useAddOrUpdateRecordMutation();
   // SHOW ARTIST_INFO TABLE BUT UPDATE REGISTRATION
   let {
     data: registrationData,
@@ -518,6 +638,7 @@ const ArtistInformationPage = () => {
     setPerformersVal(artistData.data[0][19].value);
     setEmailVal(artistData.data[0][7].value);
     setPhoneVal(artistData.data[0][9].value);
+    setAltPhoneVal(artistData.data[0][11].value);
     setAddressVal(artistData.data[0][12].value);
     setWebsiteVal(artistData.data[0][31].value);
     setAddressObject({
@@ -603,203 +724,205 @@ const ArtistInformationPage = () => {
           </Tooltip>
         </TooltipProvider>
       </div>
-      {isArtistLoading ? (
-        <div className="flex w-full flex-col items-start gap-4 rounded border border-gray-200 bg-white p-2.5">
-          <Skeleton className="h-[20px] w-[300px] rounded-full" />
-          <Skeleton className="h-[20px] w-[200px] rounded-full" />
-          <Skeleton className="mt-2 h-[20px] w-[300px] rounded-full" />
-          <Skeleton className="h-[20px] w-[200px] rounded-full" />
-          <Skeleton className="mt-2 h-[20px] w-[300px] rounded-full" />
-          <Skeleton className="h-[20px] w-[200px] rounded-full" />
-        </div>
-      ) : (
-        <div className="grid grid-cols-2 gap-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>General Information</CardTitle>
-              <CardDescription>
-                General information about artist
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-3">
-              <ArtistItem
-                label="Artist / Org"
-                value={artistVal}
-                setValue={setArtistVal}
-                editing={false}
-              />
-              <ArtistItem
-                label="Email"
-                value={emailVal}
-                setValue={setEmailVal}
-                editing={false}
-              />
-              <ArtistItem
-                label="Number of Performers"
-                value={performersVal}
-                setValue={setPerformersVal}
-                editing={editing}
-                dropdown={true}
-              />
 
-              <ArtistItem
-                label="Phone"
-                value={phoneVal}
-                setValue={setPhoneVal}
-                editing={editing}
-              />
-              <ArtistItem
-                label="Address"
-                value={addressVal}
-                setValue={setAddressObject}
-                editing={editing}
-                address={addressObject}
-              />
-              <ArtistItem
-                label="Website"
-                value={websiteVal}
-                setValue={setWebsiteVal}
-                editing={editing}
-              />
-              <Sheet
-                open={changePasswordOpen}
-                onOpenChange={setChangePasswordOpen}
-              >
-                <SheetTrigger
-                  onClick={() => setChangePasswordOpen(true)}
-                  className="mt-3 w-fit cursor-pointer text-sm text-blue-500 hover:underline"
-                >
-                  Change Password
-                </SheetTrigger>
-                <SheetContent className="min-w-[30%]">
-                  <Form {...form}>
-                    <form
-                      onSubmit={form.handleSubmit(onSubmit)}
-                      className="flex w-full flex-col gap-3"
-                    >
-                      <div>
-                        <p className="text-2xl font-bold">Change Password</p>
-                        <p className="text-gray-500">
-                          {" "}
-                          Ensure your account is using a long, random password
-                          to stay secure.
-                        </p>
-                      </div>
-                      <FormField
-                        control={form.control}
-                        name="currentPassword"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Current Password</FormLabel>
-                            <FormControl>
-                              <PasswordInput
-                                placeholder="Current Password"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="newPassword"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>New Password</FormLabel>
-                            <FormControl>
-                              <PasswordInput
-                                placeholder="New Password"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="confirmNewPassword"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Confirm Password</FormLabel>
-                            <FormControl>
-                              <PasswordInput
-                                placeholder="Confirm Password"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <Button type="submit" className="w-fit">
-                        Save
-                      </Button>
-                    </form>
-                  </Form>
-                </SheetContent>
-              </Sheet>
-              {editing && (
-                <div className="flex gap-3">
-                  <Button
-                    className="w-fit"
-                    variant="secondary"
-                    onClick={() => cancelEdit()}
-                  >
-                    Cancel
-                  </Button>
-                  <Button className="w-fit" onClick={() => onSave()}>
-                    Save
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>Payment Information</CardTitle>
-              <CardDescription>
-                Payment information about artist
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-3">
-              <ArtistItem
-                label="Payment Type"
-                value={paymentType}
-                setValue={setPaymentType}
-                editing={false}
-              />
-              {paymentType === "Check" && (
+      <div className="grid grid-cols-2 gap-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>General Information</CardTitle>
+            <CardDescription>
+              Your account's general information
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-3">
+            {editing && <ArtistInformationForm />}
+            {!editing && (
+              <>
+                {" "}
                 <ArtistItem
-                  label="Payee Name"
-                  value={payeeName}
-                  setValue={setPayeeName}
+                  label="Artist / Org"
+                  value={artistVal}
+                  setValue={setArtistVal}
                   editing={false}
                 />
-              )}
-            </CardContent>
-          </Card>
-          {isReferencesLoading ? (
-            <Spinner />
-          ) : (
-            <div className="col-span-2">
-              <DataGrid
-                tableTitle={"References"}
-                data={formatData(referencesData || { data: [] })}
-                columns={referencesColumns}
-                readOnly={true}
-                noSearch
-                noFilter
-                noSort
-                addButtonText="Add Reference"
-                CustomAddComponent={AddReference}
-                sheetProps={{ title: "Add Reference", artistRecordId }}
+                <ArtistItem
+                  label="Email"
+                  value={emailVal}
+                  setValue={setEmailVal}
+                  editing={false}
+                />
+                <ArtistItem
+                  label="Number of Performers"
+                  value={performersVal}
+                  setValue={setPerformersVal}
+                  editing={editing}
+                  dropdown={true}
+                />
+                <ArtistItem
+                  label="Phone"
+                  value={phoneVal}
+                  setValue={setPhoneVal}
+                  editing={editing}
+                />
+                <ArtistItem
+                  label="Alt Phone"
+                  value={altPhoneVal}
+                  setValue={setAltPhoneVal}
+                  editing={editing}
+                />
+                <ArtistItem
+                  label="Address"
+                  value={addressVal}
+                  setValue={setAddressObject}
+                  editing={editing}
+                  address={addressObject}
+                />
+                <ArtistItem
+                  label="Website"
+                  value={websiteVal}
+                  setValue={setWebsiteVal}
+                  editing={editing}
+                />
+              </>
+            )}
+
+            <Sheet
+              open={changePasswordOpen}
+              onOpenChange={setChangePasswordOpen}
+            >
+              <SheetTrigger
+                onClick={() => setChangePasswordOpen(true)}
+                className="mt-3 w-fit cursor-pointer text-sm text-blue-500 hover:underline"
+              >
+                Change Password
+              </SheetTrigger>
+              <SheetContent className="min-w-[30%]">
+                <Form {...form}>
+                  <form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="flex w-full flex-col gap-3"
+                  >
+                    <div>
+                      <p className="text-2xl font-bold">Change Password</p>
+                      <p className="text-gray-500">
+                        {" "}
+                        Ensure your account is using a long, random password to
+                        stay secure.
+                      </p>
+                    </div>
+                    <FormField
+                      control={form.control}
+                      name="currentPassword"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Current Password</FormLabel>
+                          <FormControl>
+                            <PasswordInput
+                              placeholder="Current Password"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="newPassword"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>New Password</FormLabel>
+                          <FormControl>
+                            <PasswordInput
+                              placeholder="New Password"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="confirmNewPassword"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Confirm Password</FormLabel>
+                          <FormControl>
+                            <PasswordInput
+                              placeholder="Confirm Password"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Button type="submit" className="w-fit">
+                      Save
+                    </Button>
+                  </form>
+                </Form>
+              </SheetContent>
+            </Sheet>
+            {editing && (
+              <div className="flex gap-3">
+                <Button
+                  className="w-fit"
+                  variant="secondary"
+                  onClick={() => cancelEdit()}
+                >
+                  Cancel
+                </Button>
+                <Button className="w-fit" onClick={() => onSave()}>
+                  Save
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Payment Information</CardTitle>
+            <CardDescription>
+              Your account's payment information
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-3">
+            <ArtistItem
+              label="Payment Type"
+              value={paymentType}
+              setValue={setPaymentType}
+              editing={false}
+            />
+            {paymentType === "Check" && (
+              <ArtistItem
+                label="Payee Name"
+                value={payeeName}
+                setValue={setPayeeName}
+                editing={false}
               />
-            </div>
-          )}
-        </div>
-      )}
+            )}
+          </CardContent>
+        </Card>
+        {isReferencesLoading ? (
+          <Spinner />
+        ) : (
+          <div className="col-span-2">
+            <DataGrid
+              tableTitle={"References"}
+              data={formatData(referencesData || { data: [] })}
+              columns={referencesColumns}
+              readOnly={true}
+              noSearch
+              noFilter
+              noSort
+              addButtonText="Add Reference"
+              CustomAddComponent={AddReference}
+              sheetProps={{ title: "Add Reference", artistRecordId }}
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 };
