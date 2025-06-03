@@ -401,7 +401,7 @@ const ArtistInformationPage = () => {
                 <FormLabel>Number of Performers</FormLabel>
                 <FormControl>
                   <Select onValueChange={(val) => setValue(val)}>
-                    <SelectTrigger className="max-w-[400px]">
+                    <SelectTrigger>
                       <SelectValue placeholder="Number of Performers" />
                     </SelectTrigger>
                     <SelectContent>
