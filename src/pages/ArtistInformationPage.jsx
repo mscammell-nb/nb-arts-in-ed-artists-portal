@@ -511,7 +511,7 @@ const ArtistInformationPage = () => {
           />
           <FormField
             control={informationForm.control}
-            name="zipCode"
+            name="zipcode"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Zip Code</FormLabel>
