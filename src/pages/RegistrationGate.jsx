@@ -131,7 +131,7 @@ const RegistrationGate = () => {
   }
 
   // IF during cutoff and have registration for next year but not this year, show pending for next year
-  if (duringCutoff && registeredNextYear) {
+  if (duringCutoff && registeredNextYear && !registrationData?.data[0]) {
     return (
       <>
         <Alert variant="warning" className="mb-4 bg-amber-50">
