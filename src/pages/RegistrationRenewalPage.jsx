@@ -348,7 +348,6 @@ const RegistrationRenewalPage = () => {
     let base64 = await toBase64(fileUploads);
     base64 = base64.split("base64,")[1];
 
-    console.log(fileUploads, selectedType, documentsData);
     if (existingTypes.includes(selectedType)) {
       // Find the existing record for this type
       const existingRecord = documentsData.data.find(

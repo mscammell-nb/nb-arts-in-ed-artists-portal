@@ -12,13 +12,11 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
 import { handleSignout } from "@/utils/utils";
-import {
-  HamburgerMenuIcon,
-  QuestionMarkCircledIcon,
-} from "@radix-ui/react-icons";
+import { QuestionMarkCircledIcon } from "@radix-ui/react-icons";
 import {
   Award,
   Calendar,
+  ChevronRight,
   CreditCard,
   FileText,
   FolderOpen,
@@ -115,8 +113,8 @@ export function AppSidebar({ ...props }) {
   if (useIsMobile()) {
     return (
       <Sheet>
-        <SheetTrigger className="ml-5 mt-5 w-fit cursor-pointer text-xl">
-          <HamburgerMenuIcon className="h-7 w-7" />
+        <SheetTrigger className="side-bar fixed -left-1 top-1/2 z-50 w-fit -translate-y-1/2 transform cursor-pointer rounded-sm p-1 text-xl">
+          <ChevronRight className="ml-1 h-6 w-6" />
         </SheetTrigger>
         <SheetTitle className="hidden">Sidebar</SheetTitle>
         <SheetContent

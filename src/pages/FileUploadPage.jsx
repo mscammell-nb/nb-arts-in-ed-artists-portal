@@ -42,11 +42,12 @@ const INSTRUCTIONS = [
 ];
 
 const FileUploadPage = () => {
+  const [existingTypes, setExistingTypes] = useState([]);
   const [documentTypes, setDocumentTypes] = useState(null);
   const [selectedType, setSelectedType] = useState("");
   const [fileUploads, setFileUploads] = useState(null);
   const [open, setOpen] = useState(false);
-  const artist = useSelector((state) => state.artist.artistData);
+  const artist = useSelector((state) => state.artist.artistOrg);
   const cutoffStartDate = useSelector(
     (state) => state.cutoff.registrationCutoffStartDate,
   );
@@ -100,14 +101,15 @@ const FileUploadPage = () => {
   const formatData = (docData) => {
     const { data } = docData;
     return data.map((record) => {
-      let versionNumber = [...record[7].value.versions];
-      versionNumber = versionNumber.pop().versionNumber;
+      let version = [...record[7].value.versions].pop();
+      let fileName = version.fileName;
+      let versionNumber = version.versionNumber;
       return {
         id: record[3].value,
         fiscalYear: record[11].value,
         documentType: record[6].value,
         artist: record[9].value,
-        documentName: record[7].value.versions[0].fileName,
+        documentName: fileName,
         versionNumber: versionNumber,
         file: record[7],
       };
@@ -126,6 +128,15 @@ const FileUploadPage = () => {
       cutoffEndDay,
     );
   }, [cutoffStartDate, cutoffEndDate]);
+
+  useEffect(() => {
+    if (!isDocumentsDataLoading && documentsData) {
+      // Extract each unique document type, field [6]
+      const types = documentsData.data.map((doc) => doc[6].value);
+      const uniqueTypes = Array.from(new Set(types));
+      setExistingTypes(uniqueTypes);
+    }
+  }, [documentsData, isDocumentsDataLoading]);
 
   const uploadFile = async () => {
     if (fileUploads === null) {
@@ -146,22 +157,43 @@ const FileUploadPage = () => {
     }
     let base64 = await fileToBase64(fileUploads);
     base64 = base64.split("base64,")[1];
-    addDocument({
-      to: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
-      data: [
-        {
-          10: { value: fiscalYearKey },
-          9: { value: artist },
-          7: {
-            value: {
-              fileName: fileUploads.name,
-              data: base64,
+
+    if (existingTypes.includes(selectedType)) {
+      const existingRecord = documentsData.data.find(
+        (doc) => doc[6]?.value === selectedType,
+      );
+      addDocument({
+        to: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
+        data: [
+          {
+            3: { value: existingRecord[3]?.value },
+            7: {
+              value: {
+                fileName: fileUploads.name,
+                data: base64,
+              },
             },
           },
-          6: { value: selectedType },
-        },
-      ],
-    });
+        ],
+      });
+    } else {
+      addDocument({
+        to: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
+        data: [
+          {
+            10: { value: fiscalYearKey },
+            9: { value: artist },
+            7: {
+              value: {
+                fileName: fileUploads.name,
+                data: base64,
+              },
+            },
+            6: { value: selectedType },
+          },
+        ],
+      });
+    }
   };
   const fileToBase64 = (file) => {
     return new Promise((resolve, reject) => {

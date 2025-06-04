@@ -41,6 +41,7 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
 const ArtistDocumentsPage = () => {
+  const [existingTypes, setExistingTypes] = useState([]);
   const [fileUploads, setFileUploads] = useState(null);
   const [open, setOpen] = useState(false);
   const [selectedType, setSelectedType] = useState("");
@@ -148,13 +149,14 @@ const ArtistDocumentsPage = () => {
     const { data } = docData;
     return data.map((record) => {
       let versionNumber = [...record[7].value.versions];
+      let fileName = versionNumber.pop().fileName;
       versionNumber = versionNumber.pop().versionNumber;
       return {
         id: record[3].value,
         fiscalYear: record[11].value,
         documentType: record[6].value,
         artist: record[9].value,
-        documentName: record[7].value.versions[0].fileName,
+        documentName: fileName,
         versionNumber: versionNumber,
         file: record[7],
       };
@@ -178,25 +180,46 @@ const ArtistDocumentsPage = () => {
       });
       return;
     }
-    const fiscalYear = getCurrentFiscalYearKey();
+    const fiscalYearKey = getCurrentFiscalYearKey();
     let base64 = await fileToBase64(fileUploads);
     base64 = base64.split("base64,")[1];
-    addDocument({
-      to: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
-      data: [
-        {
-          10: { value: fiscalYear },
-          9: { value: artistOrg },
-          7: {
-            value: {
-              fileName: fileUploads.name,
-              data: base64,
+
+    if (!missingFiles.includes(selectedType)) {
+      const existingRecord = documentsData.data.find(
+        (doc) => doc[6]?.value === selectedType,
+      );
+      addDocument({
+        to: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
+        data: [
+          {
+            3: { value: existingRecord[3]?.value },
+            7: {
+              value: {
+                fileName: fileUploads.name,
+                data: base64,
+              },
             },
           },
-          6: { value: selectedType },
-        },
-      ],
-    });
+        ],
+      });
+    } else {
+      addDocument({
+        to: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
+        data: [
+          {
+            10: { value: fiscalYearKey },
+            9: { value: artistOrg },
+            7: {
+              value: {
+                fileName: fileUploads.name,
+                data: base64,
+              },
+            },
+            6: { value: selectedType },
+          },
+        ],
+      });
+    }
   };
   const fileToBase64 = (file) => {
     return new Promise((resolve, reject) => {
