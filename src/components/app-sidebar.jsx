@@ -2,104 +2,93 @@ import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarRail,
-  useSidebar,
 } from "@/components/ui/sidebar";
-import { VersionSwitcher } from "@/components/version-switcher";
-import {
-  TICKET_VENDOR,
-  TICKET_VENDOR_EXCEPTION_SIDEBAR,
-} from "@/constants/constants";
+import { TICKET_VENDOR } from "@/constants/constants";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
 import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
-import { HamburgerMenuIcon } from "@radix-ui/react-icons";
 import {
-  BookText,
-  ChevronLeft,
-  ChevronRight,
-  ClipboardList,
-  Drum,
+  HamburgerMenuIcon,
+  QuestionMarkCircledIcon,
+} from "@radix-ui/react-icons";
+import {
+  Award,
+  Calendar,
+  CreditCard,
   FileText,
-  MonitorCog,
-  PiggyBank,
-  UserRoundCog,
+  FolderOpen,
+  GalleryVerticalEnd,
+  LogOut,
+  User,
+  Users,
 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
-import { Button } from "./ui/button";
+import { Link, useLocation } from "react-router-dom";
 import {
   Sheet,
-  SheetClose,
   SheetContent,
   SheetDescription,
   SheetTitle,
   SheetTrigger,
 } from "./ui/sheet";
+import Spinner from "./ui/Spinner";
 
 const data = {
-  versions: ["Email Help", "Sign Out"],
+  versions: ["Need Help?", "Sign Out"],
   navMain: [
     {
-      title: "Account Information",
-      url: "#",
-      items: [
-        {
-          title: "Artist Information",
-          url: "/artist-information",
-          icon: <UserRoundCog />,
-        },
-        {
-          title: "Artist Registrations",
-          url: "/artist-registrations",
-          icon: <BookText />,
-        },
-        {
-          title: "Artist Invoices",
-          url: "/artist-invoices",
-          icon: <PiggyBank />,
-        },
-      ],
+      title: "Artist Information",
+      url: "/artist-information",
+      icon: <User className="w-4" />,
+      isActive: true,
     },
     {
-      title: "App Navigation",
-      url: "#",
-      items: [
-        {
-          title: "Artist Documents",
-          url: "/artist-documents",
-          icon: <FileText />,
-        },
-        {
-          title: "Artist Evaluations",
-          url: "/artist-evaluations",
-          icon: <ClipboardList />,
-
-          //isActive: true,
-        },
-        {
-          title: "Performers",
-          url: "/performers",
-          icon: <Drum />,
-        },
-        {
-          title: "Programs",
-          url: "/programs",
-          icon: <MonitorCog />,
-        },
-      ],
+      title: "Artist Registrations",
+      url: "/artist-registrations",
+      icon: <FileText className="w-4" />,
+      isActive: false,
+    },
+    {
+      title: "Artist Invoices",
+      url: "/artist-invoices",
+      icon: <CreditCard className="w-4" />,
+      isActive: false,
+    },
+    {
+      title: "Artist Documents",
+      url: "/artist-documents",
+      icon: <FolderOpen className="w-4" />,
+      isActive: false,
+    },
+    {
+      title: "Artist Evaluations",
+      url: "/artist-evaluations",
+      icon: <Award className="w-4" />,
+      isActive: false,
+    },
+    {
+      title: "Performers",
+      url: "/performers",
+      icon: <Users className="w-4" />,
+      isActive: false,
+    },
+    {
+      title: "Programs",
+      url: "/programs",
+      icon: <Calendar className="w-4" />,
+      isActive: false,
     },
   ],
 };
 
 export function AppSidebar({ ...props }) {
-  const { open, setOpen } = useSidebar();
+  const [active, setActive] = useState(1);
+  const location = useLocation();
 
   const user = useSelector((state) => state.auth.user);
 
@@ -108,13 +97,17 @@ export function AppSidebar({ ...props }) {
       user
         ? {
             from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
-            select: [46],
+            select: [6, 46],
             where: `{10.EX.${user.uid}}`,
           }
         : { skip: !user, refetchOnMountOrArgChange: true },
     );
 
   const isTicketVendor = artistsData?.data[0][46].value === TICKET_VENDOR;
+
+  useEffect(() => {
+    setActive(location.pathname);
+  }, [location]);
 
   if (useIsMobile()) {
     return (
@@ -123,103 +116,168 @@ export function AppSidebar({ ...props }) {
           <HamburgerMenuIcon className="h-7 w-7" />
         </SheetTrigger>
         <SheetTitle className="hidden">Sidebar</SheetTitle>
-        <SheetContent side="left" className="side-bar max-w-[66%] border-0">
+        <SheetContent
+          side="left"
+          className="side-bar flex h-full max-w-[66%] flex-col gap-0 border-0"
+        >
           <SheetDescription className="hidden">
             Arts in Education Sidebar
           </SheetDescription>
-          <SidebarHeader>
-            <VersionSwitcher className={"side-bar"} />
-            {/*<SearchForm />*/}
+          <SidebarHeader className="mb-3 border-b border-blue-800 pb-3">
+            <div className="flex items-start gap-4 ">
+              <div className="flex aspect-square size-8 max-h-[250px] items-center justify-center rounded-lg bg-white text-sidebar-primary-foreground">
+                <GalleryVerticalEnd className="size-4" />
+                <img
+                  style={{ padding: "4px" }}
+                  src="https://nassauboces.quickbase.com/up/butswtb25/a/r74/e8/v0"
+                />
+              </div>
+              <div className="flex flex-col gap-0.5 overflow-clip leading-none">
+                <span className="font-semibold">Arts in Education</span>
+                <span className=" text-xs font-normal leading-tight text-blue-200">
+                  {artistsData
+                    ? artistsData.data[0][6].value
+                    : "Artists Portal"}
+                </span>
+              </div>
+            </div>
           </SidebarHeader>
-          {data.navMain.map((item) => (
-            <SidebarGroup key={item.title}>
-              <SidebarGroupLabel>{item.title}</SidebarGroupLabel>
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  {item.items.map((item) => {
-                    if (
-                      isTicketVendor &&
-                      TICKET_VENDOR_EXCEPTION_SIDEBAR.includes(item.title)
-                    )
-                      return <></>;
-                    return (
-                      <SidebarMenuItem key={item.title}>
-                        <SidebarMenuButton asChild isActive={item.isActive}>
-                          <SheetClose asChild>
-                            <Link
-                              to={item.url}
-                              className="transition-all hover:bg-white hover:bg-opacity-20"
-                            >
-                              {item.icon}
-                              <span>{item.title}</span>
-                            </Link>
-                          </SheetClose>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                    );
-                  })}
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
-          ))}
+
+          <SidebarMenu className="flex-1 gap-0">
+            {data.navMain.map((item) => {
+              if (
+                isTicketVendor &&
+                TICKET_VENDOR_EXCEPTION_SIDEBAR.includes(item.title)
+              )
+                return null;
+              return (
+                <SidebarMenuItem key={item.title}>
+                  <Link
+                    to={item.url}
+                    className={cn(
+                      `flex w-full items-center space-x-3 px-6 py-2.5 text-left text-sm font-normal transition-all duration-200 hover:bg-blue-800 hover:bg-opacity-80`,
+                      active === item.url
+                        ? "border-r-2 border-white bg-blue-800"
+                        : "",
+                    )}
+                  >
+                    {item.icon}
+                    <span>{item.title}</span>
+                  </Link>
+                </SidebarMenuItem>
+              );
+            })}
+          </SidebarMenu>
+          <SidebarFooter className="px-0">
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild className="px-4">
+                  <Link
+                    to="/"
+                    className={`flex w-full items-center space-x-3 px-6 py-2.5 text-left text-sm font-normal transition-all duration-200 hover:bg-blue-800 hover:bg-opacity-80`}
+                  >
+                    <QuestionMarkCircledIcon />
+                    <span>{data.versions[0]}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem className="border-t border-blue-800 py-4">
+                <SidebarMenuButton asChild className="px-4">
+                  <Link
+                    to="/"
+                    className={`flex w-full items-center space-x-3 px-6 py-2.5 text-left text-sm font-normal transition-all duration-200 hover:bg-blue-800 hover:bg-opacity-80`}
+                  >
+                    <LogOut />
+                    <span>{data.versions[1]}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarFooter>
         </SheetContent>
       </Sheet>
     );
   }
+  if (isArtistDataLoading) {
+    return (
+      <div className="side-bar flex w-[--sidebar-width] items-center justify-center">
+        <Spinner classname={"text-white"} />
+      </div>
+    );
+  }
 
   return (
-    <Sidebar className={"side-bar"} {...props}>
-      <SidebarHeader>
-        <VersionSwitcher className={"side-bar"} />
-        {/*<SearchForm />*/}
+    <Sidebar className={cn("side-bar", "p-0")} {...props}>
+      <SidebarHeader className="mb-3 border-b border-blue-800 pb-3">
+        <div className="flex items-start gap-4 ">
+          <div className="flex aspect-square size-8 max-h-[250px] items-center justify-center rounded-lg bg-white text-sidebar-primary-foreground">
+            <GalleryVerticalEnd className="size-4" />
+            <img
+              style={{ padding: "4px" }}
+              src="https://nassauboces.quickbase.com/up/butswtb25/a/r74/e8/v0"
+            />
+          </div>
+          <div className="flex flex-col gap-0.5 overflow-clip leading-none">
+            <span className="font-semibold">Arts in Education</span>
+            <span className=" text-xs font-normal leading-tight text-blue-200">
+              {artistsData ? artistsData.data[0][6].value : "Artists Portal"}
+            </span>
+          </div>
+        </div>
       </SidebarHeader>
       <SidebarContent>
-        {/* We create a SidebarGroup for each parent. */}
-        {data.navMain.map((item) => (
-          <SidebarGroup key={item.title}>
-            <SidebarGroupLabel>{item.title}</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {item.items.map((item) => {
-                  if (
-                    isTicketVendor &&
-                    TICKET_VENDOR_EXCEPTION_SIDEBAR.includes(item.title)
-                  )
-                    return null;
-                  return (
-                    <SidebarMenuItem key={item.title}>
-                      <SidebarMenuButton asChild isActive={item.isActive}>
-                        <Link
-                          to={item.url}
-                          className="transition-all hover:bg-white hover:bg-opacity-20"
-                        >
-                          {item.icon}
-                          <span>{item.title}</span>
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  );
-                })}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        ))}
+        <SidebarMenu className="gap-0">
+          {data.navMain.map((item) => {
+            if (
+              isTicketVendor &&
+              TICKET_VENDOR_EXCEPTION_SIDEBAR.includes(item.title)
+            )
+              return null;
+            return (
+              <SidebarMenuItem key={item.title}>
+                <Link
+                  to={item.url}
+                  className={cn(
+                    `flex w-full items-center space-x-3 px-6 py-2.5 text-left text-sm font-normal transition-all duration-200 hover:bg-blue-800 hover:bg-opacity-80`,
+                    active === item.url
+                      ? "border-r-2 border-white bg-blue-800"
+                      : "",
+                  )}
+                >
+                  {item.icon}
+                  <span>{item.title}</span>
+                </Link>
+              </SidebarMenuItem>
+            );
+          })}
+        </SidebarMenu>
       </SidebarContent>
-      <SidebarFooter>
+      <SidebarFooter className="px-0">
         <SidebarMenu>
-          <SidebarMenuItem></SidebarMenuItem>
-          <SidebarMenuButton asChild>
-            <Button
-              variant="ghost"
-              className="justify-end"
-              onClick={() => setOpen(!open)}
-            >
-              {open ? <ChevronLeft /> : <ChevronRight />}
-            </Button>
-          </SidebarMenuButton>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild className="px-4">
+              <Link
+                to="/"
+                className={`flex w-full items-center space-x-3 px-6 py-2.5 text-left text-sm font-normal transition-all duration-200 hover:bg-blue-800 hover:bg-opacity-80`}
+              >
+                <QuestionMarkCircledIcon />
+                <span>{data.versions[0]}</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem className="border-t border-blue-800 py-4">
+            <SidebarMenuButton asChild className="px-4">
+              <Link
+                to="/"
+                className={`flex w-full items-center space-x-3 px-6 py-2.5 text-left text-sm font-normal transition-all duration-200 hover:bg-blue-800 hover:bg-opacity-80`}
+              >
+                <LogOut />
+                <span>{data.versions[1]}</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
-      <SidebarRail />
     </Sidebar>
   );
 }
