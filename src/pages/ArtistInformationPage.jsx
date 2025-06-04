@@ -818,7 +818,6 @@ const ArtistInformationPage = () => {
             {editing && <ArtistInformationForm />}
             {!editing && (
               <>
-                {" "}
                 <ArtistItem
                   label="Artist / Org"
                   value={artistVal}

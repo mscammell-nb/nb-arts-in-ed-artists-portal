@@ -1,11 +1,4 @@
-import {
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-  getSortedRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-} from "@tanstack/react-table";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -14,8 +7,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
 import { useState } from "react";
-import { Input } from "@/components/ui/input";
 import { Button } from "./ui/button";
 
 const DataTable = ({ columns, data, usePagination = false }) => {

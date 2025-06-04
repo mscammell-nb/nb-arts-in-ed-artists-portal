@@ -92,8 +92,8 @@ const RegistrationGate = () => {
           Your registration has expired. Please go to the{" "}
           <Link to={"/registration-renewal"} className="underline">
             Registration Renewal
-          </Link>{" "}
-          page to submit a new registration.{" "}
+          </Link>
+          page to submit a new registration.
         </div>
         <div className="space-x-3">
           <Button>
