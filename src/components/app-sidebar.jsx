@@ -258,7 +258,7 @@ export function AppSidebar({ ...props }) {
             <SidebarMenuButton asChild className="px-4">
               <Link
                 to="/"
-                className={`flex w-full items-center space-x-3 px-6 py-2.5 text-left text-sm font-normal transition-all duration-200 hover:bg-blue-800 hover:bg-opacity-80`}
+                className={`flex w-full items-center space-x-3 px-6 py-2.5 text-left text-sm font-normal transition-all duration-200 hover:underline`}
               >
                 <QuestionMarkCircledIcon />
                 <span>{data.versions[0]}</span>
@@ -269,7 +269,7 @@ export function AppSidebar({ ...props }) {
             <SidebarMenuButton asChild className="px-4">
               <Link
                 to="/"
-                className={`flex w-full items-center space-x-3 px-6 py-2.5 text-left text-sm font-normal transition-all duration-200 hover:bg-blue-800 hover:bg-opacity-80`}
+                className={`flex w-full items-center space-x-3 px-6 py-2.5 text-left text-sm font-normal transition-all duration-200 hover:underline`}
               >
                 <LogOut />
                 <span>{data.versions[1]}</span>
