@@ -271,9 +271,19 @@ export const checkColumn = (key, options = {}) => ({
   header: options.header || formatHeader(key),
   cell: ({ row }) => {
     if (row.original[key] === true || row.original[key] === "Yes") {
-      return <Check size={20} className="text-emerald-400" />;
+      return (
+        <span className="inline-flex items-center space-x-1 rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
+          <Check className="h-3 w-3" />
+          <span>Yes</span>
+        </span>
+      );
     } else if (row.original[key] === false || row.original[key] === "No") {
-      return <X size={20} className="text-red-400" />;
+      return (
+        <span className="inline-flex items-center space-x-1 rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800">
+          <X className="h-3 w-3" />
+          <span>No</span>
+        </span>
+      );
     } else
       return (
         <Badge
@@ -286,36 +296,64 @@ export const checkColumn = (key, options = {}) => ({
   },
 });
 
+export const emailColumn = (key, options = {}) => ({
+  accessorKey: key,
+  header: options.header || formatHeader(key),
+  cell: ({ row }) => {
+    const value = row.getValue(key) || row.original[key];
+    return value ? (
+      <a
+        href={`mailto:${value}`}
+        className="text-nowrap text-sm text-blue-600 hover:underline"
+      >
+        {value}
+      </a>
+    ) : null;
+  },
+});
+
 export const badgeColumn = (key, color, options = {}) => ({
   accessorKey: key,
   header: options.header || formatHeader(key),
   cell: (info) => {
     const colorMap = {
-      teal: "border-teal-700 bg-teal-300",
-      blue: "border-blue-700 bg-blue-300",
-      green: "border-green-700 bg-green-300",
-      red: "border-red-700 bg-red-300",
-      yellow: "border-yellow-700 bg-yellow-300",
-      purple: "border-purple-700 bg-purple-300",
-      fuchsia: "border-fuchsia-700 bg-fuchsia-300",
+      teal: "bg-teal-200 text-teal-800",
+      blue: "bg-blue-200 text-blue-800",
+      green: "bg-green-200 text-green-800",
+      red: " bg-red-200 text-red-800",
+      yellow: "bg-yellow-200 text-yellow-800",
+      purple: "bg-purple-200 text-purple-800",
+      fuchsia: "bg-fuchsia-200 text-fuchsia-800",
     };
     return (
       <div
         className="flex min-w-fit flex-col gap-1"
         style={{ wordBreak: "normal" }}
       >
-        {info.getValue().map((element) => {
-          const colorClass = colorMap[color] || "border-gray-700 bg-gray-300";
-          return (
-            <Badge
-              key={element}
-              variant="outline"
-              className={cn("min-w-fit", colorClass)}
-            >
-              {element}
-            </Badge>
-          );
-        })}
+        {Array.isArray(info.getValue()) ? (
+          info.getValue().map((element) => {
+            const colorClass = colorMap[color] || "border-gray-700 bg-gray-300";
+            return (
+              <Badge
+                key={element}
+                variant="outline"
+                className={cn("min-w-fit rounded-full border-none", colorClass)}
+              >
+                {element}
+              </Badge>
+            );
+          })
+        ) : (
+          <Badge
+            variant="outline"
+            className={cn(
+              "max-w-fit rounded-full border-none font-normal",
+              colorMap[color] || "border-gray-700 bg-gray-300",
+            )}
+          >
+            {info.getValue()}
+          </Badge>
+        )}
       </div>
     );
   },

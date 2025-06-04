@@ -47,6 +47,7 @@ import {
   checkColumn,
   createColumns,
   currencyColumn,
+  emailColumn,
   formattedColumn,
 } from "./createColumns";
 import { capitalizeString, downloadFile, uploadFile } from "./utils";
@@ -65,6 +66,9 @@ export const evalTableColumns = createColumns(
 
 export const registrationColumns = createColumns(
   ["artist", "fiscalYear", "numPerformers", "phone", "email", "approved"],
+  checkColumn("approved"),
+  badgeColumn("fiscalYear", "blue"),
+  emailColumn("email"),
   formattedColumn("numPerformers", "Number of Performers"),
 );
 

@@ -1,14 +1,20 @@
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { FilterIcon } from "lucide-react";
-import { useMemo, useCallback, memo } from "react";
 import { cn } from "@/lib/utils";
+import { FilterIcon } from "lucide-react";
+import { memo, useCallback, useMemo } from "react";
 
 /**
  * FilterMenu component - Provides filtering capabilities for table columns
  * Adapts to different data types (string, number, boolean)
- * 
+ *
  */
 
 const FilterMenu = memo(({ column, table }) => {
@@ -30,16 +36,23 @@ const FilterMenu = memo(({ column, table }) => {
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button 
-            variant="ghost" 
-            className="h-8 w-8 p-0"
+          <Button
+            variant="ghost"
+            className="rounded p-1 transition-colors hover:bg-gray-200"
             aria-label={`Filter ${column.id}`}
             aria-expanded={column.getIsFiltered() ? "true" : "false"}
             aria-haspopup="menu"
           >
-            <FilterIcon size={16} strokeWidth={2} />
+            <FilterIcon
+              size={16}
+              strokeWidth={2}
+              className="h-4 w-4 text-gray-400"
+            />
             {column.getFilterValue() && (
-              <span className="ml-1 h-2 w-2 rounded-full bg-blue-500" aria-hidden="true"></span>
+              <span
+                className="ml-1 h-2 w-2 rounded-full bg-blue-500"
+                aria-hidden="true"
+              ></span>
             )}
           </Button>
         </DropdownMenuTrigger>
@@ -47,8 +60,11 @@ const FilterMenu = memo(({ column, table }) => {
           <Input
             placeholder="Search..."
             value={columnFilterValue ?? ""}
-            onChange={useCallback((e) => column.setFilterValue(e.target.value), [column])}
-            className="mb-2 h-8 w-full p-2"
+            onChange={useCallback(
+              (e) => column.setFilterValue(e.target.value),
+              [column],
+            )}
+            className="mb-2 h-8 w-full border-none p-2 shadow-none"
             aria-label={`Filter ${column.id} by text`}
           />
           <DropdownMenuSeparator />
@@ -86,7 +102,7 @@ const FilterMenu = memo(({ column, table }) => {
             variant="ghost"
             size="sm"
             className={cn(
-              "h-8 px-2 hover:bg-gray-100 data-[state=open]:bg-gray-100"
+              "h-8 px-2 hover:bg-gray-100 data-[state=open]:bg-gray-100",
             )}
             aria-label={`Filter ${column.id} by number range`}
             aria-expanded={column.getIsFiltered() ? "true" : "false"}
@@ -94,7 +110,10 @@ const FilterMenu = memo(({ column, table }) => {
           >
             <FilterIcon className="h-4 w-4" />
             {column.getFilterValue() && (
-              <span className="ml-1 h-2 w-2 rounded-full bg-blue-500" aria-hidden="true"></span>
+              <span
+                className="ml-1 h-2 w-2 rounded-full bg-blue-500"
+                aria-hidden="true"
+              ></span>
             )}
           </Button>
         </DropdownMenuTrigger>
@@ -104,13 +123,16 @@ const FilterMenu = memo(({ column, table }) => {
               type="number"
               placeholder="Min"
               value={columnFilterValue?.[0] ?? ""}
-              onChange={useCallback((e) => {
-                const val = e.target.value;
-                column.setFilterValue((old) => [
-                  val ? parseInt(val, 10) : undefined,
-                  old?.[1],
-                ]);
-              }, [column])}
+              onChange={useCallback(
+                (e) => {
+                  const val = e.target.value;
+                  column.setFilterValue((old) => [
+                    val ? parseInt(val, 10) : undefined,
+                    old?.[1],
+                  ]);
+                },
+                [column],
+              )}
               aria-label={`Minimum value for ${column.id}`}
               className="h-8 w-24 p-2"
             />
@@ -119,13 +141,16 @@ const FilterMenu = memo(({ column, table }) => {
               type="number"
               placeholder="Max"
               value={columnFilterValue?.[1] ?? ""}
-              onChange={useCallback((e) => {
-                const val = e.target.value;
-                column.setFilterValue((old) => [
-                  old?.[0],
-                  val ? parseInt(val, 10) : undefined,
-                ]);
-              }, [column])}
+              onChange={useCallback(
+                (e) => {
+                  const val = e.target.value;
+                  column.setFilterValue((old) => [
+                    old?.[0],
+                    val ? parseInt(val, 10) : undefined,
+                  ]);
+                },
+                [column],
+              )}
               aria-label={`Maximum value for ${column.id}`}
               className="h-8 w-24 p-2"
             />
@@ -135,7 +160,10 @@ const FilterMenu = memo(({ column, table }) => {
               variant="ghost"
               size="sm"
               className="mt-2 w-full justify-center text-blue-500"
-              onClick={useCallback(() => column.setFilterValue(undefined), [column])}
+              onClick={useCallback(
+                () => column.setFilterValue(undefined),
+                [column],
+              )}
               aria-label="Clear number filter"
             >
               Clear filter
@@ -153,7 +181,7 @@ const FilterMenu = memo(({ column, table }) => {
             variant="ghost"
             size="sm"
             className={cn(
-              "h-8 px-2 hover:bg-gray-100 data-[state=open]:bg-gray-100"
+              "h-8 px-2 hover:bg-gray-100 data-[state=open]:bg-gray-100",
             )}
             aria-label={`Filter ${column.id} by boolean value`}
             aria-expanded={column.getIsFiltered() ? "true" : "false"}
@@ -161,7 +189,10 @@ const FilterMenu = memo(({ column, table }) => {
           >
             <FilterIcon className="h-4 w-4" />
             {column.getFilterValue() && (
-              <span className="ml-1 h-2 w-2 rounded-full bg-blue-500" aria-hidden="true"></span>
+              <span
+                className="ml-1 h-2 w-2 rounded-full bg-blue-500"
+                aria-hidden="true"
+              ></span>
             )}
           </Button>
         </DropdownMenuTrigger>
@@ -197,7 +228,10 @@ const FilterMenu = memo(({ column, table }) => {
               variant="ghost"
               size="sm"
               className="mt-2 w-full justify-center text-blue-500"
-              onClick={useCallback(() => column.setFilterValue(undefined), [column])}
+              onClick={useCallback(
+                () => column.setFilterValue(undefined),
+                [column],
+              )}
               aria-label="Clear boolean filter"
             >
               Clear filter
@@ -209,6 +243,5 @@ const FilterMenu = memo(({ column, table }) => {
   }
   return null;
 });
-
 
 export default FilterMenu;
