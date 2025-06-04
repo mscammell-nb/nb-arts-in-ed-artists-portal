@@ -222,9 +222,22 @@ const RegistrationRenewalPage = () => {
   }, [documentsData, isDocumentsDataLoading]);
 
   const formatDataForQuickbase = async (data) => {
-    const cutoffMonth = new Date(artistData.data[0][48].value).getMonth();
-    const cutoffDay = new Date(artistData.data[0][48].value).getDate() + 1;
-    const tempFiscalYearKey = getCutoffFiscalYearKey(cutoffMonth, cutoffDay);
+    const cutoffStartDate = useSelector(
+      (state) => state.cutoff.registrationCutoffStartDate,
+    );
+    const cutoffEndDate = useSelector(
+      (state) => state.cutoff.registrationCutoffEndDate,
+    );
+    const startMonth = new Date(cutoffStartDate).getMonth();
+    const startDay = new Date(cutoffStartDate).getDate();
+    const endMonth = new Date(cutoffEndDate).getMonth();
+    const endDay = new Date(cutoffEndDate).getDate();
+    const tempFiscalYearKey = getCutoffFiscalYearKey(
+      startMonth,
+      startDay,
+      endMonth,
+      endDay,
+    );
 
     // update quickbase
     const body = {
