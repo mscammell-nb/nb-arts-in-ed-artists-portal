@@ -186,7 +186,7 @@ const ArtistDocumentsPage = () => {
       data: [
         {
           10: { value: fiscalYear },
-          9: { value: artist },
+          9: { value: artistOrg },
           7: {
             value: {
               fileName: fileUploads.name,
