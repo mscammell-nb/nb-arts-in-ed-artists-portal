@@ -25,7 +25,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { Separator } from "../ui/separator";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import ColumnHeader from "./addons/ColumnHeader";
 import DataGridToolbar from "./addons/DataGridToolbar";
@@ -263,48 +262,51 @@ function DataGrid({
     </div>
   );
   return (
-    <div className="w-full overflow-hidden rounded-lg border bg-white p-3 shadow">
-      {(tableTitle || (!noSearch && extraButtons)) && (
-        <div className="flex w-full items-center justify-between">
-          {tableTitle && (
-            <span className="mb-3 text-2xl font-bold">{tableTitle}</span>
-          )}
-          {noSearch && extraButtons}
-        </div>
-      )}
-      {(tableTitle !== null || extraButtons.length > 0) && (
-        <Separator className="my-3" />
-      )}
-      <DataGridToolbar
-        noSearch={noSearch}
-        extraButtons={extraButtons}
-        table={table}
-      />
-      {editing && (
-        <div className="flex items-center gap-3 pb-3">
-          <Button onClick={handleSaveChanges}>
-            <Save className="mr-2 h-4 w-4" />
-            <span>Save</span>
-          </Button>
-          <Button variant="secondary" onClick={handleCancelChanges}>
-            <X className="mr-2 h-4 w-4" />
-            <span>Cancel</span>
-          </Button>
-        </div>
-      )}
-
+    <div className="w-full overflow-hidden rounded-lg border border-gray-200 bg-white px-0 py-3 shadow-sm">
+      <div className="border-b border-gray-200 p-6">
+        {(tableTitle || (!noSearch && extraButtons)) && (
+          <div className="flex w-full items-center justify-between">
+            {tableTitle && (
+              <span className="mb-3 text-2xl font-bold">{tableTitle}</span>
+            )}
+            {noSearch && extraButtons}
+          </div>
+        )}
+        <DataGridToolbar
+          noSearch={noSearch}
+          extraButtons={extraButtons}
+          table={table}
+        />
+        {editing && (
+          <div className="flex items-center gap-3 pb-3">
+            <Button onClick={handleSaveChanges}>
+              <Save className="mr-2 h-4 w-4" />
+              <span>Save</span>
+            </Button>
+            <Button variant="secondary" onClick={handleCancelChanges}>
+              <X className="mr-2 h-4 w-4" />
+              <span>Cancel</span>
+            </Button>
+          </div>
+        )}
+      </div>
       {/* Table container with accessibility attributes */}
       <div className="relative overflow-x-auto">
         <table
-          className="w-full text-left text-sm text-gray-500 dark:text-gray-400 rtl:text-right"
+          className=" w-full"
           role="grid"
           aria-labelledby={tableTitle ? "table-title" : undefined}
         >
-          <thead className="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
+          <thead className="bg-gray-50">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <th key={header.id} colSpan={header.colSpan} scope="col">
+                  <th
+                    key={header.id}
+                    colSpan={header.colSpan}
+                    scope="col"
+                    className="px-6 py-4 text-left"
+                  >
                     <ColumnHeader
                       header={header}
                       table={table}
@@ -316,18 +318,15 @@ function DataGrid({
               </tr>
             ))}
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-gray-200 bg-white text-sm">
             {table.getRowModel().rows.length > 0 ? (
               table.getRowModel().rows.map((row) => (
-                <tr
-                  key={row.id}
-                  className="border-b border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800"
-                >
+                <tr key={row.id}>
                   {row.getVisibleCells().map((cell) => (
                     <td
                       key={cell.id}
                       className={cn(
-                        "p-4",
+                        "px-6 py-4",
                         cell.column.id === "programName" &&
                           "whitespace-nowrap font-medium text-gray-900 dark:text-white",
                       )}

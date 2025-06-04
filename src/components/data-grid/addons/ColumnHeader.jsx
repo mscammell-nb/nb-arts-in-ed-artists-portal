@@ -11,18 +11,22 @@ function ColumnHeader({ header, table, noFilter, noSort }) {
   const { column } = header;
   const title = flexRender(header.column.columnDef.header, header.getContext());
   return (
-    <div
-      className="flex items-center py-3"
-      onClick={() => column.toggleSorting()}
-    >
+    <div className="flex items-center space-x-1 text-xs font-medium uppercase tracking-wider text-gray-500 hover:text-gray-700">
       {column.getCanFilter() && !noFilter && (
         <FilterMenu column={column} table={table} />
       )}
-      <div className="text-nowrap font-semibold">{title}</div>
-      {column.getCanSort() && !noSort && (
-        <Button type="button" variant="ghost" className="px-2 py-1 text-center">
+      {column.getCanSort() && !noSort ? (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting()}
+          className="flex items-center space-x-1 px-2 text-xs font-medium uppercase tracking-wider text-gray-500 hover:text-gray-700"
+        >
+          <div className="text-nowrap ">{title}</div>
+
           {getSortIcon(column)}
         </Button>
+      ) : (
+        <div className="text-nowrap ">{title}</div>
       )}
     </div>
   );
