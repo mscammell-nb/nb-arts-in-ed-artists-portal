@@ -59,9 +59,7 @@ const AddSheet = ({ open, onOpenChange, sheetProps }) => {
             last name, and stage name (if they have one) and click submit
             <br />
             <br />
-            <span className="font-bold uppercase text-red-500">
-              Important:
-            </span>{" "}
+            <span className="font-bold uppercase text-red-500">Important:</span>
             Performers can be edited only within 30 minutes of being added
             <br />
             <br />

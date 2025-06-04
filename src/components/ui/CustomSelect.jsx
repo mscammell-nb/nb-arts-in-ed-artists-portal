@@ -25,6 +25,8 @@ function CustomSelect({
   value,
   setValue,
   nameOnly = false,
+  searchKey = "",
+  search = true,
 }) {
   const id = useId();
   const [open, setOpen] = useState(false);
@@ -63,7 +65,7 @@ function CustomSelect({
           align="start"
         >
           <Command>
-            <CommandInput placeholder="Search contracts..." />
+            {search && <CommandInput placeholder={`Search ${searchKey}`} />}
             <CommandList>
               <CommandEmpty>No items found.</CommandEmpty>
               <CommandGroup>

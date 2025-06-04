@@ -30,7 +30,6 @@ import {
   useAddOrUpdateRecordMutation,
   useQueryForDataQuery,
 } from "@/redux/api/quickbaseApi";
-import { setArtistData } from "@/redux/slices/artistSlice";
 import { signUp } from "@/redux/slices/authSlice";
 import { capitalizeString, getCutoffFiscalYearKey } from "@/utils/utils";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -870,7 +869,7 @@ const RegistrationPage = () => {
               </div>
             </form>
             <div className="pt-2 text-center text-sm">
-              Already have an account?{" "}
+              Already have an account?
               <Link to="/login" className="underline">
                 Login
               </Link>

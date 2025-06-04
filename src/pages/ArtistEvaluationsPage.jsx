@@ -233,7 +233,7 @@ const ArtistEvaluationsPage = () => {
           <AlertTitle>Missing Evaluations!</AlertTitle>
           <AlertDescription>
             There are contracts that require an Evaluation. Please complete the
-            Evaluation for these contracts.{" "}
+            Evaluation for these contracts.
             <span className="font-bold">
               No payment will be made until the evaluation is completed.
             </span>
