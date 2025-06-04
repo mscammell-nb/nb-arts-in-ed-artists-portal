@@ -54,7 +54,7 @@ import { Separator } from "@/components/ui/separator";
 import { formatDocData } from "@/utils/formatDocData";
 import { toBase64 } from "@/utils/toBase64";
 import { Label } from "@radix-ui/react-dropdown-menu";
-import { getAuth, updateEmail } from "firebase/auth";
+import { getAuth } from "firebase/auth";
 import { DownloadIcon, Loader2, UploadIcon } from "lucide-react";
 
 const schema = yup.object({
@@ -226,129 +226,61 @@ const RegistrationRenewalPage = () => {
     const cutoffDay = new Date(artistData.data[0][48].value).getDate() + 1;
     const tempFiscalYearKey = getCutoffFiscalYearKey(cutoffMonth, cutoffDay);
 
-    if (artistData?.data[0][7].value !== data.email) {
-      let body = {};
-      // updateFirebaseFirst, then update quickbase
-      await updateEmail(auth.currentUser, data.email)
-        .then(() => {
-          body = {
-            to: import.meta.env.VITE_QUICKBASE_ARTIST_REGISTRATIONS_TABLE_ID,
-            data: [
-              {
-                7: {
-                  value: artistData.data[0][3].value,
-                },
-                9: {
-                  value: data.email,
-                },
-                11: {
-                  value: data.phone,
-                },
-                13: {
-                  value: user.uid,
-                },
-                15: {
-                  value: data.street1,
-                },
-                17: {
-                  value: data.city,
-                },
-                18: {
-                  value: data.state,
-                },
-                19: {
-                  value: data.zipCode,
-                },
-                20: {
-                  value: "United States",
-                },
-                24: {
-                  value: tempFiscalYearKey,
-                },
-                46: {
-                  value: data.artistOrg,
-                },
-              },
-            ],
-          };
-
-          if (data.altPhone !== null) {
-            body.data[0][12] = { value: data.altPhone };
-          }
-
-          if (data.street2 !== null) {
-            body.data[0][16] = { value: data.street2 };
-          }
-
-          if (data.website !== null) {
-            body.data[0][23] = { value: data.website };
-          }
-        })
-        .catch((error) => {
-          toast({
-            variant: "destructive",
-            title: "Failed to change email",
-            description: error.message,
-          });
-        });
-      return body;
-    } else {
-      // update quickbase
-      const body = {
-        to: import.meta.env.VITE_QUICKBASE_ARTIST_REGISTRATIONS_TABLE_ID,
-        data: [
-          {
-            7: {
-              value: artistData.data[0][3].value,
-            },
-            9: {
-              value: artistData.data[0][7].value,
-            },
-            11: {
-              value: data.phone,
-            },
-            13: {
-              value: user.uid,
-            },
-            15: {
-              value: data.street1,
-            },
-            17: {
-              value: data.city,
-            },
-            18: {
-              value: data.state,
-            },
-            19: {
-              value: data.zipCode,
-            },
-            20: {
-              value: "United States",
-            },
-            24: {
-              value: tempFiscalYearKey,
-            },
-            46: {
-              value: artistData.data[0][6].value,
-            },
+    // update quickbase
+    const body = {
+      to: import.meta.env.VITE_QUICKBASE_ARTIST_REGISTRATIONS_TABLE_ID,
+      data: [
+        {
+          7: {
+            value: artistData.data[0][3].value,
           },
-        ],
-      };
+          9: {
+            value: artistData.data[0][7].value,
+          },
+          11: {
+            value: data.phone,
+          },
+          13: {
+            value: user.uid,
+          },
+          15: {
+            value: data.street1,
+          },
+          17: {
+            value: data.city,
+          },
+          18: {
+            value: data.state,
+          },
+          19: {
+            value: data.zipCode,
+          },
+          20: {
+            value: "United States",
+          },
+          24: {
+            value: tempFiscalYearKey,
+          },
+          46: {
+            value: artistData.data[0][6].value,
+          },
+        },
+      ],
+    };
 
-      if (data.altPhone !== null) {
-        body.data[0][12] = { value: data.altPhone };
-      }
-
-      if (data.street2 !== null) {
-        body.data[0][16] = { value: data.street2 };
-      }
-
-      if (data.website !== null) {
-        body.data[0][23] = { value: data.website };
-      }
-
-      return body;
+    if (data.altPhone !== null) {
+      body.data[0][12] = { value: data.altPhone };
     }
+
+    if (data.street2 !== null) {
+      body.data[0][16] = { value: data.street2 };
+    }
+
+    if (data.website !== null) {
+      body.data[0][23] = { value: data.website };
+    }
+
+    return body;
   };
 
   useEffect(() => {
