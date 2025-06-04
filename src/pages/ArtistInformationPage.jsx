@@ -47,6 +47,7 @@ import { listFirebaseErrors } from "@/utils/listFirebaseErrors";
 import { referencesColumns } from "@/utils/TableColumns";
 import { getCurrentFiscalYear, parsePhoneNumber } from "@/utils/utils";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { ReloadIcon } from "@radix-ui/react-icons";
 import { signInWithEmailAndPassword, updatePassword } from "firebase/auth";
 import { AlertCircle, CircleAlert, Pencil } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -253,8 +254,8 @@ const informationSchema = yup.object({
   city: yup.string().required(),
   state: yup.string().oneOf(STATES, "Invalid state").required(),
   zipCode: yup
-    .number()
-    .typeError("Zip code must be a number")
+    .string()
+    .matches(/^\d{5}$/, "zip code must be exactly 5 digits")
     .required("zip code is a required field"),
   website: yup
     .string()
@@ -283,6 +284,34 @@ const ArtistInformationPage = () => {
     (state) => state.artist,
   );
 
+  let {
+    data: artistData,
+    isLoading: isArtistLoading,
+    isError: isArtistError,
+    error: artistError,
+  } = useQueryForDataQuery(
+    artistRecordId
+      ? {
+          from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
+          select: [
+            3, 6, 7, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 29, 30, 31, 50, 51,
+          ],
+          where: `{3.EX.${artistRecordId}}`,
+        }
+      : { skip: true, refetchOnMountOrArgChange: true },
+  );
+
+  const { data: referencesData, isLoading: isReferencesLoading } =
+    useQueryForDataQuery(
+      artistRecordId
+        ? {
+            from: import.meta.env.VITE_QUICKBASE_REFERENCES_TABLE_ID,
+            select: [3, 6, 7, 8, 9, 10, 11, 12],
+            where: `{12.EX.${artistRecordId}}`,
+          }
+        : { skip: true, refetchOnMountOrArgChange: true },
+    );
+
   const [
     updateArtist,
     {
@@ -293,239 +322,73 @@ const ArtistInformationPage = () => {
     },
   ] = useAddOrUpdateRecordMutation();
 
-  const ArtistInformationForm = ({ sheetProps }) => {
-    const informationForm = useForm({
-      resolver: yupResolver(informationSchema),
-      defaultValues: {
-        artistOrg: artistVal,
-        email: emailVal,
-        numOfPerformers: performersVal,
-        phone: phoneVal,
-        altPhone: altPhoneVal,
-        street1: addressObject.street1,
-        street2: addressObject.street2,
-        city: addressObject.city,
-        state: addressObject.state,
-        zipcode: addressObject.zipCode,
-        website: websiteVal,
-      },
-    });
-    const addReferenceSubmit = async (data) => {
-      try {
-        updateArtist({
-          to: import.meta.env.VITE_QUICKBASE_ARTIST_REGISTRATIONS_TABLE_ID,
-          data: [
-            {
-              3: {
-                value: registrationData.data[0][3].value,
-              },
-              8: {
-                value: artistVal,
-              },
-              21: {
-                value: performersVal,
-              },
-              9: {
-                value: emailVal,
-              },
-              11: {
-                value: phoneVal,
-              },
-              15: { value: addressObject.street1 },
-              16: { value: addressObject.street2 },
-              17: { value: addressObject.city },
-              18: { value: addressObject.state },
-              19: { value: addressObject.zipCode },
-              20: {
-                value: "United States",
-              },
-              23: {
-                value: websiteVal,
-              },
+  const informationForm = useForm({
+    resolver: yupResolver(informationSchema),
+    defaultValues: {
+      artistOrg: "",
+      email: "",
+      numOfPerformers: "",
+      phone: "",
+      altPhone: "",
+      street1: "",
+      street2: "",
+      city: "",
+      state: "",
+      zipCode: "",
+      website: "",
+    },
+  });
+
+  const updateArtistSubmit = async (data) => {
+    try {
+      updateArtist({
+        to: import.meta.env.VITE_QUICKBASE_ARTIST_REGISTRATIONS_TABLE_ID,
+        data: [
+          {
+            3: {
+              value: registrationData.data[0][3].value,
             },
-          ],
-        });
+            21: {
+              value: data.numOfPerformers,
+            },
+            9: {
+              value: data.email,
+            },
+            11: {
+              value: data.phone,
+            },
+            12: {
+              value: data.altPhone,
+            },
+            15: { value: data.street1 },
+            16: { value: data.street2 },
+            17: { value: data.city },
+            18: { value: data.state },
+            19: { value: data.zipCode },
+            20: {
+              value: "United States",
+            },
+            23: {
+              value: data.website,
+            },
+            46:
+              data.artistOrg != artistData.data[0][6].value
+                ? {
+                    value: data.artistOrg,
+                  }
+                : { value: "" },
+          },
+        ],
+      }).then((res) => {
         setEditing(false);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    return (
-      <Form {...informationForm}>
-        <form
-          className="flex w-full flex-col gap-3"
-          onSubmit={informationForm.handleSubmit(onSave)}
-        >
-          <FormField
-            control={informationForm.control}
-            name="artistOrg"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Artist / Org</FormLabel>
-                <FormControl>
-                  <Input placeholder="Artist / Org" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={informationForm.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input placeholder="Email" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={informationForm.control}
-            name="numOfPerformers"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <CustomSelect
-                    data={[
-                      {
-                        id: "Less than Five",
-                        name: "Less than Five",
-                      },
-                    ]}
-                    label={"Number of Performers"}
-                    placeholder={"Select a number"}
-                    value={field.value}
-                    setValue={field.onChange}
-                    search={false}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={informationForm.control}
-            name="phone"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Phone</FormLabel>
-                <FormControl>
-                  <Input placeholder="(123) 456-7890" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={informationForm.control}
-            name="altPhone"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Alt Phone</FormLabel>
-                <FormControl>
-                  <Input placeholder="(123) 456-7890" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={informationForm.control}
-            name="street1"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Street 1</FormLabel>
-                <FormControl>
-                  <Input placeholder="123 Main Street" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={informationForm.control}
-            name="street2"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Street 2</FormLabel>
-                <FormControl>
-                  <Input placeholder="123 Main Street" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={informationForm.control}
-            name="city"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>City</FormLabel>
-                <FormControl>
-                  <Input placeholder="City" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={informationForm.control}
-            name="state"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>State</FormLabel>
-                <FormControl>
-                  <Input placeholder="State" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={informationForm.control}
-            name="zipcode"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Zip Code</FormLabel>
-                <FormControl>
-                  <Input placeholder="12345" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={informationForm.control}
-            name="website"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Website</FormLabel>
-                <FormControl>
-                  <Input placeholder="www.Google.com" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <div className="flex gap-3">
-            <Button
-              type="button"
-              className="w-fit"
-              variant="secondary"
-              onClick={() => cancelEdit()}
-            >
-              Cancel
-            </Button>
-            <Button type="submit" className="w-fit">
-              Save
-            </Button>
-          </div>
-        </form>
-      </Form>
-    );
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message,
+      });
+    }
   };
 
   const schema = yup.object({
@@ -622,37 +485,11 @@ const ArtistInformationPage = () => {
       : { skip: true, refetchOnMountOrArgChange: true },
   );
 
-  let {
-    data: artistData,
-    isLoading: isArtistLoading,
-    isError: isArtistError,
-    error: artistError,
-  } = useQueryForDataQuery(
-    artistRecordId
-      ? {
-          from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
-          select: [
-            3, 6, 7, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 29, 30, 31, 50, 51,
-          ],
-          where: `{3.EX.${artistRecordId}}`,
-        }
-      : { skip: true, refetchOnMountOrArgChange: true },
-  );
-
-  const { data: referencesData, isLoading: isReferencesLoading } =
-    useQueryForDataQuery(
-      artistRecordId
-        ? {
-            from: import.meta.env.VITE_QUICKBASE_REFERENCES_TABLE_ID,
-            select: [3, 6, 7, 8, 9, 10, 11, 12],
-            where: `{12.EX.${artistRecordId}}`,
-          }
-        : { skip: true, refetchOnMountOrArgChange: true },
-    );
   useEffect(() => {
     if (artistData) {
       resetInformation();
     }
+    console.log(artistData);
   }, [artistData]);
 
   useEffect(() => {
@@ -673,65 +510,48 @@ const ArtistInformationPage = () => {
     }
   }, [updateArtistError, isUpdateArtistSuccess, isUpdateArtistError]);
 
-  const onSave = () => {
-    updateArtist({
-      to: import.meta.env.VITE_QUICKBASE_ARTIST_REGISTRATIONS_TABLE_ID,
-      data: [
-        {
-          3: {
-            value: registrationData.data[0][3].value,
-          },
-          8: {
-            value: artistVal,
-          },
-          21: {
-            value: performersVal,
-          },
-          9: {
-            value: emailVal,
-          },
-          11: {
-            value: phoneVal,
-          },
-          15: { value: addressObject.street1 },
-          16: { value: addressObject.street2 },
-          17: { value: addressObject.city },
-          18: { value: addressObject.state },
-          19: { value: addressObject.zipCode },
-          20: {
-            value: "United States",
-          },
-          23: {
-            value: websiteVal,
-          },
-        },
-      ],
+  const resetInformation = () => {
+    const data = artistData.data[0];
+
+    setArtistVal(data[6].value);
+    setPerformersVal(data[19].value);
+    setEmailVal(data[7].value);
+    setPhoneVal(data[9].value);
+    setAltPhoneVal(data[11].value);
+    setAddressVal(data[12].value);
+    setWebsiteVal(data[31].value);
+    setAddressObject({
+      street1: data[13].value,
+      street2: data[14].value,
+      city: data[15].value,
+      state: data[16].value,
+      zipCode: data[17].value,
     });
-    setEditing(false);
+    setPaymentType(data[50].value);
+    setPayeeName(data[51].value);
+
+    const defaultValues = {
+      artistOrg: data[6].value,
+      email: data[7].value,
+      numOfPerformers: data[19].value,
+      phone: data[9].value,
+      altPhone: data[11].value,
+      website: data[31].value,
+      street1: data[13].value,
+      street2: data[14].value,
+      city: data[15].value,
+      state: data[16].value,
+      zipCode: data[17].value,
+      website: data[31].value,
+    };
+    informationForm.reset(defaultValues);
   };
+
   const cancelEdit = () => {
     setEditing(false);
     resetInformation();
   };
 
-  const resetInformation = () => {
-    setArtistVal(artistData.data[0][6].value);
-    setPerformersVal(artistData.data[0][19].value);
-    setEmailVal(artistData.data[0][7].value);
-    setPhoneVal(artistData.data[0][9].value);
-    setAltPhoneVal(artistData.data[0][11].value);
-    setAddressVal(artistData.data[0][12].value);
-    setWebsiteVal(artistData.data[0][31].value);
-    setAddressObject({
-      street1: artistData.data[0][13].value,
-      street2: artistData.data[0][14].value,
-      city: artistData.data[0][15].value,
-      state: artistData.data[0][16].value,
-      zipCode: artistData.data[0][17].value,
-    });
-    setPaymentType(artistData.data[0][50].value);
-    setPayeeName(artistData.data[0][51].value);
-  };
   const formatData = (d) => {
     const { data } = d;
     return data.map((record) => {
@@ -815,7 +635,195 @@ const ArtistInformationPage = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-3">
-            {editing && <ArtistInformationForm />}
+            {editing && (
+              <Form {...informationForm}>
+                <form
+                  className="flex w-full flex-col gap-3"
+                  onSubmit={informationForm.handleSubmit(updateArtistSubmit)}
+                >
+                  <FormField
+                    control={informationForm.control}
+                    name="artistOrg"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Artist / Org</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Artist / Org" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={informationForm.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Email" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={informationForm.control}
+                    name="numOfPerformers"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <CustomSelect
+                            data={[
+                              {
+                                id: "Less than Five",
+                                name: "Less than Five",
+                              },
+                            ]}
+                            label={"Number of Performers"}
+                            placeholder={"Select a number"}
+                            value={field.value}
+                            setValue={field.onChange}
+                            search={false}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={informationForm.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Phone</FormLabel>
+                        <FormControl>
+                          <Input placeholder="(123) 456-7890" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={informationForm.control}
+                    name="altPhone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Alt Phone</FormLabel>
+                        <FormControl>
+                          <Input placeholder="(123) 456-7890" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={informationForm.control}
+                    name="street1"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Street 1</FormLabel>
+                        <FormControl>
+                          <Input placeholder="123 Main Street" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={informationForm.control}
+                    name="street2"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Street 2</FormLabel>
+                        <FormControl>
+                          <Input placeholder="123 Main Street" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={informationForm.control}
+                    name="city"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>City</FormLabel>
+                        <FormControl>
+                          <Input placeholder="City" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={informationForm.control}
+                    name="state"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>State</FormLabel>
+                        <FormControl>
+                          <Input placeholder="State" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={informationForm.control}
+                    name="zipCode"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Zip Code</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            className="[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                            placeholder="11801"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={informationForm.control}
+                    name="website"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Website</FormLabel>
+                        <FormControl>
+                          <Input placeholder="www.Google.com" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <div className="flex gap-3">
+                    <Button
+                      type="button"
+                      className="w-fit"
+                      variant="secondary"
+                      onClick={() => cancelEdit()}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="submit"
+                      className="w-fit"
+                      disabled={isUpdateArtistLoading}
+                    >
+                      {isUpdateArtistLoading && (
+                        <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                      )}
+                      {isUpdateArtistLoading ? "Please wait" : "Save"}
+                    </Button>
+                  </div>
+                </form>
+              </Form>
+            )}
+
             {!editing && (
               <>
                 <ArtistItem
