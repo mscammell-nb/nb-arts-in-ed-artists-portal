@@ -22,7 +22,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import Spinner from "@/components/ui/Spinner";
 import { useToast } from "@/components/ui/use-toast";
 import { STATES, VALID_WEBSITE_URL_REGEX } from "@/constants/constants";
 import { cn } from "@/lib/utils";
@@ -98,15 +97,6 @@ const RegistrationPage = () => {
 
   const navigate = useNavigate();
   const { toast } = useToast();
-  const {
-    data: masterData,
-    isLoading: isMasterDataLoading,
-    isError: isMasterDataError,
-    error: masterDataError,
-  } = useQueryForDataQuery({
-    from: import.meta.env.VITE_QUICKBASE_MASTER_TABLE_ID,
-    select: [6, 9],
-  });
 
   const { data: artistOrgsData } = useQueryForDataQuery({
     from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
@@ -332,14 +322,6 @@ const RegistrationPage = () => {
   useEffect(() => {
     trigger();
   }, [formStep]);
-
-  if (isMasterDataLoading) {
-    return (
-      <div>
-        <Spinner />
-      </div>
-    );
-  }
 
   const cutoffStartDate = useSelector(
     (state) => state.cutoff.registrationCutoffStartDate,
