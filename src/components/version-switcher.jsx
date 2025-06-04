@@ -34,15 +34,15 @@ export function VersionSwitcher({ versions, defaultVersion }) {
   );
 
   return (
-    <SidebarMenu>
-      <SidebarMenuItem>
+    <SidebarMenu className="max-h-16 border-b border-blue-800 pb-4">
+      <SidebarMenuItem className="p-2">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
               className="rounded-lg transition-all hover:bg-white hover:bg-opacity-20 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-white text-sidebar-primary-foreground">
+              <div className="flex aspect-square size-8 max-h-[250px] items-center justify-center rounded-lg bg-white text-sidebar-primary-foreground">
                 <GalleryVerticalEnd className="size-4" />
                 <img
                   className=""
@@ -50,9 +50,9 @@ export function VersionSwitcher({ versions, defaultVersion }) {
                   src="https://nassauboces.quickbase.com/up/butswtb25/a/r74/e8/v0"
                 />
               </div>
-              <div className="flex flex-col gap-0.5 leading-none">
+              <div className="flex  flex-col gap-0.5 overflow-clip leading-none">
                 <span className="font-semibold">Arts in Education</span>
-                <span className="">
+                <span className=" text-xs font-normal leading-tight text-blue-200">
                   {artistsData
                     ? artistsData.data[0][6].value
                     : "Artists Portal"}

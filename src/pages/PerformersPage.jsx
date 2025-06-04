@@ -332,7 +332,7 @@ const PerformersPage = () => {
     );
   }
 
-  if (performersData == undefined) {
+  if (!performersData?.data.length) {
     return <p>No performers</p>;
   }
 
