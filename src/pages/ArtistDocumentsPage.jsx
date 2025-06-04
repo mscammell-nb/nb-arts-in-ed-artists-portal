@@ -228,22 +228,24 @@ const ArtistDocumentsPage = () => {
   }
   return (
     <div className="flex w-full flex-col gap-4 overflow-hidden">
-      <p className="text-2xl font-semibold">Artist Documents</p>
       {missingFiles.length > 0 && (
-        <Alert variant="destructive" className="bg-red-50">
-          <AlertCircleIcon className="align-middle" />
-          <AlertTitle>Missing file(s):</AlertTitle>
+        <Alert variant="destructive" className="bg-red-50 text-red-700">
+          <AlertCircleIcon className="stroke-red-700 align-middle" />
+          <AlertTitle className="font-semibold">Missing file(s):</AlertTitle>
           <AlertDescription>
             Please submit the missing files for the current fiscal year,{" "}
             <span className="font-bold">{getCurrentFiscalYear()}</span>:
-            <ul>
+            <ul className="list-disc">
               {missingFiles.map((file) => (
-                <li key={file}>- {file}</li>
+                <li key={file}>{file}</li>
               ))}
             </ul>
           </AlertDescription>
         </Alert>
       )}
+      <div>
+        <p>Download Document Templates</p>
+      </div>
       <div className="flex flex-col items-center gap-3 md:flex-row">
         {!isFileTypesLoading &&
           fileTypes &&

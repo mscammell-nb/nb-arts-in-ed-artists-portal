@@ -79,51 +79,14 @@ export const documentColumns = (
   isRemoveDocumentLoading = null,
 ) => {
   const cols = [
-    {
-      accessorKey: "fiscalYear",
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          className="text-xs font-semibold uppercase text-gray-700"
-          onClick={() => column.toggleSorting()}
-        >
-          Fiscal Year
-        </Button>
-      ),
-      cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
-    },
-    {
-      accessorKey: "documentName",
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          className="text-xs font-semibold uppercase text-gray-700"
-          onClick={() => column.toggleSorting()}
-        >
-          Document Name
-        </Button>
-      ),
-      cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
-    },
-    {
-      accessorKey: "documentType",
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          className="text-xs font-semibold uppercase text-gray-700"
-          onClick={() => column.toggleSorting()}
-        >
-          Document Type
-        </Button>
-      ),
-      cell: (info) => <p className="text-nowrap">{info.getValue()}</p>,
-    },
+    ...createColumns(
+      ["fiscalYear", "documentName", "documentType"],
+      badgeColumn("fiscalYear", "blue"),
+    ),
   ];
   if (allowDownload)
     cols.push({
-      header: ({ column }) => (
-        <p className="text-center font-semibold">Download</p>
-      ),
+      header: ({ column }) => <p className="text-center">Download</p>,
       id: "download",
       cell: ({ row }) => (
         <div className="grid w-full place-items-center">

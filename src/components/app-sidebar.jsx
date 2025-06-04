@@ -11,6 +11,7 @@ import { TICKET_VENDOR } from "@/constants/constants";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
+import { handleSignout } from "@/utils/utils";
 import {
   HamburgerMenuIcon,
   QuestionMarkCircledIcon,
@@ -27,8 +28,8 @@ import {
   Users,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { Link, useLocation } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   Sheet,
   SheetContent,
@@ -87,6 +88,8 @@ const data = {
 };
 
 export function AppSidebar({ ...props }) {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [active, setActive] = useState(1);
   const location = useLocation();
 
@@ -183,13 +186,15 @@ export function AppSidebar({ ...props }) {
               </SidebarMenuItem>
               <SidebarMenuItem className="border-t border-blue-800 py-4">
                 <SidebarMenuButton asChild className="px-4">
-                  <Link
-                    to="/"
+                  <div
+                    onClick={() => {
+                      handleSignout(dispatch, navigate);
+                    }}
                     className={`flex w-full items-center space-x-3 px-6 py-2.5 text-left text-sm font-normal transition-all duration-200 hover:bg-blue-800 hover:bg-opacity-80`}
                   >
                     <LogOut />
                     <span>{data.versions[1]}</span>
-                  </Link>
+                  </div>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
@@ -267,13 +272,15 @@ export function AppSidebar({ ...props }) {
           </SidebarMenuItem>
           <SidebarMenuItem className="border-t border-blue-800 py-4">
             <SidebarMenuButton asChild className="px-4">
-              <Link
-                to="/"
-                className={`flex w-full items-center space-x-3 px-6 py-2.5 text-left text-sm font-normal transition-all duration-200 hover:underline`}
+              <div
+                onClick={() => {
+                  handleSignout(dispatch, navigate);
+                }}
+                className={`flex w-full cursor-pointer items-center space-x-3 px-6 py-2.5 text-left text-sm font-normal transition-all duration-200 hover:underline`}
               >
                 <LogOut />
                 <span>{data.versions[1]}</span>
-              </Link>
+              </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
