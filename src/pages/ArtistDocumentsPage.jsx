@@ -70,7 +70,7 @@ const ArtistDocumentsPage = () => {
         ? {
             from: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
             select: [3, 6, 7, 9, 10, 11, 12, 14],
-            where: `{9.EX.'${artistOrg}'}`,
+            where: `{9.EX.'${artistOrg}'} AND {11.EX.'${getCurrentFiscalYear()}'}`,
             sortBy: [{ fieldId: 11 }, { order: "DESC" }],
           }
         : { skip: !artistOrg, refetchOnMountOrArgChange: true },
