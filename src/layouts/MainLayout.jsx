@@ -1,13 +1,13 @@
 import { AppSidebar } from "@/components/app-sidebar";
+import PageHeader from "@/components/PageHeader";
 import RenewRegistrationModal from "@/components/renewRegistrationModal";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/toaster";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 
 const MainLayout = () => {
   const isMobile = useIsMobile();
-  
 
   return (
     <div className="max-w-screen flex min-h-screen flex-col overflow-x-hidden bg-slate-50">
@@ -16,6 +16,7 @@ const MainLayout = () => {
         {!isMobile && <AppSidebar variant="inset" collapsible="icon" />}
         <div className="flex flex-grow flex-col">
           {isMobile && <AppSidebar variant="inset" collapsible="icon" />}
+          <PageHeader />
           <div
             className={`flex ${isMobile ? "max-w-[100vw]" : "max-w-[calc(100vw-var(--sidebar-width))]"}  grow items-start justify-start overflow-hidden p-10 pt-14`}
           >
