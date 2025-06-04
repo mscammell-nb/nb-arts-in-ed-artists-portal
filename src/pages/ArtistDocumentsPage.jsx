@@ -36,8 +36,7 @@ import {
   getCurrentFiscalYearKey,
 } from "@/utils/utils";
 import { Label } from "@radix-ui/react-dropdown-menu";
-import { DownloadIcon } from "@radix-ui/react-icons";
-import { AlertCircleIcon, Loader2, UploadIcon } from "lucide-react";
+import { AlertCircleIcon, Download, Loader2, Upload } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
@@ -243,31 +242,41 @@ const ArtistDocumentsPage = () => {
           </AlertDescription>
         </Alert>
       )}
-      <div>
-        <p>Download Document Templates</p>
-      </div>
-      <div className="flex flex-col items-center gap-3 md:flex-row">
-        {!isFileTypesLoading &&
-          fileTypes &&
-          fileTypes.data.map((f) => (
-            <Button
-              className="flex w-full items-center gap-2 md:w-auto"
-              key={f[31].value}
-              onClick={() => downloadTemplate(f)}
-            >
-              <DownloadIcon />
-              {f[31].value}
-            </Button>
-          ))}
+      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <h3 className="mb-4 text-lg font-medium text-gray-900">
+          Download Document Templates
+        </h3>
+        <div className="flex flex-wrap gap-3">
+          {!isFileTypesLoading &&
+            fileTypes &&
+            fileTypes.data.map((f) => (
+              <Button
+                className="flex items-center space-x-2 rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
+                key={f[31].value}
+                onClick={() => downloadTemplate(f)}
+              >
+                <Download className="h-4 w-4" />
+                <span>{f[31].value}</span>
+              </Button>
+            ))}
+        </div>
       </div>
       {/* File Upload */}
-      <div className="flex items-center gap-3">
-        <p className="text-sm text-gray-600">Upload a file: </p>
+      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <h3 className="mb-4 text-lg font-medium text-gray-900">
+          Upload a file:
+        </h3>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button variant="outline" className="rounded-full">
-              <UploadIcon className="size-4" />
-            </Button>
+            <button className="group flex w-full max-w-md items-center rounded-lg border-2 border-dashed border-gray-300 bg-white p-4 transition-all duration-200 hover:border-blue-400 hover:bg-blue-50">
+              <div className="mr-3 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 transition-colors group-hover:bg-blue-200">
+                <Upload className="h-5 w-5 text-blue-600" />
+              </div>
+              <div className="text-left">
+                <p className="font-medium text-gray-900">Upload a file</p>
+                <p className="text-sm text-gray-500">Click to browse files</p>
+              </div>
+            </button>
           </DialogTrigger>
           <DialogContent className="max-w-sm sm:max-w-lg">
             <DialogHeader>
