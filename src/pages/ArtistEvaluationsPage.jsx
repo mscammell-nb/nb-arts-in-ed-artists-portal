@@ -119,7 +119,7 @@ const ArtistEvaluationsPage = () => {
           select: [
             2, 3, 6, 7, 8, 9, 11, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 25,
           ],
-          where: `{24.EX.${artistRecordId}}`,
+          where: `{24.EX.'${artistRecordId}'}`,
         }
       : { skip: true, refetchOnMountOrArgChange: true },
   );
@@ -134,7 +134,7 @@ const ArtistEvaluationsPage = () => {
       ? {
           from: import.meta.env.VITE_QUICKBASE_PROGRAMS_TABLE_ID,
           select: [1, 3, 8, 11, 16, 31, 32, 33],
-          where: `{8.EX.${artistRecordId}}AND{16.EX.${getCurrentFiscalYear()}}`,
+          where: `{8.EX.'${artistRecordId}'}AND{16.EX.'${getCurrentFiscalYear()}'}`,
         }
       : { skip: true, refetchOnMountOrArgChange: true },
   );
@@ -146,7 +146,7 @@ const ArtistEvaluationsPage = () => {
             // select: [1, 3, 8, 10, 12, 13, 15, 16, 24, 46, 30],
             select: [3, 20, 22, 23, 24, 28, 30, 32, 34, 35, 36, 37, 46, 49],
 
-            where: `{33.EX.${artistRecordId}}AND{24.EX.${getCurrentFiscalYear()}}`,
+            where: `{33.EX.'${artistRecordId}'}AND{24.EX.'${getCurrentFiscalYear()}'}`,
           }
         : { skip: true, refetchOnMountOrArgChange: true },
     );

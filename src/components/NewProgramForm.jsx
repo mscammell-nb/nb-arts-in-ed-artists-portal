@@ -50,7 +50,7 @@ function NewProgramForm({ selectedArtist = null, onSubmitSuccess = () => {} }) {
         ? {
             from: import.meta.env.VITE_QUICKBASE_PERFORMERS_TABLE_ID,
             select: [3, 9, 10, 11, 14],
-            where: `{14.EX.${artistRecordId}} AND {9.EX.Yes} AND {10.EX.Yes} AND {11.EX.Yes}`,
+            where: `{14.EX.'${artistRecordId}'} AND {9.EX.Yes} AND {10.EX.Yes} AND {11.EX.Yes}`,
           }
         : { skip: true, refetchOnMountOrArgChange: true },
     );

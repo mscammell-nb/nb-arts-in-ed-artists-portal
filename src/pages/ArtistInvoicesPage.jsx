@@ -24,7 +24,7 @@ export default function ArtistInvoicesPage() {
       ? {
           from: import.meta.env.VITE_QUICKBASE_CONTRACTS_TABLE_ID,
           select: [3, 20, 22, 23, 24, 28, 30, 32, 34, 35, 36, 37],
-          where: `{33.EX.${artistRecordId}}`,
+          where: `{33.EX.'${artistRecordId}'}`,
         }
       : { skip: true, refetchOnMountOrArgChange: true },
   );

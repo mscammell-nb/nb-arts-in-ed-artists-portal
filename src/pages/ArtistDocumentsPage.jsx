@@ -55,7 +55,7 @@ const ArtistDocumentsPage = () => {
         ? {
             from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
             select: [46],
-            where: `{10.EX.${user.uid}}`,
+            where: `{10.EX.'${user.uid}'}`,
           }
         : { skip: !user, refetchOnMountOrArgChange: true },
     );
@@ -71,7 +71,7 @@ const ArtistDocumentsPage = () => {
         ? {
             from: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
             select: [3, 6, 7, 9, 10, 11, 12, 14],
-            where: `{9.EX.${artistOrg}}`,
+            where: `{9.EX.'${artistOrg}'}`,
             sortBy: [{ fieldId: 11 }, { order: "DESC" }],
           }
         : { skip: !artistOrg, refetchOnMountOrArgChange: true },

@@ -59,7 +59,7 @@ const NewProgramPage = () => {
   } = useQueryForDataQuery({
     from: import.meta.env.VITE_QUICKBASE_PERFORMERS_TABLE_ID,
     select: [3, 9, 10, 11, 14],
-    where: `{14.EX.${artistRecordId}} AND {9.EX."Yes"} AND {10.EX."Yes"} AND {11.EX."true"}`,
+    where: `{14.EX.'${artistRecordId}'} AND {9.EX."Yes"} AND {10.EX."Yes"} AND {11.EX."true"}`,
   });
 
   const maxPerformers =

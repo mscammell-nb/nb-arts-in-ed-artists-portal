@@ -119,7 +119,7 @@ const RegistrationRenewalPage = () => {
       ? {
           from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
           select: [3, 6, 7, 8, 9, 11, 13, 14, 15, 16, 17, 31, 48],
-          where: `{10.EX.${user.uid}}`,
+          where: `{10.EX.'${user.uid}'}`,
         }
       : { skip: !user, refetchOnMountOrArgChange: true },
   );
@@ -159,7 +159,7 @@ const RegistrationRenewalPage = () => {
         ? {
             from: import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
             select: [3, 6, 7, 9, 10, 11, 12, 14],
-            where: `{9.EX.'${artist}'} AND {10.EX.${fiscalYearKey}}`,
+            where: `{9.EX.'${artist}'} AND {10.EX.'${fiscalYearKey}'}`,
             sortBy: [{ fieldId: 10 }, { order: "DESC" }],
           }
         : { skip: !artist || !fiscalYearKey, refetchOnMountOrArgChange: true },

@@ -35,7 +35,7 @@ const ArtistRegistrationsPage = () => {
       ? {
           from: import.meta.env.VITE_QUICKBASE_ARTIST_REGISTRATIONS_TABLE_ID,
           select: [3, 6, 8, 9, 11, 12, 14, 21, 23, 25, 28],
-          where: `{13.EX.${user.uid}}`,
+          where: `{13.EX.'${user.uid}'}`,
         }
       : { skip: !user, refetchOnMountOrArgChange: true },
   );

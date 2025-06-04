@@ -1,3 +1,4 @@
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
 import { setArtistData } from "@/redux/slices/artistSlice";
@@ -9,10 +10,6 @@ import {
   handleSignout,
   isDuringCutoff,
 } from "@/utils/utils";
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Link, Navigate, useNavigate } from "react-router-dom";
-import Spinner from "../components/ui/Spinner";
 import {
   AlertCircle,
   AlertTriangle,
@@ -21,9 +18,11 @@ import {
   FileText,
   LogOut,
   RefreshCcw,
-  RefreshCcwDot,
 } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, Navigate, useNavigate } from "react-router-dom";
+import Spinner from "../components/ui/Spinner";
 
 const RegistrationGate = () => {
   const user = useSelector((state) => state.auth.user);
@@ -56,7 +55,7 @@ const RegistrationGate = () => {
       ? {
           from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
           select: [3, 6, 29, 30, 48, 58, 62, 63],
-          where: `{10.EX.${user.uid}}`,
+          where: `{10.EX.'${user.uid}'}`,
         }
       : { skip: !user, refetchOnMountOrArgChange: true },
   );
@@ -71,7 +70,7 @@ const RegistrationGate = () => {
       ? {
           from: import.meta.env.VITE_QUICKBASE_ARTIST_REGISTRATIONS_TABLE_ID,
           select: [3, 6, 25],
-          where: `{13.EX.${user.uid}} AND {25.EX.${currFiscalYear}}`,
+          where: `{13.EX.'${user.uid}'} AND {25.EX.'${currFiscalYear}'}`,
           sortBy: [{ fieldId: 25 }, { order: "DESC" }],
         }
       : { skip: !user, refetchOnMountOrArgChange: true },
@@ -208,7 +207,10 @@ const RegistrationGate = () => {
             page to submit a new registration.
           </p>
           <div className="flex flex-col gap-3">
-            <Button className="text-md flex w-full items-center gap-3 py-5 font-medium" onClick={()=>navigate("/registration-renewal")}>
+            <Button
+              className="text-md flex w-full items-center gap-3 py-5 font-medium"
+              onClick={() => navigate("/registration-renewal")}
+            >
               <RefreshCcw className="h-4 w-4" />
               Registration Renewal
             </Button>

@@ -28,7 +28,7 @@ export function VersionSwitcher({ versions, defaultVersion }) {
       ? {
           from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
           select: [3, 6, 29, 30],
-          where: `{10.EX.${user.uid}}`,
+          where: `{10.EX.'${user.uid}'}`,
         }
       : { skip: !user, refetchOnMountOrArgChange: true },
   );

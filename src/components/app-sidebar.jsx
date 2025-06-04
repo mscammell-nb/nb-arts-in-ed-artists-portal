@@ -98,7 +98,7 @@ export function AppSidebar({ ...props }) {
         ? {
             from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
             select: [6, 46],
-            where: `{10.EX.${user.uid}}`,
+            where: `{10.EX.'${user.uid}'}`,
           }
         : { skip: !user, refetchOnMountOrArgChange: true },
     );
