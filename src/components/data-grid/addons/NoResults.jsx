@@ -1,6 +1,6 @@
 const NoResultsFound = ({ message = "No results found", icon = true }) => {
   return (
-    <tr className="border-b border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
+    <tr className="bg-white dark:border-gray-700 dark:bg-gray-800">
       <td colSpan="100%" className="p-8 text-center">
         <div className="flex flex-col items-center justify-center py-8">
           {icon && (
