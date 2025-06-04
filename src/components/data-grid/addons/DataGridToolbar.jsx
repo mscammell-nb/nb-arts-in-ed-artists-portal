@@ -23,7 +23,7 @@ const DataGridToolbar = memo(function DataGridToolbar({
   return (
     <div
       className={cn(
-        "flex flex-col items-center gap-2 pb-3 sm:flex-row",
+        "flex w-full flex-col items-center gap-2 sm:flex-row",
         noSearch ? "justify-end" : "justify-between",
       )}
       role="search"

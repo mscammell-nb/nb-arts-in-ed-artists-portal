@@ -263,33 +263,57 @@ function DataGrid({
   );
   return (
     <div className="w-full overflow-hidden rounded-lg border border-gray-200 bg-white px-0 py-3 shadow-sm">
-      <div className="border-b border-gray-200 p-6">
-        {(tableTitle || (!noSearch && extraButtons)) && (
+      {tableTitle ? (
+        <>
+          <div className="border-b border-gray-200 p-6">
+            <div className="flex items-center justify-between">
+              <span className="text-2xl font-bold">{tableTitle}</span>
+              {extraButtons && extraButtons}
+            </div>
+            {/* {(tableTitle || (!noSearch && extraButtons)) && (
           <div className="flex w-full items-center justify-between">
             {tableTitle && (
               <span className="mb-3 text-2xl font-bold">{tableTitle}</span>
             )}
             {noSearch && extraButtons}
           </div>
-        )}
-        <DataGridToolbar
-          noSearch={noSearch}
-          extraButtons={extraButtons}
-          table={table}
-        />
-        {editing && (
-          <div className="flex items-center gap-3 pb-3">
-            <Button onClick={handleSaveChanges}>
-              <Save className="mr-2 h-4 w-4" />
-              <span>Save</span>
-            </Button>
-            <Button variant="secondary" onClick={handleCancelChanges}>
-              <X className="mr-2 h-4 w-4" />
-              <span>Cancel</span>
-            </Button>
+        )} */}
           </div>
-        )}
-      </div>
+          <div className="flex items-center justify-between border-b border-gray-200 p-6">
+            <DataGridToolbar noSearch={noSearch} table={table} />
+            {editing && (
+              <div className="flex items-center gap-3 pb-3">
+                <Button onClick={handleSaveChanges}>
+                  <Save className="mr-2 h-4 w-4" />
+                  <span>Save</span>
+                </Button>
+                <Button variant="secondary" onClick={handleCancelChanges}>
+                  <X className="mr-2 h-4 w-4" />
+                  <span>Cancel</span>
+                </Button>
+              </div>
+            )}
+          </div>
+        </>
+      ) : (
+        <div className="flex items-center justify-between border-b border-gray-200 p-6">
+          <DataGridToolbar noSearch={noSearch} table={table} />
+          {extraButtons && extraButtons}
+          {editing && (
+            <div className="ml-4 flex items-center gap-3">
+              <Button onClick={handleSaveChanges}>
+                <Save className="mr-2 h-4 w-4" />
+                <span>Save</span>
+              </Button>
+              <Button variant="secondary" onClick={handleCancelChanges}>
+                <X className="mr-2 h-4 w-4" />
+                <span>Cancel</span>
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Table container with accessibility attributes */}
       <div className="relative overflow-x-auto">
         <table

@@ -341,7 +341,6 @@ const PerformersPage = () => {
           data={formatData(performersData)}
           columns={performersColumns}
           usePagination
-          tableTitle={"Performers List"}
           CustomAddComponent={AddSheet}
           addButtonText="Add Performer"
           sheetProps={{
