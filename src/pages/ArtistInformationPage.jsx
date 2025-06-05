@@ -1,13 +1,6 @@
 import DataGrid from "@/components/data-grid/data-grid";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import CustomSelect from "@/components/ui/CustomSelect";
 import {
   Form,
@@ -18,7 +11,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { PasswordInput } from "@/components/ui/password-input";
 import {
   Select,
@@ -46,6 +38,7 @@ import { toast } from "@/components/ui/use-toast";
 import { STATES, VALID_WEBSITE_URL_REGEX } from "@/constants/constants";
 import { ALL_DISTRICTS } from "@/constants/districts";
 import { auth } from "@/firebaseConfig";
+import { cn } from "@/lib/utils";
 import {
   useAddOrUpdateRecordMutation,
   useQueryForDataQuery,
@@ -56,20 +49,43 @@ import { getCurrentFiscalYear, parsePhoneNumber } from "@/utils/utils";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { signInWithEmailAndPassword, updatePassword } from "firebase/auth";
-import { AlertCircle, CircleAlert, Pencil } from "lucide-react";
+import {
+  AlertCircle,
+  CircleAlert,
+  Globe,
+  Mail,
+  MapPin,
+  Pencil,
+  Phone,
+  Users,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
 import * as yup from "yup";
 import "yup-phone-lite";
 
-const ArtistItem = ({ label, value }) => {
-  return (
-    <div className="flex flex-col gap-1">
-      <Label className="font-semibold">{label}</Label>
-      <p>{value || "-"}</p>
-    </div>
-  );
+const ArtistItem = ({ label, value, icon = null, link = false }) => {
+  if (true)
+    return (
+      <div className="flex items-center space-x-3">
+        {icon}
+        <div>
+          <span className="block text-sm font-medium text-gray-700">
+            {label}
+          </span>
+          {link ? (
+            <span className="text-blue-500 hover:underline">
+              <a href={value} target="_blank">
+                {value}
+              </a>
+            </span>
+          ) : (
+            <span className="text-gray-900">{value || "-"}</span>
+          )}
+        </div>
+      </div>
+    );
 };
 const AddReference = ({ open, onOpenChange, sheetProps }) => {
   return (
@@ -609,430 +625,497 @@ const ArtistInformationPage = () => {
   }
 
   return (
-    <div className="flex w-full max-w-[1200px] flex-col gap-3">
-      {registrationData && !registrationData.data[0][6] && (
-        <div className="flex w-full items-center justify-start gap-3 border border-yellow-500 bg-yellow-100 p-2 text-yellow-700">
-          <CircleAlert size={20} />
-          <p>
-            This information is{" "}
-            <span className="font-bold">Pending Approval</span>
-          </p>
-        </div>
-      )}
-      {!has3References && (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Not enough references!</AlertTitle>
-          <AlertDescription>
-            You are required to have at least 3 references to submit a new
-            program.
-          </AlertDescription>
-        </Alert>
-      )}
-      {registrationData?.data[0][36].value != "" && (
-        <Alert variant="info">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Changes Pending</AlertTitle>
-          <AlertDescription>
-            You have changes to your account information pending. You will see
-            the changes once they are approved.
-          </AlertDescription>
-        </Alert>
-      )}
-
-      <div className="flex w-full items-center justify-between rounded border border-gray-200 bg-white p-2.5">
-        <p className="text-xl font-semibold">Artist Information</p>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger>
-              <Pencil
-                className="cursor-pointer text-blue-400"
-                onClick={() => {
-                  setEditing(!editing);
-                }}
-                size={20}
-              />
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Edit</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+    <div className="flex-1 overflow-auto p-6 pt-0">
+      {/* Alerts */}
+      <div className="mb-4 flex w-full flex-col items-center gap-2">
+        {registrationData && !registrationData.data[0][6] && (
+          <div className="flex w-full items-center justify-start gap-3 border border-yellow-500 bg-yellow-100 p-2 text-yellow-700">
+            <CircleAlert size={20} />
+            <p>
+              This information is{" "}
+              <span className="font-bold">Pending Approval</span>
+            </p>
+          </div>
+        )}
+        {!has3References && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Not enough references!</AlertTitle>
+            <AlertDescription>
+              You are required to have at least 3 references to submit a new
+              program.
+            </AlertDescription>
+          </Alert>
+        )}
+        {registrationData?.data[0][36].value != "" && (
+          <Alert variant="info">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Changes Pending</AlertTitle>
+            <AlertDescription>
+              You have changes to your account information pending. You will see
+              the changes once they are approved.
+            </AlertDescription>
+          </Alert>
+        )}
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <Card>
-          <CardHeader>
-            <CardTitle>General Information</CardTitle>
-            <CardDescription>
-              Your account's general information
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-3">
-            {editing && (
-              <Form {...informationForm}>
-                <form
-                  className="flex w-full flex-col gap-3"
-                  onSubmit={informationForm.handleSubmit(updateArtistSubmit)}
-                >
-                  <FormField
-                    control={informationForm.control}
-                    name="artistOrg"
-                    render={({ field }) => (
+      <div className="flex flex-col gap-8">
+        {/* General Information */}
+        <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
+          <div className="flex items-center justify-between border-b border-gray-200 p-6">
+            <div>
+              <h2 className="text-lg font-medium text-gray-900">
+                General Information
+              </h2>
+              <p className="mt-1 text-sm text-gray-500">
+                General information about artist
+              </p>
+            </div>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <Pencil
+                    className="cursor-pointer text-blue-400"
+                    onClick={() => {
+                      setEditing(!editing);
+                    }}
+                    size={20}
+                  />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Edit</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+          <div className="space-y-6 border-b border-gray-200 p-6">
+            <Form {...informationForm}>
+              <form
+                onSubmit={informationForm.handleSubmit(updateArtistSubmit)}
+                className={cn(editing ? "space-y-8" : "space-y-6")}
+              >
+                <FormField
+                  control={informationForm.control}
+                  name="artistOrg"
+                  render={({ field }) =>
+                    editing ? (
                       <FormItem>
-                        <FormLabel>Artist / Org</FormLabel>
+                        <FormLabel className="flex items-center gap-2 text-gray-700">
+                          Artist / Org
+                        </FormLabel>
                         <FormControl>
                           <Input placeholder="Artist / Org" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
-                    )}
-                  />
+                    ) : (
+                      <ArtistItem
+                        label="Artist / Org"
+                        value={artistVal}
+                        setValue={setArtistVal}
+                      />
+                    )
+                  }
+                />
+                <div
+                  className={cn(
+                    "grid grid-cols-1",
+                    editing ? "gap-8" : "gap-4",
+                  )}
+                >
                   <FormField
                     control={informationForm.control}
                     name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Email" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={informationForm.control}
-                    name="numOfPerformers"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Number of Performers</FormLabel>
-                        <FormControl>
-                          <Select
-                            value={field.value}
-                            onValueChange={field.onChange}
-                          >
-                            <SelectTrigger className="w-full">
-                              <SelectValue placeholder="Number of Performers" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="Less than Five">
-                                Less than Five
-                              </SelectItem>
-                              <SelectItem value="Five or More">
-                                Five or More
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    render={({ field }) =>
+                      editing ? (
+                        <FormItem>
+                          <FormLabel className="flex items-center gap-2 text-gray-700">
+                            <Mail className="h-4 w-4 text-gray-400" />
+                            Email
+                          </FormLabel>
+                          <FormControl>
+                            <Input placeholder="Email" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      ) : (
+                        <ArtistItem
+                          icon={<Mail className="h-4 w-4 text-gray-400" />}
+                          label="Email"
+                          value={emailVal}
+                          setValue={setEmailVal}
+                        />
+                      )
+                    }
                   />
                   <FormField
                     control={informationForm.control}
                     name="phone"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Phone</FormLabel>
-                        <FormControl>
-                          <Input placeholder="(123) 456-7890" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    render={({ field }) =>
+                      editing ? (
+                        <FormItem>
+                          <FormLabel className="flex items-center gap-2 text-gray-700">
+                            <Phone className="h-4 w-4 text-gray-400" />
+                            Phone
+                          </FormLabel>
+                          <FormControl>
+                            <Input placeholder="(123) 456-7890" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      ) : (
+                        <ArtistItem
+                          icon={<Phone className="h-4 w-4 text-gray-400" />}
+                          label="Phone"
+                          value={phoneVal}
+                          setValue={setPhoneVal}
+                        />
+                      )
+                    }
                   />
-                  <FormField
-                    control={informationForm.control}
-                    name="altPhone"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Alt Phone</FormLabel>
-                        <FormControl>
-                          <Input placeholder="(123) 456-7890" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={informationForm.control}
-                    name="street1"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Street 1</FormLabel>
-                        <FormControl>
-                          <Input placeholder="123 Main Street" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={informationForm.control}
-                    name="street2"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Street 2</FormLabel>
-                        <FormControl>
-                          <Input placeholder="123 Main Street" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={informationForm.control}
-                    name="city"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>City</FormLabel>
-                        <FormControl>
-                          <Input placeholder="City" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={informationForm.control}
-                    name="state"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>State</FormLabel>
-                        <FormControl>
-                          <Input placeholder="State" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={informationForm.control}
-                    name="zipCode"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Zip Code</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            className="[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-                            placeholder="11801"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  {editing ? (
+                    <div>
+                      <div className="mb-4 flex items-center space-x-2">
+                        <MapPin className="h-4 w-4 text-gray-400" />
+                        <label className="text-sm font-medium text-gray-700">
+                          Address
+                        </label>
+                      </div>
+                      <div className="space-y-4 pl-6">
+                        <FormField
+                          control={informationForm.control}
+                          name="street1"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="flex items-center gap-2 text-gray-700">
+                                Street 1
+                              </FormLabel>
+                              <FormControl>
+                                <Input
+                                  placeholder="123 Main Street"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={informationForm.control}
+                          name="street2"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="flex items-center gap-2 text-gray-700">
+                                Street 2
+                                <span className="text-xs text-slate-500">
+                                  (Optional)
+                                </span>
+                              </FormLabel>
+                              <FormControl>
+                                <Input
+                                  placeholder="123 Main Street"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={informationForm.control}
+                          name="city"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="flex items-center gap-2 text-gray-700">
+                                City
+                              </FormLabel>
+                              <FormControl>
+                                <Input placeholder="City" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={informationForm.control}
+                          name="state"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="flex items-center gap-2 text-gray-700">
+                                State
+                              </FormLabel>
+                              <FormControl>
+                                <Input placeholder="State" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={informationForm.control}
+                          name="zipCode"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="flex items-center gap-2 text-gray-700">
+                                Zip Code
+                              </FormLabel>
+                              <FormControl>
+                                <Input
+                                  type="number"
+                                  className="[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                                  placeholder="11801"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <ArtistItem
+                      icon={<MapPin className="h-4 w-4 text-gray-400" />}
+                      label="Address"
+                      value={addressVal}
+                      setValue={setAddressVal}
+                    />
+                  )}
                   <FormField
                     control={informationForm.control}
                     name="website"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Website</FormLabel>
-                        <FormControl>
-                          <Input placeholder="www.Google.com" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    render={({ field }) =>
+                      editing ? (
+                        <FormItem>
+                          <FormLabel className="flex items-center gap-2 text-gray-700">
+                            Website
+                          </FormLabel>
+                          <FormControl>
+                            <Input placeholder="www.Google.com" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      ) : (
+                        <ArtistItem
+                          icon={<Globe className="h-4 w-4 text-gray-400" />}
+                          label="Website"
+                          value={websiteVal}
+                          setValue={setWebsiteVal}
+                          link
+                        />
+                      )
+                    }
                   />
-                  <div className="flex gap-3">
-                    <Button
-                      type="button"
-                      className="w-fit"
-                      variant="secondary"
-                      onClick={() => cancelEdit()}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      type="submit"
-                      className="w-fit"
-                      disabled={isUpdateArtistLoading}
-                    >
-                      {isUpdateArtistLoading && (
-                        <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                      )}
-                      {isUpdateArtistLoading ? "Please wait" : "Save"}
-                    </Button>
-                  </div>
-                </form>
-              </Form>
-            )}
-
-            {!editing && (
-              <>
-                <ArtistItem
-                  label="Artist / Org"
-                  value={artistVal}
-                  setValue={setArtistVal}
-                  editing={false}
-                />
-                <ArtistItem
-                  label="Email"
-                  value={emailVal}
-                  setValue={setEmailVal}
-                  editing={false}
-                />
-                <ArtistItem
-                  label="Number of Performers"
-                  value={performersVal}
-                  setValue={setPerformersVal}
-                  editing={editing}
-                  dropdown={true}
-                />
-                <ArtistItem
-                  label="Phone"
-                  value={phoneVal}
-                  setValue={setPhoneVal}
-                  editing={editing}
-                />
-                <ArtistItem
-                  label="Alt Phone"
-                  value={altPhoneVal}
-                  setValue={setAltPhoneVal}
-                  editing={editing}
-                />
-                <ArtistItem
-                  label="Address"
-                  value={addressVal}
-                  setValue={setAddressObject}
-                  editing={editing}
-                  address={addressObject}
-                />
-                <ArtistItem
-                  label="Website"
-                  value={websiteVal}
-                  setValue={setWebsiteVal}
-                  editing={editing}
-                />
-              </>
-            )}
-
-            <Sheet
-              open={changePasswordOpen}
-              onOpenChange={setChangePasswordOpen}
-            >
-              <SheetTrigger
-                onClick={() => setChangePasswordOpen(true)}
-                className="mt-3 w-fit cursor-pointer text-sm text-blue-500 hover:underline"
+                  <FormField
+                    control={informationForm.control}
+                    name="numOfPerformers"
+                    render={({ field }) =>
+                      editing ? (
+                        <FormItem>
+                          <FormLabel className="flex items-center gap-2 text-gray-700">
+                            <Users className="h-4 w-4 text-gray-400" />
+                            Number of Performers
+                          </FormLabel>
+                          <FormControl>
+                            <Select
+                              value={field.value}
+                              onValueChange={field.onChange}
+                            >
+                              <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Number of Performers" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Less than Five">
+                                  Less than Five
+                                </SelectItem>
+                                <SelectItem value="Five or More">
+                                  Five or More
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      ) : (
+                        <ArtistItem
+                          icon={<Users className="h-4 w-4 text-gray-400" />}
+                          label="Number of Performers"
+                          value={performersVal}
+                          setValue={setPerformersVal}
+                        />
+                      )
+                    }
+                  />
+                </div>
+              </form>
+            </Form>
+          </div>
+          <div className="rounded-b-lg  bg-white px-6 py-4">
+            <div className="flex items-center justify-between">
+              <Sheet
+                open={changePasswordOpen}
+                onOpenChange={setChangePasswordOpen}
               >
-                Change Password
-              </SheetTrigger>
-              <SheetContent className="min-w-[30%]">
-                <Form {...form}>
-                  <form
-                    onSubmit={form.handleSubmit(onSubmit)}
-                    className="flex w-full flex-col gap-3"
+                <SheetTrigger
+                  onClick={() => setChangePasswordOpen(true)}
+                  className="w-fit cursor-pointer text-sm text-blue-500 hover:underline"
+                >
+                  Change Password
+                </SheetTrigger>
+                <SheetContent className="min-w-[30%]">
+                  <Form {...form}>
+                    <form
+                      onSubmit={form.handleSubmit(onSubmit)}
+                      className="flex w-full flex-col gap-3"
+                    >
+                      <div>
+                        <p className="text-2xl font-bold">Change Password</p>
+                        <p className="text-gray-500">
+                          {" "}
+                          Ensure your account is using a long, random password
+                          to stay secure.
+                        </p>
+                      </div>
+                      <FormField
+                        control={form.control}
+                        name="currentPassword"
+                        render={({ field }) =>
+                          editing ? (
+                            <FormItem>
+                              <FormLabel>Current Password</FormLabel>
+                              <FormControl>
+                                <PasswordInput
+                                  placeholder="Current Password"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          ) : (
+                            <ArtistItem
+                              icon={<Mail className="h-4 w-4 text-gray-400" />}
+                              label="Email"
+                              value={emailVal}
+                              setValue={setEmailVal}
+                            />
+                          )
+                        }
+                      />
+                      <FormField
+                        control={form.control}
+                        name="newPassword"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>New Password</FormLabel>
+                            <FormControl>
+                              <PasswordInput
+                                placeholder="New Password"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="confirmNewPassword"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Confirm Password</FormLabel>
+                            <FormControl>
+                              <PasswordInput
+                                placeholder="Confirm Password"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <Button type="submit" className="w-fit">
+                        Save
+                      </Button>
+                    </form>
+                  </Form>
+                </SheetContent>
+              </Sheet>
+              {editing && (
+                <div className="flex items-center space-x-3">
+                  <Button
+                    type="button"
+                    className="w-fit"
+                    variant="outline"
+                    onClick={() => cancelEdit()}
                   >
-                    <div>
-                      <p className="text-2xl font-bold">Change Password</p>
-                      <p className="text-gray-500">
-                        {" "}
-                        Ensure your account is using a long, random password to
-                        stay secure.
-                      </p>
-                    </div>
-                    <FormField
-                      control={form.control}
-                      name="currentPassword"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Current Password</FormLabel>
-                          <FormControl>
-                            <PasswordInput
-                              placeholder="Current Password"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="newPassword"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>New Password</FormLabel>
-                          <FormControl>
-                            <PasswordInput
-                              placeholder="New Password"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="confirmNewPassword"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Confirm Password</FormLabel>
-                          <FormControl>
-                            <PasswordInput
-                              placeholder="Confirm Password"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <Button type="submit" className="w-fit">
-                      Save
-                    </Button>
-                  </form>
-                </Form>
-              </SheetContent>
-            </Sheet>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Payment Information</CardTitle>
-            <CardDescription>
-              Your account's payment information
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-3">
-            <ArtistItem
-              label="Payment Type"
-              value={paymentType}
-              setValue={setPaymentType}
-              editing={false}
-            />
-            {paymentType === "Check" && (
-              <ArtistItem
-                label="Payee Name"
-                value={payeeName}
-                setValue={setPayeeName}
-                editing={false}
-              />
-            )}
-          </CardContent>
-        </Card>
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    onClick={() =>
+                      informationForm.handleSubmit(updateArtistSubmit)()
+                    }
+                    className="rounded-md bg-blue-600 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+                    disabled={isUpdateArtistLoading}
+                  >
+                    {isUpdateArtistLoading && (
+                      <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                    )}
+                    {isUpdateArtistLoading ? "Please wait" : "Save"}
+                  </Button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Payment Information */}
+        <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
+          <div className="flex flex-col items-start justify-between border-b border-gray-200 p-6">
+            <h2 className="text-lg font-medium text-gray-900">
+              Payment Information
+            </h2>
+            <p className="mt-1 text-sm text-gray-500">
+              Payment information about artist
+            </p>
+          </div>
+          {/* Check, ETF (Direct Deposit) */}
+          {artistData?.data && (
+            <div className="flex space-x-10 p-6">
+              <div>
+                <label className="mb-2 block text-sm font-medium text-gray-700">
+                  Payment Type
+                </label>
+                <p>{artistData.data[0][50].value || "-"}</p>
+              </div>
+              {artistData.data[0][50].value === "Check" && (
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-700">
+                    Payee Name
+                  </label>
+                  <p>{artistData.data[0][51].value || "-"}</p>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* References */}
         {isReferencesLoading ? (
           <Spinner />
         ) : (
-          <div className="col-span-2">
-            <DataGrid
-              tableTitle={"References"}
-              data={formatData(referencesData || { data: [] })}
-              columns={referencesColumns}
-              readOnly={true}
-              noSearch
-              noFilter
-              noSort
-              addButtonText="Add Reference"
-              CustomAddComponent={AddReference}
-              sheetProps={{ title: "Add Reference", artistRecordId }}
-            />
-          </div>
+          <DataGrid
+            tableTitle={"References"}
+            data={formatData(referencesData || { data: [] })}
+            columns={referencesColumns}
+            readOnly={true}
+            noSearch
+            noFilter
+            noSort
+            addButtonText="Add Reference"
+            CustomAddComponent={AddReference}
+            sheetProps={{ title: "Add Reference", artistRecordId }}
+          />
         )}
       </div>
     </div>

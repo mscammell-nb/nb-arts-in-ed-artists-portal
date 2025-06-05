@@ -279,10 +279,31 @@ function DataGrid({
           </div>
         )} */}
           </div>
+          {!noSearch && (
+            <div className="flex items-center justify-between border-b border-gray-200 p-6">
+              <DataGridToolbar noSearch={noSearch} table={table} />
+              {editing && (
+                <div className="flex items-center gap-3 pb-3">
+                  <Button onClick={handleSaveChanges}>
+                    <Save className="mr-2 h-4 w-4" />
+                    <span>Save</span>
+                  </Button>
+                  <Button variant="secondary" onClick={handleCancelChanges}>
+                    <X className="mr-2 h-4 w-4" />
+                    <span>Cancel</span>
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
+        </>
+      ) : (
+        !noSearch && (
           <div className="flex items-center justify-between border-b border-gray-200 p-6">
             <DataGridToolbar noSearch={noSearch} table={table} />
+            {extraButtons && extraButtons}
             {editing && (
-              <div className="flex items-center gap-3 pb-3">
+              <div className="ml-4 flex items-center gap-3">
                 <Button onClick={handleSaveChanges}>
                   <Save className="mr-2 h-4 w-4" />
                   <span>Save</span>
@@ -294,24 +315,7 @@ function DataGrid({
               </div>
             )}
           </div>
-        </>
-      ) : (
-        <div className="flex items-center justify-between border-b border-gray-200 p-6">
-          <DataGridToolbar noSearch={noSearch} table={table} />
-          {extraButtons && extraButtons}
-          {editing && (
-            <div className="ml-4 flex items-center gap-3">
-              <Button onClick={handleSaveChanges}>
-                <Save className="mr-2 h-4 w-4" />
-                <span>Save</span>
-              </Button>
-              <Button variant="secondary" onClick={handleCancelChanges}>
-                <X className="mr-2 h-4 w-4" />
-                <span>Cancel</span>
-              </Button>
-            </div>
-          )}
-        </div>
+        )
       )}
 
       {/* Table container with accessibility attributes */}

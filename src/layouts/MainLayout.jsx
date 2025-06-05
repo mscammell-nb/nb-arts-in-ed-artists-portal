@@ -18,7 +18,7 @@ const MainLayout = () => {
           {isMobile && <AppSidebar variant="inset" collapsible="icon" />}
           <PageHeader />
           <div
-            className={`flex ${isMobile ? "max-w-[100vw]" : "max-w-[calc(100vw-var(--sidebar-width))]"}  grow items-start justify-start overflow-hidden p-10 pt-14`}
+            className={`flex ${isMobile ? "max-w-[100vw]" : "max-w-[calc(100vw-var(--sidebar-width))]"}  grow items-start justify-start overflow-hidden p-10 pt-4`}
           >
             <Outlet />
           </div>
