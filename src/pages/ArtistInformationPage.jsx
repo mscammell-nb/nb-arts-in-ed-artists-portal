@@ -66,26 +66,30 @@ import * as yup from "yup";
 import "yup-phone-lite";
 
 const ArtistItem = ({ label, value, icon = null, link = false }) => {
-  if (true)
-    return (
-      <div className="flex items-center space-x-3">
-        {icon}
-        <div>
-          <span className="block text-sm font-medium text-gray-700">
-            {label}
+  const formatUrl = (url) => {
+    if (url.startsWith("http://") || url.startsWith("https://")) {
+      return url;
+    }
+    return `https://${url}`;
+  };
+  return (
+    <div className="flex items-center space-x-3">
+      {icon}
+      <div>
+        <span className="block text-sm font-medium text-gray-700">{label}</span>
+        {link ? (
+          <span className="text-blue-500 hover:underline">
+            {console.log(value)}
+            <a href={formatUrl(value)} target="_blank">
+              {value}
+            </a>
           </span>
-          {link ? (
-            <span className="text-blue-500 hover:underline">
-              <a href={value} target="_blank">
-                {value}
-              </a>
-            </span>
-          ) : (
-            <span className="text-gray-900">{value || "-"}</span>
-          )}
-        </div>
+        ) : (
+          <span className="text-gray-900">{value || "-"}</span>
+        )}
       </div>
-    );
+    </div>
+  );
 };
 const AddReference = ({ open, onOpenChange, sheetProps }) => {
   return (
