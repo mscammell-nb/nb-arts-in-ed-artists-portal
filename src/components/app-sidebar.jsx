@@ -109,6 +109,13 @@ export function AppSidebar({ ...props }) {
   useEffect(() => {
     setActive(location.pathname);
   }, [location]);
+  if (isArtistDataLoading) {
+    return (
+      <div className="side-bar flex w-[--sidebar-width] items-center justify-center">
+        <Spinner classname={"text-white"} />
+      </div>
+    );
+  }
 
   if (useIsMobile()) {
     return (
@@ -201,16 +208,9 @@ export function AppSidebar({ ...props }) {
       </Sheet>
     );
   }
-  if (isArtistDataLoading) {
-    return (
-      <div className="side-bar flex w-[--sidebar-width] items-center justify-center">
-        <Spinner classname={"text-white"} />
-      </div>
-    );
-  }
 
   return (
-    <Sidebar className={cn("side-bar", "p-0")} {...props}>
+    <Sidebar className={cn("side-bar", "p-0 pt-2")} {...props}>
       <SidebarHeader className="mb-3 border-b border-blue-800 pb-3">
         <div className="flex items-start gap-4 ">
           <div className="flex aspect-square size-8 max-h-[250px] items-center justify-center rounded-lg bg-white text-sidebar-primary-foreground">

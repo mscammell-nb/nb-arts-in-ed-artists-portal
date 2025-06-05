@@ -148,9 +148,9 @@ const ArtistDocumentsPage = () => {
   const formatData = (docData) => {
     const { data } = docData;
     return data.map((record) => {
-      let versionNumber = [...record[7].value.versions];
-      let fileName = versionNumber.pop().fileName;
-      versionNumber = versionNumber.pop().versionNumber;
+      let version = [...record[7].value.versions].pop();
+      let fileName = version.fileName;
+      let versionNumber = version.versionNumber;
       return {
         id: record[3].value,
         fiscalYear: record[11].value,

@@ -416,8 +416,8 @@ const RegistrationRenewalPage = () => {
   }, [isAddDocumentError, isAddDocumentSuccess]);
 
   const downloadTemplate = (file) => {
-    let versionNumber = [...file[7].value.versions];
-    versionNumber = versionNumber.pop().versionNumber;
+    let version = [...record[7].value.versions].pop();
+    let versionNumber = version.versionNumber;
     downloadFile(
       import.meta.env.VITE_QUICKBASE_DOCUMENT_TYPES_TABLE_ID,
       7,
