@@ -90,6 +90,7 @@ export function AppSidebar({ ...props }) {
   const navigate = useNavigate();
   const [active, setActive] = useState(1);
   const location = useLocation();
+  const isMobile = useIsMobile();
 
   const user = useSelector((state) => state.auth.user);
 
@@ -109,6 +110,7 @@ export function AppSidebar({ ...props }) {
   useEffect(() => {
     setActive(location.pathname);
   }, [location]);
+
   if (isArtistDataLoading) {
     return (
       <div className="side-bar flex w-[--sidebar-width] items-center justify-center">
@@ -117,7 +119,7 @@ export function AppSidebar({ ...props }) {
     );
   }
 
-  if (useIsMobile()) {
+  if (isMobile) {
     return (
       <Sheet>
         <SheetTrigger className="side-bar fixed -left-1 top-1/2 z-50 w-fit -translate-y-1/2 transform cursor-pointer rounded-sm p-1 text-xl">

@@ -270,18 +270,15 @@ function DataGrid({
               <span className="text-2xl font-bold">{tableTitle}</span>
               {extraButtons && extraButtons}
             </div>
-            {/* {(tableTitle || (!noSearch && extraButtons)) && (
-          <div className="flex w-full items-center justify-between">
-            {tableTitle && (
-              <span className="mb-3 text-2xl font-bold">{tableTitle}</span>
-            )}
-            {noSearch && extraButtons}
-          </div>
-        )} */}
           </div>
           {!noSearch && (
             <div className="flex items-center justify-between border-b border-gray-200 p-6">
-              <DataGridToolbar noSearch={noSearch} table={table} />
+              <DataGridToolbar
+                noSearch={noSearch}
+                table={table}
+                globalFilter={globalFilter}
+                setGlobalFilter={setGlobalFilter}
+              />
               {editing && (
                 <div className="flex items-center gap-3 pb-3">
                   <Button onClick={handleSaveChanges}>
@@ -300,7 +297,12 @@ function DataGrid({
       ) : (
         !noSearch && (
           <div className="flex items-center justify-between border-b border-gray-200 p-6">
-            <DataGridToolbar noSearch={noSearch} table={table} />
+            <DataGridToolbar
+              noSearch={noSearch}
+              table={table}
+              globalFilter={globalFilter}
+              setGlobalFilter={setGlobalFilter}
+            />
             {extraButtons && extraButtons}
             {editing && (
               <div className="ml-4 flex items-center gap-3">
