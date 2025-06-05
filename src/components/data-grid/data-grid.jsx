@@ -267,7 +267,7 @@ function DataGrid({
         <>
           <div className="border-b border-gray-200 p-6">
             <div className="flex items-center justify-between">
-              <span className="text-2xl font-bold">{tableTitle}</span>
+              <span className="text-2xl font-semibold">{tableTitle}</span>
               {extraButtons && extraButtons}
             </div>
           </div>
