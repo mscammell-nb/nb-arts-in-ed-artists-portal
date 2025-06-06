@@ -106,7 +106,7 @@ const RegistrationGate = () => {
   if (registrationData?.data[0] && !registrationData.data[0][6].value) {
     return (
       <div className=" -mt-14 flex w-full flex-1 flex-col items-center justify-center">
-        <div className=" max-w-[500px] rounded-xl border border-slate-200 bg-white p-8 text-center shadow-lg ">
+        <div className=" max-w-[500px] rounded-xl border border-slate-200 bg-foreground p-8 text-center shadow-lg ">
           <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-amber-100">
             <Clock className="h-8 w-8 text-amber-600" />
           </div>
@@ -143,7 +143,7 @@ const RegistrationGate = () => {
           </AlertDescription>
         </Alert>
 
-        <div className="flex flex-col gap-6 rounded-lg border border-slate-200 bg-white p-8 shadow-md">
+        <div className="flex flex-col gap-6 rounded-lg border border-slate-200 bg-foreground p-8 shadow-md">
           <div className="flex items-start space-x-4 rounded-lg border border-blue-200 bg-blue-50 p-6">
             <Calendar className="mt-0.5 h-6 w-6 flex-shrink-0 text-blue-600" />
             <div>
@@ -192,7 +192,7 @@ const RegistrationGate = () => {
   if (artistData.data[0][30].value) {
     return (
       <div className=" -mt-14 flex w-full flex-1 flex-col items-center justify-center">
-        <div className=" max-w-[500px] rounded-xl border border-slate-200 bg-white p-8 text-center shadow-lg">
+        <div className=" max-w-[500px] rounded-xl border border-slate-200 bg-foreground p-8 text-center shadow-lg">
           <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
             <AlertTriangle className="h-8 w-8 text-red-600" />
           </div>

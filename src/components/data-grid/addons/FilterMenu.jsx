@@ -46,7 +46,7 @@ const FilterMenu = memo(({ column, table }) => {
             <FilterIcon
               size={16}
               strokeWidth={2}
-              className="h-4 w-4 text-gray-400"
+              className="text-tertiary-400 h-4 w-4"
             />
             {column.getFilterValue() && (
               <span
@@ -85,7 +85,7 @@ const FilterMenu = memo(({ column, table }) => {
                 </DropdownMenuCheckboxItem>
               ))
             ) : (
-              <div className="py-2 text-center text-sm text-gray-500">
+              <div className="text-tertiary-500 py-2 text-center text-sm">
                 No options available
               </div>
             )}

@@ -265,8 +265,8 @@ const ArtistDocumentsPage = () => {
           </AlertDescription>
         </Alert>
       )}
-      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-        <h3 className="mb-4 text-lg font-medium text-gray-900">
+      <div className="rounded-lg border border-border bg-foreground p-6 shadow-sm">
+        <h3 className="text-tertiary-900 mb-4 text-lg font-medium">
           Download Document Templates
         </h3>
         <div className="flex flex-wrap gap-3">
@@ -285,19 +285,21 @@ const ArtistDocumentsPage = () => {
         </div>
       </div>
       {/* File Upload */}
-      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-        <h3 className="mb-4 text-lg font-medium text-gray-900">
+      <div className="rounded-lg border border-border bg-foreground p-6 shadow-sm">
+        <h3 className="text-tertiary-900 mb-4 text-lg font-medium">
           Upload a file:
         </h3>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <button className="group flex w-full max-w-md items-center rounded-lg border-2 border-dashed border-gray-300 bg-white p-4 transition-all duration-200 hover:border-blue-400 hover:bg-blue-50">
+            <button className="group flex w-full max-w-md items-center rounded-lg border-2 border-dashed border-gray-300 bg-foreground p-4 transition-all duration-200 hover:border-blue-400 hover:bg-blue-50">
               <div className="mr-3 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 transition-colors group-hover:bg-blue-200">
                 <Upload className="h-5 w-5 text-blue-600" />
               </div>
               <div className="text-left">
-                <p className="font-medium text-gray-900">Upload a file</p>
-                <p className="text-sm text-gray-500">Click to browse files</p>
+                <p className="text-tertiary-900 font-medium">Upload a file</p>
+                <p className="text-tertiary-500 text-sm">
+                  Click to browse files
+                </p>
               </div>
             </button>
           </DialogTrigger>

@@ -1,16 +1,22 @@
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Label } from "@radix-ui/react-dropdown-menu";
-import { 
-  CloudUpload, 
+import {
+  CloudUpload,
+  Eye,
   FileImage,
   FileText,
   FolderArchive,
   X,
-  Eye
 } from "lucide-react";
-import React, { useState, useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 const FileTypes = Object.freeze({
   TEXT: "text",
@@ -19,9 +25,9 @@ const FileTypes = Object.freeze({
 });
 
 const getFileType = (mimeType) => {
-  if (mimeType.startsWith('image/')) return FileTypes.IMAGE;
-  if (mimeType === 'application/pdf') return FileTypes.PDF;
-  if (mimeType.startsWith('text/')) return FileTypes.TEXT;
+  if (mimeType.startsWith("image/")) return FileTypes.IMAGE;
+  if (mimeType === "application/pdf") return FileTypes.PDF;
+  if (mimeType.startsWith("text/")) return FileTypes.TEXT;
   return "other";
 };
 
@@ -33,17 +39,17 @@ export const DropZone = ({ setUploadedFile }) => {
 
   const generatePreview = (file) => {
     const fileType = getFileType(file.type);
-    
+
     if (fileType === FileTypes.IMAGE) {
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreview(reader.result);
       };
       reader.readAsDataURL(file);
-    } else if (file.type === 'application/pdf') {
+    } else if (file.type === "application/pdf") {
       const pdfUrl = URL.createObjectURL(file);
       setPdfUrl(pdfUrl);
-      setPreview('pdf');
+      setPreview("pdf");
     } else {
       setPreview(null);
     }
@@ -60,23 +66,26 @@ export const DropZone = ({ setUploadedFile }) => {
 
   const getFileIcon = (file) => {
     const fileType = getFileType(file.type);
-    
+
     switch (fileType) {
       case FileTypes.IMAGE:
         return <FileImage size={24} className="text-purple-600" />;
       case FileTypes.TEXT:
         return <FileText size={24} className="text-blue-400" />;
       default:
-        return <FolderArchive size={24} className="text-gray-400" />;
+        return <FolderArchive size={24} className="text-tertiary-400" />;
     }
   };
 
-  const onDrop = useCallback((acceptedFiles) => {
-    const file = acceptedFiles[0];
-    setUploadedFile(file);
-    setUploadedFileInternal(file);
-    generatePreview(file);
-  }, [setUploadedFile]);
+  const onDrop = useCallback(
+    (acceptedFiles) => {
+      const file = acceptedFiles[0];
+      setUploadedFile(file);
+      setUploadedFileInternal(file);
+      generatePreview(file);
+    },
+    [setUploadedFile],
+  );
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
@@ -102,22 +111,28 @@ export const DropZone = ({ setUploadedFile }) => {
         })}
       >
         <input {...getInputProps()} />
-        <CloudUpload size={40} className="text-gray-400" />
-        <p className="mt-2 text-sm font-semibold text-gray-600">Drag File</p>
-        <p className="text-xs text-gray-500">
+        <CloudUpload size={40} className="text-tertiary-400" />
+        <p className="text-tertiary-600 mt-2 text-sm font-semibold">
+          Drag File
+        </p>
+        <p className="text-tertiary-500 text-xs">
           Click to upload file &#40;files should be under 10 MB&#41;
         </p>
       </div>
-      
+
       {uploadedFile && (
         <div className="mt-4">
-          <Label className="text-sm font-medium text-gray-700">Selected File:</Label>
-          <div className="mt-2 flex items-center gap-4 rounded-lg border border-gray-200 p-4">
+          <Label className="text-tertiary-700 text-sm font-medium">
+            Selected File:
+          </Label>
+          <div className="mt-2 flex items-center gap-4 rounded-lg border border-border p-4">
             {/* Preview section */}
             <div className="flex h-12 w-12 items-center justify-center rounded border">
-              {getFileType(uploadedFile.type) === FileTypes.IMAGE && preview && preview !== 'pdf' ? (
+              {getFileType(uploadedFile.type) === FileTypes.IMAGE &&
+              preview &&
+              preview !== "pdf" ? (
                 <FileImage size={24} className="text-purple-600" />
-              ) : uploadedFile.type === 'application/pdf' ? (
+              ) : uploadedFile.type === "application/pdf" ? (
                 <div className="flex h-12 w-12 items-center justify-center bg-red-100">
                   <span className="text-xs font-bold text-red-600">PDF</span>
                 </div>
@@ -125,20 +140,22 @@ export const DropZone = ({ setUploadedFile }) => {
                 getFileIcon(uploadedFile)
               )}
             </div>
-            
+
             {/* File info */}
             <div className="flex-1">
-              <p className="text-sm font-medium text-gray-900">{uploadedFile.name}</p>
-              <p className="text-xs text-gray-500">
+              <p className="text-tertiary-900 text-sm font-medium">
+                {uploadedFile.name}
+              </p>
+              <p className="text-tertiary-500 text-xs">
                 {(uploadedFile.size / 1024).toFixed(2)} KB
               </p>
             </div>
-            
+
             {/* Buttons */}
             <div className="flex gap-2">
               {/* Preview button - only show for images and PDFs */}
-              {(getFileType(uploadedFile.type) === FileTypes.IMAGE || 
-                uploadedFile.type === 'application/pdf') && (
+              {(getFileType(uploadedFile.type) === FileTypes.IMAGE ||
+                uploadedFile.type === "application/pdf") && (
                 <Button
                   variant="outline"
                   size="sm"
@@ -150,7 +167,7 @@ export const DropZone = ({ setUploadedFile }) => {
                   <Eye size={16} />
                 </Button>
               )}
-              
+
               {/* Remove button */}
               <Button
                 variant="destructive"
@@ -173,17 +190,20 @@ export const DropZone = ({ setUploadedFile }) => {
           <DialogHeader>
             <DialogTitle>Preview: {uploadedFile?.name}</DialogTitle>
           </DialogHeader>
-          <DialogDescription>
-            Preview of the selected file
-          </DialogDescription>
+          <DialogDescription>Preview of the selected file</DialogDescription>
           <div className="mt-4">
-            {uploadedFile && getFileType(uploadedFile.type) === FileTypes.IMAGE && preview && preview !== 'pdf' ? (
+            {uploadedFile &&
+            getFileType(uploadedFile.type) === FileTypes.IMAGE &&
+            preview &&
+            preview !== "pdf" ? (
               <img
                 src={preview}
                 alt={uploadedFile.name}
                 className="max-h-[70vh] w-full rounded object-contain"
               />
-            ) : uploadedFile && uploadedFile.type === 'application/pdf' && pdfUrl ? (
+            ) : uploadedFile &&
+              uploadedFile.type === "application/pdf" &&
+              pdfUrl ? (
               <iframe
                 src={pdfUrl}
                 title="PDF Preview"

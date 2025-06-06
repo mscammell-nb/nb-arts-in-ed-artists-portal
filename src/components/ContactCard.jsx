@@ -3,7 +3,7 @@ import { Mail, Phone, User } from "lucide-react";
 
 const ContactCard = ({ name, email, phone, inDialog = false }) => {
   const cardClasses = {
-    base: `mx-auto max-w-md overflow-hidden rounded-xl bg-white shadow-md md:max-w-md`,
+    base: `mx-auto max-w-md overflow-hidden rounded-xl bg-foreground shadow-md md:max-w-md`,
     dialog: `w-full overflow-hidden mb-4`,
   };
   return (
@@ -11,7 +11,9 @@ const ContactCard = ({ name, email, phone, inDialog = false }) => {
       <div>
         <div className="mb-4">
           {!inDialog ? (
-            <h2 className="text-2xl font-bold text-gray-800">Contact Card</h2>
+            <h2 className="text-tertiary-800 text-2xl font-bold">
+              Contact Card
+            </h2>
           ) : (
             <></>
           )}
@@ -19,26 +21,26 @@ const ContactCard = ({ name, email, phone, inDialog = false }) => {
 
         <div className="space-y-4">
           <div className="flex items-center gap-3">
-            <User className="text-gray-500" size={20} />
+            <User className="text-tertiary-500" size={20} />
             <div>
-              <p className="text-sm text-gray-500">Name</p>
-              <p className="text-lg font-medium text-gray-900">{name}</p>
+              <p className="text-tertiary-500 text-sm">Name</p>
+              <p className="text-tertiary-900 text-lg font-medium">{name}</p>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
-            <Mail className="text-gray-500" size={20} />
+            <Mail className="text-tertiary-500" size={20} />
             <div>
-              <p className="text-sm text-gray-500">Email</p>
-              <p className="text-lg font-medium text-gray-900">{email}</p>
+              <p className="text-tertiary-500 text-sm">Email</p>
+              <p className="text-tertiary-900 text-lg font-medium">{email}</p>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
-            <Phone className="text-gray-500" size={20} />
+            <Phone className="text-tertiary-500" size={20} />
             <div>
-              <p className="text-sm text-gray-500">Phone</p>
-              <p className="text-lg font-medium text-gray-900">{phone}</p>
+              <p className="text-tertiary-500 text-sm">Phone</p>
+              <p className="text-tertiary-900 text-lg font-medium">{phone}</p>
             </div>
           </div>
         </div>

@@ -97,14 +97,14 @@ const editableColumns = (
                   <Select
                     value={inputValue}
                     onValueChange={handleValueChange}
-                    className="w-full rounded border border-gray-200 p-1"
+                    className="w-full rounded border border-border p-1"
                     // Add accessibility attributes
                     aria-label={`Edit ${column.id}`}
                   >
                     <SelectTrigger
                       className={cn(
                         inputValue === originalValue
-                          ? "bg-white"
+                          ? "bg-foreground"
                           : "bg-yellow-200",
                       )}
                       aria-label={`Current value: ${inputValue}`}
@@ -153,9 +153,9 @@ const editableColumns = (
                     value={inputValue}
                     onChange={handleValueChange}
                     className={cn(
-                      "w-full rounded border border-gray-200 p-1",
+                      "w-full rounded border border-border p-1",
                       inputValue === originalValue
-                        ? "bg-white"
+                        ? "bg-foreground"
                         : "bg-yellow-200",
                     )}
                     // Add accessibility attributes
@@ -184,14 +184,14 @@ const editableColumns = (
                   <Select
                     value={inputValue}
                     onValueChange={handleValueChange}
-                    className="w-full rounded border border-gray-200 p-1"
+                    className="w-full rounded border border-border p-1"
                     // Add accessibility attributes
                     aria-label={`Edit ${column.id}`}
                   >
                     <SelectTrigger
                       className={cn(
                         inputValue === originalValue
-                          ? "bg-white"
+                          ? "bg-foreground"
                           : "bg-yellow-200",
                       )}
                       aria-label={`Current value: ${inputValue}`}
@@ -228,9 +228,9 @@ const editableColumns = (
                 return (
                   <MultiSelect
                     className={cn(
-                      "w-full rounded border border-gray-200 p-1",
+                      "w-full rounded border border-border p-1",
                       inputValue === originalValue
-                        ? "bg-white"
+                        ? "bg-foreground"
                         : "bg-yellow-200",
                     )}
                     options={[
@@ -275,8 +275,10 @@ const editableColumns = (
                   value={inputValue || ""}
                   onChange={handleInputChange}
                   className={cn(
-                    "w-full rounded border border-gray-200 p-1 text-gray-600 placeholder:text-gray-400",
-                    inputValue === originalValue ? "bg-white" : "bg-yellow-200",
+                    "text-tertiary-600 placeholder:text-tertiary-400 w-full rounded border border-border p-1",
+                    inputValue === originalValue
+                      ? "bg-foreground"
+                      : "bg-yellow-200",
                   )}
                   // Add accessibility attributes
                   aria-label={`Edit ${column.id}`}

@@ -206,14 +206,14 @@ function DataGrid({
         <Button
           variant="outline"
           onClick={clearAllFilters}
-          className="whitespace-nowrap text-gray-500"
+          className="text-tertiary whitespace-nowrap"
         >
           Clear Filters
         </Button>
       )}
       {allowExport && (
         <DropdownMenu>
-          <DropdownMenuTrigger className="flex w-full max-w-[600px] items-center rounded-lg border border-gray-300 px-3 py-2 text-gray-500 transition-all hover:border-gray-500 sm:w-auto">
+          <DropdownMenuTrigger className="text-tertiary flex w-full max-w-[600px] items-center rounded-lg border border-border px-3 py-2 transition-all hover:border-gray-500 sm:w-auto">
             <span className="mr-2 text-nowrap text-sm">Export as</span>
             <CaretDownIcon />
           </DropdownMenuTrigger>
@@ -232,7 +232,7 @@ function DataGrid({
       {customButtons && customButtons.map((button) => button)}
       {CustomAddComponent && (
         <Button
-          className=" w-full max-w-[600px] rounded bg-blue-500 px-3 text-white sm:w-auto"
+          className=" w-full max-w-[600px] rounded bg-accent px-3 text-white hover:bg-accent/80 sm:w-auto"
           onClick={handleAddNew}
           disabled={sheetProps?.loading}
         >
@@ -246,7 +246,7 @@ function DataGrid({
         <Tooltip>
           <TooltipTrigger asChild>
             <div
-              className="cursor-pointer rounded border border-gray-300 p-2 text-gray-400 transition-all hover:border-gray-600 hover:text-gray-600"
+              className="text-tertiary cursor-pointer rounded border border-border p-2 transition-all hover:border-[hsl(var(--text-secondary))] hover:text-secondary"
               onClick={() => {
                 setEditing(true);
               }}
@@ -262,17 +262,17 @@ function DataGrid({
     </div>
   );
   return (
-    <div className="w-full overflow-hidden rounded-lg border border-gray-200 bg-white px-0 py-3 shadow-sm">
+    <div className="w-full overflow-hidden rounded-lg border border-border bg-foreground px-0 py-3 shadow-sm">
       {tableTitle ? (
         <>
-          <div className="border-b border-gray-200 p-6">
+          <div className="border-b border-border p-6">
             <div className="flex items-center justify-between">
               <span className="text-2xl font-semibold">{tableTitle}</span>
               {extraButtons && extraButtons}
             </div>
           </div>
           {!noSearch && (
-            <div className="flex items-center justify-between border-b border-gray-200 p-6">
+            <div className="flex items-center justify-between border-b border-border p-6">
               <DataGridToolbar
                 noSearch={noSearch}
                 table={table}
@@ -296,7 +296,7 @@ function DataGrid({
         </>
       ) : (
         !noSearch && (
-          <div className="flex items-center justify-between border-b border-gray-200 p-6">
+          <div className="flex items-center justify-between border-b border-border p-6">
             <DataGridToolbar
               noSearch={noSearch}
               table={table}
@@ -348,7 +348,7 @@ function DataGrid({
               </tr>
             ))}
           </thead>
-          <tbody className="divide-y divide-gray-200 bg-white text-sm">
+          <tbody className="divide-y divide-border bg-foreground text-sm">
             {table.getRowModel().rows.length > 0 ? (
               table.getRowModel().rows.map((row) => (
                 <tr key={row.id}>
@@ -358,7 +358,7 @@ function DataGrid({
                       className={cn(
                         "px-6 py-4",
                         cell.column.id === "programName" &&
-                          "whitespace-nowrap font-medium text-gray-900 dark:text-white",
+                          "whitespace-nowrap font-medium text-secondary",
                       )}
                       style={{ wordBreak: "break-word" }}
                       role="gridcell"

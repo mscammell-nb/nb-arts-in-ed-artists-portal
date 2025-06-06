@@ -98,7 +98,7 @@ const AddReference = ({ open, onOpenChange, sheetProps }) => {
     <Sheet open={open} onOpenChange={onOpenChange} {...sheetProps}>
       <SheetContent className="min-w-[30%]">
         <SheetHeader>
-          <SheetTitle>{sheetProps.title}</SheetTitle>
+          <SheetTitle className="text-primary">{sheetProps.title}</SheetTitle>
           <SheetDescription>
             Please fill out the form to add a new reference
           </SheetDescription>
@@ -694,7 +694,7 @@ const ArtistInformationPage = () => {
               </Tooltip>
             </TooltipProvider>
           </div>
-          <div className="space-y-6 border-b border-gray-200 p-6">
+          <div className="space-y-6 border-b border-border p-6">
             <Form {...informationForm}>
               <form
                 onSubmit={informationForm.handleSubmit(updateArtistSubmit)}
@@ -957,7 +957,7 @@ const ArtistInformationPage = () => {
               </form>
             </Form>
           </div>
-          <div className="rounded-b-lg  bg-white px-6 py-4">
+          <div className="rounded-b-lg  bg-foreground px-6 py-4">
             <div className="flex items-center justify-between">
               <Sheet
                 open={changePasswordOpen}

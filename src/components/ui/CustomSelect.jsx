@@ -77,9 +77,9 @@ function CustomSelect({
                       setValue(currentValue === value ? "" : d);
                       setOpen(false);
                     }}
-                    className="z-50 flex items-center justify-between"
+                    className="z-50 flex items-center justify-between hover:bg-background"
                   >
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 text-primary">
                       {!nameOnly && d["identifier"] + " - "}
                       {d["name"]}
                     </div>

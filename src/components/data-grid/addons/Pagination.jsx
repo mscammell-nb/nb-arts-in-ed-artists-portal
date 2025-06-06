@@ -99,7 +99,7 @@ const Pagination = memo(function Pagination({ table }) {
 
   return (
     <div
-      className="mt-2 flex flex-col gap-4 border-t border-gray-200 px-6 py-4 sm:flex-row sm:items-center sm:justify-between"
+      className="mt-2 flex flex-col gap-4 border-t border-border px-6 py-4 sm:flex-row sm:items-center sm:justify-between"
       role="navigation"
       aria-label="Pagination navigation"
     >

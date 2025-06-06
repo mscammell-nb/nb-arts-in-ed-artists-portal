@@ -207,13 +207,13 @@ const ProgramsPage = () => {
                     <div>Programs</div>
                     <TabsList className="mb-4 grid min-w-full grid-cols-2">
                       <TabsTrigger
-                        className="font-semibold text-gray-700"
+                        className="text-tertiary-700 font-semibold"
                         value={fiscalYear}
                       >
                         {fiscalYear}
                       </TabsTrigger>
                       <TabsTrigger
-                        className="font-semibold text-gray-700"
+                        className="text-tertiary-700 font-semibold"
                         value={nextFiscalYear}
                       >
                         {nextFiscalYear}
@@ -258,13 +258,13 @@ const ProgramsPage = () => {
                     <div>Programs</div>
                     <TabsList className="mb-4 grid min-w-full grid-cols-2">
                       <TabsTrigger
-                        className="font-semibold text-gray-700"
+                        className="text-tertiary-700 font-semibold"
                         value={fiscalYear}
                       >
                         {fiscalYear}
                       </TabsTrigger>
                       <TabsTrigger
-                        className="font-semibold text-gray-700"
+                        className="text-tertiary-700 font-semibold"
                         value={nextFiscalYear}
                       >
                         {nextFiscalYear}

@@ -139,7 +139,7 @@ export const dualColumn = (key, primaryField, secondaryField, headerText) => ({
   cell: ({ row }) => (
     <div>
       <div>{row.original[primaryField]}</div>
-      <div className="text-sm text-gray-500">
+      <div className="text-tertiary-500 text-sm">
         {row.original[secondaryField]}
       </div>
     </div>
@@ -157,7 +157,7 @@ export const statusColumn = (key, options = {}) => ({
     const statusConfig = {
       "not-reviewed": {
         label: "Not Yet Reviewed",
-        color: "bg-gray-100 text-gray-800",
+        color: "bg-gray-100 text-tertiary-800",
         icon: <Clock className="mr-1 h-3 w-3" />,
       },
       approved: {
@@ -180,7 +180,7 @@ export const statusColumn = (key, options = {}) => ({
     return (
       <div className="flex flex-col items-start">
         {row.original[key].date && (
-          <div className="mb-1 text-xs text-gray-500">
+          <div className="text-tertiary-500 mb-1 text-xs">
             {row.original[key].date}
           </div>
         )}
@@ -207,7 +207,7 @@ export const boardApprovalColumn = (key, options = {}) => ({
     const statusConfig = {
       "not-reviewed": {
         label: "Not Yet Reviewed",
-        color: "bg-gray-100 text-gray-800",
+        color: "bg-gray-100 text-tertiary-800",
         icon: <Clock className="mr-1 h-3 w-3" />,
       },
       accepted: {
@@ -386,19 +386,19 @@ export const formattedColumn = (key, displayHeader, options = {}) => {
 
       // Handle empty values
       if (value === null || value === undefined || value === "") {
-        return <span className="text-gray-400">{emptyText}</span>;
+        return <span className="text-tertiary-400">{emptyText}</span>;
       }
 
       // Format and display the value
       const formattedValue = formatter(value);
       return (
-        <div className={cn("text-gray-800", cellClassName)}>
+        <div className={cn("text-tertiary-800", cellClassName)}>
           {textPrefix && (
-            <span className="mr-1 text-gray-500">{textPrefix}</span>
+            <span className="text-tertiary-500 mr-1">{textPrefix}</span>
           )}
           <span className={className}>{formattedValue}</span>
           {textSuffix && (
-            <span className="ml-1 text-gray-500">{textSuffix}</span>
+            <span className="text-tertiary-500 ml-1">{textSuffix}</span>
           )}
         </div>
       );
