@@ -288,7 +288,9 @@ export const checkColumn = (key, options = {}) => ({
       return (
         <Badge
           variant="outline"
-          className={"text-nowrap border-gray-400 bg-gray-200"}
+          className={
+            "text-nowrap rounded-full border-none bg-primary/20 font-normal text-primary"
+          }
         >
           N/A
         </Badge>

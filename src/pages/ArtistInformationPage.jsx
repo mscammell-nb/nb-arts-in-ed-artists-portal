@@ -98,7 +98,7 @@ const AddReference = ({ open, onOpenChange, sheetProps }) => {
     <Sheet open={open} onOpenChange={onOpenChange} {...sheetProps}>
       <SheetContent className="min-w-[30%]">
         <SheetHeader>
-          <SheetTitle className="text-primary">{sheetProps.title}</SheetTitle>
+          <SheetTitle>{sheetProps.title}</SheetTitle>
           <SheetDescription>
             Please fill out the form to add a new reference
           </SheetDescription>
@@ -244,7 +244,7 @@ const AddReferenceForm = ({ sheetProps, onOpenChange }) => {
             </FormItem>
           )}
         />
-        <Button type="submit" isLoading={isLoading}>
+        <Button type="submit" isLoading={isLoading} variant="accent">
           Submit
         </Button>
       </form>
@@ -1040,7 +1040,7 @@ const ArtistInformationPage = () => {
                           </FormItem>
                         )}
                       />
-                      <Button type="submit" className="w-fit">
+                      <Button type="submit" variant="accent">
                         Save
                       </Button>
                     </form>

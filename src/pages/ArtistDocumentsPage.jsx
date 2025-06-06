@@ -274,7 +274,7 @@ const ArtistDocumentsPage = () => {
             fileTypes &&
             fileTypes.data.map((f) => (
               <Button
-                className="flex items-center space-x-2 rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
+                className="flex items-center space-x-2 rounded-lg bg-accent px-4 py-2 text-primary  transition-colors hover:bg-accent/80"
                 key={f[31].value}
                 onClick={() => downloadTemplate(f)}
               >
@@ -291,9 +291,9 @@ const ArtistDocumentsPage = () => {
         </h3>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <button className="group flex w-full max-w-md items-center rounded-lg border-2 border-dashed border-gray-300 bg-foreground p-4 transition-all duration-200 hover:border-blue-400 hover:bg-blue-50">
-              <div className="mr-3 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 transition-colors group-hover:bg-blue-200">
-                <Upload className="h-5 w-5 text-blue-600" />
+            <button className="group flex w-full max-w-md items-center rounded-lg border-2 border-dashed border-border bg-foreground p-4 transition-all duration-200 hover:border-accent/50 hover:bg-accent/20">
+              <div className="mr-3 flex h-10 w-10 items-center justify-center rounded-lg bg-accent/20 transition-colors group-hover:bg-accent/30">
+                <Upload className="h-5 w-5 text-accent" />
               </div>
               <div className="text-left">
                 <p className="text-tertiary-900 font-medium">Upload a file</p>

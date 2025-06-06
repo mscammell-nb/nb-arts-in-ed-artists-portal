@@ -203,8 +203,7 @@ const ProgramsPage = () => {
                   }),
                 })}
                 tableTitle={
-                  <div className="flex gap-x-6">
-                    <div>Programs</div>
+                  <div className="flex w-72 gap-x-6">
                     <TabsList className="mb-4 grid min-w-full grid-cols-2">
                       <TabsTrigger
                         className="text-tertiary-700 font-semibold"
@@ -254,8 +253,7 @@ const ProgramsPage = () => {
                   }),
                 })}
                 tableTitle={
-                  <div className="flex gap-x-6">
-                    <div>Programs</div>
+                  <div className="flex w-72 gap-x-6">
                     <TabsList className="mb-4 grid min-w-full grid-cols-2">
                       <TabsTrigger
                         className="text-tertiary-700 font-semibold"
@@ -308,7 +306,6 @@ const ProgramsPage = () => {
               return record[16].value == fiscalYear;
             }),
           })}
-          tableTitle={"Programs"}
           usePagination
           allowExport
           customButtons={BUTTON_LINKS.map(

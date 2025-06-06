@@ -285,7 +285,7 @@ function DataGrid({
                     <Save className="mr-2 h-4 w-4" />
                     <span>Save</span>
                   </Button>
-                  <Button variant="secondary" onClick={handleCancelChanges}>
+                  <Button variant="outline" onClick={handleCancelChanges}>
                     <X className="mr-2 h-4 w-4" />
                     <span>Cancel</span>
                   </Button>
