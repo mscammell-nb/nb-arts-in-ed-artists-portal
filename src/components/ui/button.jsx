@@ -1,7 +1,7 @@
-import * as React from "react";
+import { ReloadIcon } from "@radix-ui/react-icons";
 import { Slot } from "@radix-ui/react-slot";
 import { cva } from "class-variance-authority";
-import { ReloadIcon } from "@radix-ui/react-icons";
+import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -12,12 +12,13 @@ const buttonVariants = cva(
       variant: {
         default:
           "bg-primary text-primary-foreground shadow hover:bg-primary/90",
-        lighter: "bg-lighter text-lighter-foreground shadow hover:bg-lighter/90",
-        darker: 'bg-darker text-darker-foreground shadow hover:bg-darker/90',
+        lighter:
+          "bg-lighter text-lighter-foreground shadow hover:bg-lighter/90",
+        darker: "bg-darker text-darker-foreground shadow hover:bg-darker/90",
         destructive:
           "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
         outline:
-          "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
+          "border border-input bg-background shadow-sm hover:bg-accent hover:bg-background/80 ",
         secondary:
           "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",

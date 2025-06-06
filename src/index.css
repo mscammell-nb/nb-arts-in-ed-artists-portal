@@ -2,33 +2,34 @@
 @tailwind components;
 @tailwind utilities;
 
+
+
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 224 71.4% 4.1%;
+    --background: 210 35% 98%;
+    --foreground: 0 0% 100%;
+    --text-primary: 0 0% 25%;     
+    --text-secondary: 0 0% 35%;   
+    --text-tertiary: 0 0% 55%;    
     --card: 0 0% 100%;
     --card-foreground: 224 71.4% 4.1%;
     --popover: 0 0% 100%;
     --popover-foreground: 224 71.4% 4.1%;
-    --primary: 226 95% 22%;
+    --primary: 210 100% 20%;
     --primary-foreground: 226 1.9% 92.2%;
+    --accent: 36 100% 53%;
     --darker: 267 63% 37%;
     --darker-foreground: 210 20% 98%;
-    --secondary: 226 4.75% 96.1%;
+    --secondary: 223 95% 63%;
     --secondary-foreground: 226 6.699999999999999% 12.2%;
-    --primary: 227 47% 53%;
     --secondary-foreground: 220.9 39.3% 11%;
     --muted: 220 14.3% 95.9%;
     --muted-foreground: 220 8.9% 46.1%;
-    --accent: 220 14.3% 95.9%;
-    --accent-foreground: 220.9 39.3% 11%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 20% 98%;
-    --warning: 38 92% 48%;
-    --warning-foreground: 48 96% 9%;
     --success: 155 67% 45%;
     --success-foreground: 210 19% 98%;
-    --border: 220 13% 91%;
+    --border: 220 14% 91%;
     --input: 220 13% 91%;
     --ring: 226 95% 22%;
     --radius: 0.5rem;
@@ -37,23 +38,26 @@
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
+
   }
 
   .dark {
-    --background: 224 71.4% 4.1%;
-    --foreground: 210 20% 98%;
+    --background: 0 0% 9%;
+    --foreground: 0 0% 85%;
+    --text-primary: 0 0% 85%;     
+    --text-secondary: 0 0% 65%;   
+    --text-tertiary: 0 0% 45%;
     --card: 224 71.4% 4.1%;
     --card-foreground: 210 20% 98%;
     --popover: 224 71.4% 4.1%;
     --popover-foreground: 210 20% 98%;
-    --primary: 226 95% 22%;
+    --primary: 210 100% 20%;
     --primary-foreground: 210 20% 98%;
-    --secondary: 215 27.9% 16.9%;
+    --accent: 36 100% 53%;
+    --secondary: 223 95% 63%;
     --secondary-foreground: 210 20% 98%;
     --muted: 215 27.9% 16.9%;
     --muted-foreground: 217.9 10.6% 64.9%;
-    --accent: 215 27.9% 16.9%;
-    --accent-foreground: 210 20% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 20% 98%;
     --border: 215 27.9% 16.9%;
@@ -66,40 +70,56 @@
     --chart-5: 340 75% 55%;
   }
 }
-
+.text-primary{
+  color: hsl(var(--text-primary)) !important;
+}
+.text-secondary{
+  color: hsl(var(--text-secondary)) !important;
+}
+.text-tertiary{
+  color: hsl(var(--text-tertiary)) !important;
+}
+.text-foreground{
+  color: hsl(var(--foreground)) !important;
+}
 @layer base {
   * {
     @apply border-border;
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-primary;
   }
 }
 
-.side-bar {
-  background-color: #1e3a8a !important;
+.side-bar{
+  background-color: hsl(var(--primary)) !important;
   color: white !important;
   font-weight: 700;
 }
 
-.boces-blue-bg {
+.boces-blue-bg{
   background-color: #dcebfd;
 }
-.boces-favicon-bg {
+.boces-favicon-bg{
   background-color: #5082c0;
 }
 
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
+.group-heading-custom [cmdk-group-heading] {
+  /* Your custom styles here */
+  font-size: 1rem;
+  font-weight: 600;
+  background-color: theme('colors.gray.400');
+  border-radius: theme('borderRadius.md');
+  color: theme('colors.white') !important;
+  padding: 0.5rem 0.75rem;
+}
+.data-\[state\=active\]\:bg-background[data-state="active"] {
+  background-color: hsl(var(--foreground)) !important;
 }
 
 div[role="tablist"] > button[data-state="active"] {
-  background: #3b82f6;
-  color: #ffffff;
+  background: hsl(var(--accent)) !important;
+  color: hsl(var(--foreground));
 }
+

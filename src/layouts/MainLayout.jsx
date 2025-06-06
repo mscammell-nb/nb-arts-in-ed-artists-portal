@@ -10,7 +10,7 @@ const MainLayout = () => {
   const isMobile = useIsMobile();
 
   return (
-    <div className="max-w-screen flex min-h-screen flex-col overflow-x-hidden bg-slate-50">
+    <div className="max-w-screen flex min-h-screen flex-col overflow-x-hidden bg-background">
       <RenewRegistrationModal />
       <SidebarProvider>
         {!isMobile && <AppSidebar variant="inset" collapsible="icon" />}
@@ -22,7 +22,7 @@ const MainLayout = () => {
           >
             <Outlet />
           </div>
-          <footer className="flex flex-col items-center bg-primary p-5 text-sm text-white">
+          <footer className="flex flex-col items-center bg-primary p-5 text-sm text-foreground">
             <p>
               &copy; {new Date().getUTCFullYear()} Nassau BOCES. All Rights
               Reserved.
