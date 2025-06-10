@@ -1,17 +1,17 @@
-import { useDropzone } from "react-dropzone";
+import { getFileType } from "@/utils/getFileType";
 import {
   FileImage,
-  UploadCloud,
-  X,
   FileText,
   FileVideo2,
   FolderArchive,
+  UploadCloud,
+  X,
 } from "lucide-react";
 import { useCallback } from "react";
+import { useDropzone } from "react-dropzone";
+import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { ScrollArea } from "./ui/scroll-area";
-import { getFileType } from "@/utils/getFileType";
-import { Button } from "./ui/button";
 
 const FileTypes = Object.freeze({
   TEXT: "text",
@@ -98,10 +98,10 @@ const FileUpload = ({
                 <UploadCloud size={20} />
               </div>
 
-              <p className="mt-2 text-sm text-gray-600">
+              <p className="mt-2 text-sm text-tertiary">
                 <span className="font-semibold">Drag files</span>
               </p>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-tertiary">
                 {/* TODO: may need to change this */}
                 Click to upload files &#40;files should be under 10 MB&#41;
               </p>

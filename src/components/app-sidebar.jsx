@@ -114,7 +114,7 @@ export function AppSidebar({ ...props }) {
   if (isArtistDataLoading) {
     return (
       <div className="side-bar flex w-[--sidebar-width] items-center justify-center">
-        <Spinner classname={"text-white"} />
+        <Spinner classname={"text-foreground"} />
       </div>
     );
   }
@@ -133,9 +133,9 @@ export function AppSidebar({ ...props }) {
           <SheetDescription className="hidden">
             Arts in Education Sidebar
           </SheetDescription>
-          <SidebarHeader className="mb-3 border-b border-blue-800 pb-3">
+          <SidebarHeader className="mb-3 border-b border-secondary pb-3">
             <div className="flex items-start gap-4 ">
-              <div className="flex aspect-square size-8 max-h-[250px] items-center justify-center rounded-lg bg-white text-sidebar-primary-foreground">
+              <div className="flex aspect-square size-8 max-h-[250px] items-center justify-center rounded-lg bg-foreground text-sidebar-primary-foreground">
                 <GalleryVerticalEnd className="size-4" />
                 <img
                   style={{ padding: "4px" }}
@@ -144,7 +144,7 @@ export function AppSidebar({ ...props }) {
               </div>
               <div className="flex flex-col gap-0.5 overflow-clip leading-none">
                 <span className="font-semibold">Arts in Education</span>
-                <span className=" text-xs font-normal leading-tight text-blue-200">
+                <span className=" text-xs font-normal leading-tight text-neutral-400">
                   {artistsData
                     ? artistsData.data[0][6].value
                     : "Artists Portal"}
@@ -165,9 +165,9 @@ export function AppSidebar({ ...props }) {
                   <Link
                     to={item.url}
                     className={cn(
-                      `flex w-full items-center space-x-3 px-6 py-2.5 text-left text-sm font-normal transition-all duration-200 hover:bg-blue-800 hover:bg-opacity-80`,
+                      `flex w-full items-center space-x-3 px-6 py-2.5 text-left text-sm font-normal transition-all duration-200 hover:bg-secondary/50 hover:bg-opacity-80`,
                       active === item.url
-                        ? "border-r-2 border-white bg-blue-800"
+                        ? "border-r-2 border-accent bg-secondary/40"
                         : "",
                     )}
                   >
@@ -184,20 +184,20 @@ export function AppSidebar({ ...props }) {
                 <SidebarMenuButton asChild className="px-4">
                   <Link
                     to="/"
-                    className={`flex w-full items-center space-x-3 px-6 py-2.5 text-left text-sm font-normal transition-all duration-200 hover:bg-blue-800 hover:bg-opacity-80`}
+                    className={`flex w-full items-center space-x-3 px-6 py-2.5 text-left text-sm font-normal transition-all duration-200`}
                   >
                     <QuestionMarkCircledIcon />
                     <span>{data.versions[0]}</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
-              <SidebarMenuItem className="border-t border-blue-800 py-4">
+              <SidebarMenuItem className="border-t border-secondary py-4">
                 <SidebarMenuButton asChild className="px-4">
                   <div
                     onClick={() => {
                       handleSignout(dispatch, navigate);
                     }}
-                    className={`flex w-full items-center space-x-3 px-6 py-2.5 text-left text-sm font-normal transition-all duration-200 hover:bg-blue-800 hover:bg-opacity-80`}
+                    className={`flex w-full items-center space-x-3 px-6 py-2.5 text-left text-sm font-normal transition-all duration-200`}
                   >
                     <LogOut />
                     <span>{data.versions[1]}</span>
@@ -213,7 +213,7 @@ export function AppSidebar({ ...props }) {
 
   return (
     <Sidebar className={cn("side-bar", "p-0 pt-2")} {...props}>
-      <SidebarHeader className="mb-3 border-b border-blue-800 pb-3">
+      <SidebarHeader className="mb-3 border-b border-secondary pb-3">
         <div className="flex items-start gap-4 ">
           <div className="flex aspect-square size-8 max-h-[250px] items-center justify-center rounded-lg bg-white text-sidebar-primary-foreground">
             <GalleryVerticalEnd className="size-4" />
@@ -224,7 +224,7 @@ export function AppSidebar({ ...props }) {
           </div>
           <div className="flex flex-col gap-0.5 overflow-clip leading-none">
             <span className="font-semibold">Arts in Education</span>
-            <span className=" text-xs font-normal leading-tight text-blue-200">
+            <span className=" text-xs font-normal leading-tight text-neutral-400">
               {artistsData ? artistsData.data[0][6].value : "Artists Portal"}
             </span>
           </div>
@@ -243,9 +243,9 @@ export function AppSidebar({ ...props }) {
                 <Link
                   to={item.url}
                   className={cn(
-                    `flex w-full items-center space-x-3 px-6 py-2.5 text-left text-sm font-normal transition-all duration-200 hover:bg-blue-800 hover:bg-opacity-80`,
+                    `flex w-full items-center space-x-3 px-6 py-2.5 text-left text-sm font-normal transition-all duration-200 hover:bg-secondary/50 hover:bg-opacity-80`,
                     active === item.url
-                      ? "border-r-2 border-white bg-blue-800"
+                      ? "border-r-2 border-accent bg-secondary/40"
                       : "",
                   )}
                 >
@@ -270,7 +270,7 @@ export function AppSidebar({ ...props }) {
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
-          <SidebarMenuItem className="border-t border-blue-800 py-4">
+          <SidebarMenuItem className="border-t border-secondary py-4">
             <SidebarMenuButton asChild className="px-4">
               <div
                 onClick={() => {

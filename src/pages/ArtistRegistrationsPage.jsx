@@ -61,7 +61,7 @@ const ArtistRegistrationsPage = () => {
   return (
     <div className="w-full space-y-6">
       {expired && (
-        <Card className="z-999 flex min-w-fit max-w-xl bg-yellow-100 text-gray-800 shadow-lg">
+        <Card className="z-999 flex min-w-fit max-w-xl bg-yellow-100 text-tertiary shadow-lg">
           <CardHeader className="flex flex-col items-start">
             <CardHeader className="text-xl font-semibold">
               Your Registration Is Expiring Soon!

@@ -8,9 +8,13 @@ import { Outlet } from "react-router-dom";
 
 const MainLayout = () => {
   const isMobile = useIsMobile();
+  console.log(
+    "Dark mode ? ",
+    window.matchMedia(`(prefers-color-scheme: dark`).matches,
+  );
 
   return (
-    <div className="max-w-screen flex min-h-screen flex-col overflow-x-hidden bg-slate-50">
+    <div className="max-w-screen flex min-h-screen flex-col overflow-x-hidden bg-background  text-primary">
       <RenewRegistrationModal />
       <SidebarProvider>
         {!isMobile && <AppSidebar variant="inset" collapsible="icon" />}
@@ -22,7 +26,7 @@ const MainLayout = () => {
           >
             <Outlet />
           </div>
-          <footer className="flex flex-col items-center bg-primary p-5 text-sm text-white">
+          <footer className="text-text-secondary flex flex-col items-center bg-primary p-5 text-sm">
             <p>
               &copy; {new Date().getUTCFullYear()} Nassau BOCES. All Rights
               Reserved.

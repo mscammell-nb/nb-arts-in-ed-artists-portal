@@ -1,7 +1,7 @@
-import * as React from "react";
+import { ReloadIcon } from "@radix-ui/react-icons";
 import { Slot } from "@radix-ui/react-slot";
 import { cva } from "class-variance-authority";
-import { ReloadIcon } from "@radix-ui/react-icons";
+import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -10,18 +10,19 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default:
-          "bg-primary text-primary-foreground shadow hover:bg-primary/90",
-        lighter: "bg-lighter text-lighter-foreground shadow hover:bg-lighter/90",
-        darker: 'bg-darker text-darker-foreground shadow hover:bg-darker/90',
+        default: "bg-primary text-white shadow hover:bg-primary/90",
+        lighter:
+          "bg-lighter text-lighter-foreground shadow hover:bg-lighter/90",
+        darker: "bg-darker text-darker-foreground shadow hover:bg-darker/90",
         destructive:
           "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
         outline:
-          "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
+          "border border-border bg-background shadow-sm hover:bg-foreground text-primary",
         secondary:
           "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
+        ghost: "hover:bg-gray-200/60 hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
+        accent: "bg-accent text-neutral-800 hover:bg-accent/80 shadow",
       },
       size: {
         default: "h-9 px-4 py-2",

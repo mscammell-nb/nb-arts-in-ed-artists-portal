@@ -18,16 +18,16 @@ const PageHeader = () => {
   );
 
   return (
-    <header className="border-b border-gray-200 bg-white px-6 py-4">
+    <header className="border-b border-border bg-foreground px-6 py-4">
       <div className="flex items-center space-x-3">
         <Button
           variant="ghost"
           onClick={() => navigate(-1)}
-          className="rounded-full p-1 transition-colors hover:bg-gray-100"
+          className="rounded-full p-1 transition-colors hover:bg-background"
         >
-          <ChevronLeft className="h-5 w-5 text-gray-600" />
+          <ChevronLeft className="text-tertiary h-5 w-5" />
         </Button>
-        <h1 className="text-2xl font-semibold text-gray-900">{pageTitle}</h1>
+        <h1 className="text-2xl font-semibold text-primary">{pageTitle}</h1>
       </div>
     </header>
   );

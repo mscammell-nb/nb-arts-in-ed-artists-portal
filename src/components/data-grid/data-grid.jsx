@@ -206,14 +206,14 @@ function DataGrid({
         <Button
           variant="outline"
           onClick={clearAllFilters}
-          className="whitespace-nowrap text-gray-500"
+          className="whitespace-nowrap text-tertiary"
         >
           Clear Filters
         </Button>
       )}
       {allowExport && (
         <DropdownMenu>
-          <DropdownMenuTrigger className="flex w-full max-w-[600px] items-center rounded-lg border border-gray-300 px-3 py-2 text-gray-500 transition-all hover:border-gray-500 sm:w-auto">
+          <DropdownMenuTrigger className="flex w-full max-w-[600px] items-center rounded-lg border border-border px-3 py-2 text-tertiary transition-all hover:border-gray-500 sm:w-auto">
             <span className="mr-2 text-nowrap text-sm">Export as</span>
             <CaretDownIcon />
           </DropdownMenuTrigger>
@@ -232,7 +232,8 @@ function DataGrid({
       {customButtons && customButtons.map((button) => button)}
       {CustomAddComponent && (
         <Button
-          className=" w-full max-w-[600px] rounded bg-blue-500 px-3 text-white sm:w-auto"
+          variant="accent"
+          className=" w-full max-w-[600px] rounded px-3 sm:w-auto"
           onClick={handleAddNew}
           disabled={sheetProps?.loading}
         >
@@ -246,7 +247,7 @@ function DataGrid({
         <Tooltip>
           <TooltipTrigger asChild>
             <div
-              className="cursor-pointer rounded border border-gray-300 p-2 text-gray-400 transition-all hover:border-gray-600 hover:text-gray-600"
+              className="cursor-pointer rounded border border-border p-2 text-tertiary transition-all hover:border-[hsl(var(--text-secondary))] hover:text-secondary"
               onClick={() => {
                 setEditing(true);
               }}
@@ -262,17 +263,19 @@ function DataGrid({
     </div>
   );
   return (
-    <div className="w-full overflow-hidden rounded-lg border border-gray-200 bg-white px-0 py-3 shadow-sm">
+    <div className="w-full overflow-hidden rounded-lg border border-border bg-foreground px-0 py-3 shadow-sm">
       {tableTitle ? (
         <>
-          <div className="border-b border-gray-200 p-6">
+          <div className="border-b border-border p-6">
             <div className="flex items-center justify-between">
-              <span className="text-2xl font-semibold">{tableTitle}</span>
+              <span className="text-2xl font-semibold text-primary">
+                {tableTitle}
+              </span>
               {extraButtons && extraButtons}
             </div>
           </div>
           {!noSearch && (
-            <div className="flex items-center justify-between border-b border-gray-200 p-6">
+            <div className="flex items-center justify-between border-b border-border p-6">
               <DataGridToolbar
                 noSearch={noSearch}
                 table={table}
@@ -285,7 +288,7 @@ function DataGrid({
                     <Save className="mr-2 h-4 w-4" />
                     <span>Save</span>
                   </Button>
-                  <Button variant="secondary" onClick={handleCancelChanges}>
+                  <Button variant="outline" onClick={handleCancelChanges}>
                     <X className="mr-2 h-4 w-4" />
                     <span>Cancel</span>
                   </Button>
@@ -296,7 +299,7 @@ function DataGrid({
         </>
       ) : (
         !noSearch && (
-          <div className="flex items-center justify-between border-b border-gray-200 p-6">
+          <div className="flex items-center justify-between border-b border-border p-6">
             <DataGridToolbar
               noSearch={noSearch}
               table={table}
@@ -327,7 +330,7 @@ function DataGrid({
           role="grid"
           aria-labelledby={tableTitle ? "table-title" : undefined}
         >
-          <thead className="bg-gray-50">
+          <thead className="bg-gray-50 text-primary dark:bg-neutral-700">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
@@ -348,7 +351,7 @@ function DataGrid({
               </tr>
             ))}
           </thead>
-          <tbody className="divide-y divide-gray-200 bg-white text-sm">
+          <tbody className="divide-y divide-border bg-foreground text-sm">
             {table.getRowModel().rows.length > 0 ? (
               table.getRowModel().rows.map((row) => (
                 <tr key={row.id}>
@@ -356,9 +359,9 @@ function DataGrid({
                     <td
                       key={cell.id}
                       className={cn(
-                        "px-6 py-4",
+                        "px-6 py-4 text-secondary",
                         cell.column.id === "programName" &&
-                          "whitespace-nowrap font-medium text-gray-900 dark:text-white",
+                          "whitespace-nowrap font-medium text-secondary",
                       )}
                       style={{ wordBreak: "break-word" }}
                       role="gridcell"

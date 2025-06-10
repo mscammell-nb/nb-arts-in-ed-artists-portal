@@ -288,7 +288,7 @@ const FileUploadPage = () => {
       </section>
       <section>
         <div className="flex items-center gap-3 pb-4">
-          <p className="text-sm text-gray-600">Upload a file:</p>
+          <p className="text-sm text-tertiary">Upload a file:</p>
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
               <Button variant="outline" className="rounded-full">

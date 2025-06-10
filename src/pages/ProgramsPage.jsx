@@ -16,6 +16,7 @@ import {
   PROGRAMS_EDITABLE_FIELDS,
   SERVICE_TYPE_DEFINITIONS,
 } from "@/constants/constants";
+import { cn } from "@/lib/utils";
 import {
   useAddOrUpdateRecordMutation,
   useQueryForDataQuery,
@@ -203,17 +204,13 @@ const ProgramsPage = () => {
                   }),
                 })}
                 tableTitle={
-                  <div className="flex gap-x-6">
-                    <div>Programs</div>
+                  <div className="flex w-72 gap-x-6">
                     <TabsList className="mb-4 grid min-w-full grid-cols-2">
-                      <TabsTrigger
-                        className="font-semibold text-gray-700"
-                        value={fiscalYear}
-                      >
+                      <TabsTrigger className="font-semibold" value={fiscalYear}>
                         {fiscalYear}
                       </TabsTrigger>
                       <TabsTrigger
-                        className="font-semibold text-gray-700"
+                        className="font-semibold"
                         value={nextFiscalYear}
                       >
                         {nextFiscalYear}
@@ -231,7 +228,10 @@ const ProgramsPage = () => {
                         key={index}
                         to={link.url}
                         target={link.isTargetBlank ? "_blank" : null}
-                        className={buttonVariants({ variant: "lighter" })}
+                        className={cn(
+                          buttonVariants({ variant: "lighter" }),
+                          "border dark:border-white",
+                        )}
                       >
                         {link.label}
                       </Link>
@@ -254,17 +254,13 @@ const ProgramsPage = () => {
                   }),
                 })}
                 tableTitle={
-                  <div className="flex gap-x-6">
-                    <div>Programs</div>
+                  <div className="flex w-72 gap-x-6">
                     <TabsList className="mb-4 grid min-w-full grid-cols-2">
-                      <TabsTrigger
-                        className="font-semibold text-gray-700"
-                        value={fiscalYear}
-                      >
+                      <TabsTrigger className="font-semibold" value={fiscalYear}>
                         {fiscalYear}
                       </TabsTrigger>
                       <TabsTrigger
-                        className="font-semibold text-gray-700"
+                        className="font-semibold"
                         value={nextFiscalYear}
                       >
                         {nextFiscalYear}
@@ -308,7 +304,6 @@ const ProgramsPage = () => {
               return record[16].value == fiscalYear;
             }),
           })}
-          tableTitle={"Programs"}
           usePagination
           allowExport
           customButtons={BUTTON_LINKS.map(

@@ -99,7 +99,7 @@ const Pagination = memo(function Pagination({ table }) {
 
   return (
     <div
-      className="mt-2 flex flex-col gap-4 border-t border-gray-200 px-6 py-4 sm:flex-row sm:items-center sm:justify-between"
+      className="mt-2 flex flex-col gap-4 border-t border-border px-6 py-4 sm:flex-row sm:items-center sm:justify-between"
       role="navigation"
       aria-label="Pagination navigation"
     >
@@ -150,7 +150,7 @@ const Pagination = memo(function Pagination({ table }) {
           page === "..." ? (
             <span
               key={`ellipsis-${index}`}
-              className="px-1 text-muted-foreground"
+              className="px-1 text-primary"
               aria-hidden="true"
             >
               ...
@@ -165,9 +165,7 @@ const Pagination = memo(function Pagination({ table }) {
               aria-current={currentPage === page ? "page" : undefined}
               className={cn(
                 "h-8 w-8 rounded-full p-0",
-                currentPage === page
-                  ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                  : "",
+                currentPage === page ? "bg-accent hover:bg-accent/90" : "",
               )}
             >
               {page}

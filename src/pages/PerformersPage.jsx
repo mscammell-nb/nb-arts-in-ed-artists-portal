@@ -71,7 +71,7 @@ const AddSheet = ({ open, onOpenChange, sheetProps }) => {
               onSubmit={sheetProps.addPerformerForm.handleSubmit((data) =>
                 sheetProps.addPerformer(data, closeSheet),
               )}
-              className="space-y-4"
+              className="space-y-4 text-primary"
             >
               <FormField
                 control={sheetProps.addPerformerForm.control}
