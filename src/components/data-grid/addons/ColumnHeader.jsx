@@ -19,7 +19,7 @@ function ColumnHeader({ header, table, noFilter, noSort }) {
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting()}
-          className="flex items-center space-x-1 px-2 text-xs font-medium uppercase tracking-wider hover:text-tertiary"
+          className="flex items-center space-x-1 px-2 text-xs font-medium uppercase tracking-wider hover:bg-neutral-200 hover:text-tertiary dark:hover:bg-neutral-800"
         >
           <div className="text-nowrap">{title}</div>
 

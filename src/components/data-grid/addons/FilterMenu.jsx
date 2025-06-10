@@ -7,7 +7,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
 import { FilterIcon } from "lucide-react";
 import { memo, useCallback, useMemo } from "react";
 
@@ -38,16 +37,12 @@ const FilterMenu = memo(({ column, table }) => {
         <DropdownMenuTrigger asChild>
           <Button
             variant="ghost"
-            className="rounded p-1 transition-colors hover:bg-gray-200"
+            className="rounded p-1 transition-colors hover:bg-neutral-200 dark:hover:!bg-neutral-800"
             aria-label={`Filter ${column.id}`}
             aria-expanded={column.getIsFiltered() ? "true" : "false"}
             aria-haspopup="menu"
           >
-            <FilterIcon
-              size={16}
-              strokeWidth={2}
-              className="h-4 w-4 text-tertiary"
-            />
+            <FilterIcon size={16} strokeWidth={2} className="h-4 w-4" />
             {column.getFilterValue() && (
               <span
                 className="ml-1 h-2 w-2 rounded-full bg-blue-500"
@@ -101,9 +96,7 @@ const FilterMenu = memo(({ column, table }) => {
           <Button
             variant="ghost"
             size="sm"
-            className={cn(
-              "h-8 px-2 hover:bg-gray-100 data-[state=open]:bg-gray-100",
-            )}
+            className="rounded p-1 transition-colors hover:bg-neutral-200 dark:hover:!bg-neutral-800"
             aria-label={`Filter ${column.id} by number range`}
             aria-expanded={column.getIsFiltered() ? "true" : "false"}
             aria-haspopup="menu"
@@ -180,9 +173,7 @@ const FilterMenu = memo(({ column, table }) => {
           <Button
             variant="ghost"
             size="sm"
-            className={cn(
-              "h-8 px-2 hover:bg-gray-100 data-[state=open]:bg-gray-100",
-            )}
+            className="rounded p-1 transition-colors hover:bg-neutral-200 dark:hover:!bg-neutral-800"
             aria-label={`Filter ${column.id} by boolean value`}
             aria-expanded={column.getIsFiltered() ? "true" : "false"}
             aria-haspopup="menu"
