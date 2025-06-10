@@ -140,7 +140,7 @@ const LoginPage = () => {
 
               <Dialog onSubmit={onForgotPassword}>
                 <DialogTrigger asChild>
-                  <span className="cursor-pointer text-sm text-blue-600 underline">
+                  <span className="cursor-pointer text-sm text-blue-500 underline">
                     Forgot your password?
                   </span>
                 </DialogTrigger>
@@ -180,8 +180,8 @@ const LoginPage = () => {
             </form>
           </Form>
           <div className="pt-2 text-center text-sm">
-            Don't have an account?
-            <Link to="/registration" className="text-blue-600 underline">
+            Don't have an account?{" "}
+            <Link to="/registration" className="text-blue-500 underline">
               Register
             </Link>
           </div>

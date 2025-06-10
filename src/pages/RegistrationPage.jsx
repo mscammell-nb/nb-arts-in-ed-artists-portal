@@ -864,8 +864,8 @@ const RegistrationPage = () => {
               </div>
             </form>
             <div className="pt-2 text-center text-sm">
-              Already have an account?
-              <Link to="/login" className="underline">
+              Already have an account?{" "}
+              <Link to="/login" className="text-blue-500 underline">
                 Login
               </Link>
             </div>
