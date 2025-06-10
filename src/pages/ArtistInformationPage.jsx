@@ -244,7 +244,7 @@ const AddReferenceForm = ({ sheetProps, onOpenChange }) => {
             </FormItem>
           )}
         />
-        <Button type="submit" isLoading={isLoading} variant="accent">
+        <Button type="submit" isLoading={isLoading}>
           Submit
         </Button>
       </form>

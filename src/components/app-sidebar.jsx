@@ -135,7 +135,7 @@ export function AppSidebar({ ...props }) {
           </SheetDescription>
           <SidebarHeader className="mb-3 border-b border-secondary pb-3">
             <div className="flex items-start gap-4 ">
-              <div className="flex aspect-square size-8 max-h-[250px] items-center justify-center rounded-lg bg-foreground text-sidebar-primary-foreground">
+              <div className="flex aspect-square size-8 max-h-[250px] items-center justify-center rounded-lg bg-white text-sidebar-primary-foreground">
                 <GalleryVerticalEnd className="size-4" />
                 <img
                   style={{ padding: "4px" }}
@@ -144,7 +144,7 @@ export function AppSidebar({ ...props }) {
               </div>
               <div className="flex flex-col gap-0.5 overflow-clip leading-none">
                 <span className="font-semibold">Arts in Education</span>
-                <span className=" text-xs font-normal leading-tight text-neutral-400">
+                <span className=" text-xs font-normal leading-tight text-blue-200">
                   {artistsData
                     ? artistsData.data[0][6].value
                     : "Artists Portal"}
@@ -224,7 +224,7 @@ export function AppSidebar({ ...props }) {
           </div>
           <div className="flex flex-col gap-0.5 overflow-clip leading-none">
             <span className="font-semibold">Arts in Education</span>
-            <span className=" text-xs font-normal leading-tight text-neutral-400">
+            <span className=" text-xs font-normal leading-tight text-blue-200">
               {artistsData ? artistsData.data[0][6].value : "Artists Portal"}
             </span>
           </div>
