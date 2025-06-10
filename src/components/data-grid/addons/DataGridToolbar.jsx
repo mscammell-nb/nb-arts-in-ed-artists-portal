@@ -36,7 +36,7 @@ const DataGridToolbar = memo(function DataGridToolbar({
       {!noSearch && (
         <>
           <div className="relative w-full max-w-md">
-            <Search className="text-tertiary-400 absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform" />
+            <Search className="text-text-tertiary absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform" />
             <Input
               placeholder="Search..."
               value={globalFilter ?? ""} // Use the passed value

@@ -91,7 +91,7 @@ export const documentColumns = (
       cell: ({ row }) => (
         <div className="grid w-full place-items-center">
           <Button
-            className={"bg-foreground text-sm text-black "}
+            className={"bg-foreground text-sm text-primary "}
             onClick={() =>
               downloadFile(
                 import.meta.env.VITE_QUICKBASE_ARTISTS_FILES_TABLE_ID,
@@ -452,7 +452,7 @@ export const baseContractColumns = [
       header: "Requestor",
       cell: ({ row }) => (
         <Dialog>
-          <DialogTrigger className="text-tertiary-500 text-sm hover:text-blue-400 hover:underline">
+          <DialogTrigger className="text-sm text-tertiary hover:text-blue-400 hover:underline">
             {row.original.requestor}
           </DialogTrigger>
           <DialogContent>

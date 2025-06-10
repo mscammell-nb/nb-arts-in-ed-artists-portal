@@ -275,7 +275,7 @@ const editableColumns = (
                   value={inputValue || ""}
                   onChange={handleInputChange}
                   className={cn(
-                    "text-tertiary-600 placeholder:text-tertiary-400 w-full rounded border border-border p-1",
+                    "w-full rounded border border-border p-1 text-tertiary placeholder:text-tertiary",
                     inputValue === originalValue
                       ? "bg-foreground"
                       : "bg-yellow-200",

@@ -76,7 +76,7 @@ const ArtistItem = ({ label, value, icon = null, link = false }) => {
     <div className="flex items-center space-x-3">
       {icon}
       <div>
-        <span className="text-tertiary font-secondary block text-sm">
+        <span className="font-secondary block text-sm text-tertiary">
           {label}
         </span>
         {link ? (
@@ -171,7 +171,7 @@ const AddReferenceForm = ({ sheetProps, onOpenChange }) => {
     <Form {...referenceForm}>
       <form
         onSubmit={referenceForm.handleSubmit(addReferenceSubmit)}
-        className="flex w-full flex-col gap-3"
+        className="flex w-full flex-col gap-3 text-primary"
       >
         <FormField
           control={referenceForm.control}
@@ -673,7 +673,7 @@ const ArtistInformationPage = () => {
               <h2 className="text-lg font-medium text-primary">
                 General Information
               </h2>
-              <p className="text-tertiary mt-1 text-sm">
+              <p className="mt-1 text-sm text-tertiary">
                 General information about artist
               </p>
             </div>
@@ -736,7 +736,7 @@ const ArtistInformationPage = () => {
                       editing ? (
                         <FormItem>
                           <FormLabel className="flex items-center gap-2 text-secondary">
-                            <Mail className="text-tertiary h-4 w-4" />
+                            <Mail className="h-4 w-4 text-tertiary" />
                             Email
                           </FormLabel>
                           <FormControl>
@@ -746,7 +746,7 @@ const ArtistInformationPage = () => {
                         </FormItem>
                       ) : (
                         <ArtistItem
-                          icon={<Mail className="text-tertiary h-4 w-4" />}
+                          icon={<Mail className="h-4 w-4 text-tertiary" />}
                           label="Email"
                           value={emailVal}
                           setValue={setEmailVal}
@@ -761,7 +761,7 @@ const ArtistInformationPage = () => {
                       editing ? (
                         <FormItem>
                           <FormLabel className="flex items-center gap-2 text-secondary">
-                            <Phone className="text-tertiary h-4 w-4" />
+                            <Phone className="h-4 w-4 text-tertiary" />
                             Phone
                           </FormLabel>
                           <FormControl>
@@ -771,7 +771,7 @@ const ArtistInformationPage = () => {
                         </FormItem>
                       ) : (
                         <ArtistItem
-                          icon={<Phone className="text-tertiary h-4 w-4" />}
+                          icon={<Phone className="h-4 w-4 text-tertiary" />}
                           label="Phone"
                           value={phoneVal}
                           setValue={setPhoneVal}
@@ -782,7 +782,7 @@ const ArtistInformationPage = () => {
                   {editing ? (
                     <div>
                       <div className="mb-4 flex items-center space-x-2">
-                        <MapPin className="text-tertiary h-4 w-4" />
+                        <MapPin className="h-4 w-4 text-tertiary" />
                         <label className="text-sm font-medium text-secondary">
                           Address
                         </label>
@@ -813,7 +813,7 @@ const ArtistInformationPage = () => {
                             <FormItem>
                               <FormLabel className="flex items-center gap-2 text-secondary">
                                 Street 2
-                                <span className="text-tertiary text-xs">
+                                <span className="text-xs text-tertiary">
                                   (Optional)
                                 </span>
                               </FormLabel>
@@ -881,7 +881,7 @@ const ArtistInformationPage = () => {
                     </div>
                   ) : (
                     <ArtistItem
-                      icon={<MapPin className="text-tertiary h-4 w-4" />}
+                      icon={<MapPin className="h-4 w-4 text-tertiary" />}
                       label="Address"
                       value={addressVal}
                       setValue={setAddressVal}
@@ -894,7 +894,7 @@ const ArtistInformationPage = () => {
                       editing ? (
                         <FormItem>
                           <FormLabel className="flex items-center gap-2 text-secondary">
-                            <Globe className="text-tertiary h-4 w-4" />
+                            <Globe className="h-4 w-4 text-tertiary" />
                             Website
                           </FormLabel>
                           <FormControl>
@@ -904,7 +904,7 @@ const ArtistInformationPage = () => {
                         </FormItem>
                       ) : (
                         <ArtistItem
-                          icon={<Globe className="text-tertiary h-4 w-4" />}
+                          icon={<Globe className="h-4 w-4 text-tertiary" />}
                           label="Website"
                           value={websiteVal}
                           setValue={setWebsiteVal}
@@ -920,7 +920,7 @@ const ArtistInformationPage = () => {
                       editing ? (
                         <FormItem>
                           <FormLabel className="flex items-center gap-2 text-secondary">
-                            <Users className="text-tertiary h-4 w-4" />
+                            <Users className="h-4 w-4 text-tertiary" />
                             Number of Performers
                           </FormLabel>
                           <FormControl>
@@ -945,7 +945,7 @@ const ArtistInformationPage = () => {
                         </FormItem>
                       ) : (
                         <ArtistItem
-                          icon={<Users className="text-tertiary h-4 w-4" />}
+                          icon={<Users className="h-4 w-4 text-tertiary" />}
                           label="Number of Performers"
                           value={performersVal}
                           setValue={setPerformersVal}
@@ -1000,7 +1000,7 @@ const ArtistInformationPage = () => {
                             </FormItem>
                           ) : (
                             <ArtistItem
-                              icon={<Mail className="text-tertiary h-4 w-4" />}
+                              icon={<Mail className="h-4 w-4 text-tertiary" />}
                               label="Email"
                               value={emailVal}
                               setValue={setEmailVal}
@@ -1082,7 +1082,7 @@ const ArtistInformationPage = () => {
             <h2 className="text-lg font-medium text-primary">
               Payment Information
             </h2>
-            <p className="text-tertiary mt-1 text-sm">
+            <p className="mt-1 text-sm text-tertiary">
               Payment information about artist
             </p>
           </div>

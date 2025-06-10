@@ -1,12 +1,12 @@
 const NoResultsFound = ({ message = "No results found", icon = true }) => {
   return (
-    <tr className="bg-foreground dark:border-gray-700 dark:bg-gray-800">
+    <tr className="bg-foreground dark:border-gray-700 dark:bg-neutral-800">
       <td colSpan="100%" className="p-8 text-center">
         <div className="flex flex-col items-center justify-center py-8">
           {icon && (
-            <div className="mb-4 rounded-full bg-gray-100 p-3 dark:bg-gray-700">
+            <div className="mb-4 rounded-full bg-gray-100 p-3 dark:bg-neutral-700">
               <svg
-                className="text-tertiary-400 dark:text-tertiary-300 h-6 w-6"
+                className="h-6 w-6 text-tertiary dark:text-tertiary"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -21,7 +21,7 @@ const NoResultsFound = ({ message = "No results found", icon = true }) => {
               </svg>
             </div>
           )}
-          <h3 className="text-tertiary-900 mb-1 text-lg font-semibold dark:text-white">
+          <h3 className="mb-1 text-lg font-semibold dark:text-white">
             {message}
           </h3>
         </div>

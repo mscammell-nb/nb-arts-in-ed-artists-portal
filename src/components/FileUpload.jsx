@@ -98,10 +98,10 @@ const FileUpload = ({
                 <UploadCloud size={20} />
               </div>
 
-              <p className="text-tertiary-600 mt-2 text-sm">
+              <p className="mt-2 text-sm text-tertiary">
                 <span className="font-semibold">Drag files</span>
               </p>
-              <p className="text-tertiary-500 text-xs">
+              <p className="text-xs text-tertiary">
                 {/* TODO: may need to change this */}
                 Click to upload files &#40;files should be under 10 MB&#41;
               </p>

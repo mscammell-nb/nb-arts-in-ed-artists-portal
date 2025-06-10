@@ -206,14 +206,14 @@ function DataGrid({
         <Button
           variant="outline"
           onClick={clearAllFilters}
-          className="text-tertiary whitespace-nowrap"
+          className="whitespace-nowrap text-tertiary"
         >
           Clear Filters
         </Button>
       )}
       {allowExport && (
         <DropdownMenu>
-          <DropdownMenuTrigger className="text-tertiary flex w-full max-w-[600px] items-center rounded-lg border border-border px-3 py-2 transition-all hover:border-gray-500 sm:w-auto">
+          <DropdownMenuTrigger className="flex w-full max-w-[600px] items-center rounded-lg border border-border px-3 py-2 text-tertiary transition-all hover:border-gray-500 sm:w-auto">
             <span className="mr-2 text-nowrap text-sm">Export as</span>
             <CaretDownIcon />
           </DropdownMenuTrigger>
@@ -232,7 +232,8 @@ function DataGrid({
       {customButtons && customButtons.map((button) => button)}
       {CustomAddComponent && (
         <Button
-          className=" w-full max-w-[600px] rounded bg-accent px-3 text-white hover:bg-accent/80 sm:w-auto"
+          variant="accent"
+          className=" w-full max-w-[600px] rounded px-3 sm:w-auto"
           onClick={handleAddNew}
           disabled={sheetProps?.loading}
         >
@@ -246,7 +247,7 @@ function DataGrid({
         <Tooltip>
           <TooltipTrigger asChild>
             <div
-              className="text-tertiary cursor-pointer rounded border border-border p-2 transition-all hover:border-[hsl(var(--text-secondary))] hover:text-secondary"
+              className="cursor-pointer rounded border border-border p-2 text-tertiary transition-all hover:border-[hsl(var(--text-secondary))] hover:text-secondary"
               onClick={() => {
                 setEditing(true);
               }}
@@ -267,7 +268,9 @@ function DataGrid({
         <>
           <div className="border-b border-border p-6">
             <div className="flex items-center justify-between">
-              <span className="text-2xl font-semibold">{tableTitle}</span>
+              <span className="text-2xl font-semibold text-primary">
+                {tableTitle}
+              </span>
               {extraButtons && extraButtons}
             </div>
           </div>
@@ -327,7 +330,7 @@ function DataGrid({
           role="grid"
           aria-labelledby={tableTitle ? "table-title" : undefined}
         >
-          <thead className="bg-gray-50">
+          <thead className="bg-gray-50 text-primary dark:bg-neutral-700">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
@@ -356,7 +359,7 @@ function DataGrid({
                     <td
                       key={cell.id}
                       className={cn(
-                        "px-6 py-4",
+                        "px-6 py-4 text-secondary",
                         cell.column.id === "programName" &&
                           "whitespace-nowrap font-medium text-secondary",
                       )}

@@ -40,7 +40,7 @@ function CustomSelect({
             id={id}
             variant="outline"
             role="combobox"
-            className="w-full justify-between bg-background px-3 font-normal outline-offset-0 hover:bg-background focus-visible:border-ring focus-visible:outline-[3px] focus-visible:outline-ring/20"
+            className="w-full justify-between border-border bg-background px-3 font-normal  outline-offset-0 hover:bg-background focus-visible:border-ring focus-visible:outline-[3px] focus-visible:outline-ring/20"
           >
             {value ? (
               <span className="flex min-w-0 items-center gap-2">
@@ -61,7 +61,7 @@ function CustomSelect({
           </Button>
         </PopoverTrigger>
         <PopoverContent
-          className="w-full min-w-[var(--radix-popper-anchor-width)] border-input p-0"
+          className="w-full min-w-[var(--radix-popper-anchor-width)] p-0"
           align="start"
         >
           <Command>

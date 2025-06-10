@@ -5,12 +5,12 @@ const NotFoundPage = () => {
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100 px-6">
       <div className="w-full max-w-lg text-center">
         <div className="mb-8">
-          <h1 className="text-tertiary-800 text-9xl font-extrabold">404</h1>
+          <h1 className="text-9xl font-extrabold text-tertiary">404</h1>
           <div className="mx-auto my-6 h-1 w-24 bg-indigo-500"></div>
-          <h2 className="text-tertiary-700 mb-2 text-3xl font-bold">
+          <h2 className="mb-2 text-3xl font-bold text-tertiary">
             Page Not Found
           </h2>
-          <p className="text-tertiary-500 mb-8">
+          <p className="mb-8 text-tertiary">
             We couldn't find the page you're looking for.
           </p>
         </div>
@@ -23,7 +23,7 @@ const NotFoundPage = () => {
             Return Home
           </Link>
 
-          <div className="text-tertiary-500 mt-8">
+          <div className="mt-8 text-tertiary">
             <p>If you think this is a mistake, please contact support.</p>
           </div>
         </div>

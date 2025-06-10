@@ -205,14 +205,11 @@ const ProgramsPage = () => {
                 tableTitle={
                   <div className="flex w-72 gap-x-6">
                     <TabsList className="mb-4 grid min-w-full grid-cols-2">
-                      <TabsTrigger
-                        className="text-tertiary-700 font-semibold"
-                        value={fiscalYear}
-                      >
+                      <TabsTrigger className="font-semibold" value={fiscalYear}>
                         {fiscalYear}
                       </TabsTrigger>
                       <TabsTrigger
-                        className="text-tertiary-700 font-semibold"
+                        className="font-semibold"
                         value={nextFiscalYear}
                       >
                         {nextFiscalYear}
@@ -255,14 +252,11 @@ const ProgramsPage = () => {
                 tableTitle={
                   <div className="flex w-72 gap-x-6">
                     <TabsList className="mb-4 grid min-w-full grid-cols-2">
-                      <TabsTrigger
-                        className="text-tertiary-700 font-semibold"
-                        value={fiscalYear}
-                      >
+                      <TabsTrigger className="font-semibold" value={fiscalYear}>
                         {fiscalYear}
                       </TabsTrigger>
                       <TabsTrigger
-                        className="text-tertiary-700 font-semibold"
+                        className="font-semibold"
                         value={nextFiscalYear}
                       >
                         {nextFiscalYear}

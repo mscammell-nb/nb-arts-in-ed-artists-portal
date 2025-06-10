@@ -266,7 +266,7 @@ const ArtistDocumentsPage = () => {
         </Alert>
       )}
       <div className="rounded-lg border border-border bg-foreground p-6 shadow-sm">
-        <h3 className="text-tertiary-900 mb-4 text-lg font-medium">
+        <h3 className="mb-4 text-lg font-medium">
           Download Document Templates
         </h3>
         <div className="flex flex-wrap gap-3">
@@ -274,7 +274,7 @@ const ArtistDocumentsPage = () => {
             fileTypes &&
             fileTypes.data.map((f) => (
               <Button
-                className="flex items-center space-x-2 rounded-lg bg-accent px-4 py-2 text-primary  transition-colors hover:bg-accent/80"
+                className="flex items-center space-x-2 rounded-lg bg-accent px-4 py-2 text-primary transition-colors hover:bg-accent/80 dark:!text-neutral-800"
                 key={f[31].value}
                 onClick={() => downloadTemplate(f)}
               >
@@ -286,7 +286,7 @@ const ArtistDocumentsPage = () => {
       </div>
       {/* File Upload */}
       <div className="rounded-lg border border-border bg-foreground p-6 shadow-sm">
-        <h3 className="text-tertiary-900 mb-4 text-lg font-medium">
+        <h3 className="mb-4 text-lg font-medium text-tertiary">
           Upload a file:
         </h3>
         <Dialog open={open} onOpenChange={setOpen}>
@@ -296,14 +296,14 @@ const ArtistDocumentsPage = () => {
                 <Upload className="h-5 w-5 text-accent" />
               </div>
               <div className="text-left">
-                <p className="text-tertiary-900 font-medium">Upload a file</p>
-                <p className="text-tertiary-500 text-sm">
+                <p className="text-text-secondary font-medium">Upload a file</p>
+                <p className="text-text-tertiary text-sm">
                   Click to browse files
                 </p>
               </div>
             </button>
           </DialogTrigger>
-          <DialogContent className="max-w-sm sm:max-w-lg">
+          <DialogContent className="max-w-sm text-primary sm:max-w-lg">
             <DialogHeader>
               <DialogTitle className="mb-1">Upload a file</DialogTitle>
             </DialogHeader>

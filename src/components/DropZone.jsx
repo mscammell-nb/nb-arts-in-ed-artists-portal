@@ -73,7 +73,7 @@ export const DropZone = ({ setUploadedFile }) => {
       case FileTypes.TEXT:
         return <FileText size={24} className="text-blue-400" />;
       default:
-        return <FolderArchive size={24} className="text-tertiary-400" />;
+        return <FolderArchive size={24} className="text-tertiary" />;
     }
   };
 
@@ -107,22 +107,20 @@ export const DropZone = ({ setUploadedFile }) => {
       <div
         {...getRootProps({
           className:
-            "relative flex w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 py-6 hover:bg-gray-100",
+            "relative flex w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-border bg-background py-6 hover:bg-background/40",
         })}
       >
         <input {...getInputProps()} />
-        <CloudUpload size={40} className="text-tertiary-400" />
-        <p className="text-tertiary-600 mt-2 text-sm font-semibold">
-          Drag File
-        </p>
-        <p className="text-tertiary-500 text-xs">
+        <CloudUpload size={40} className="text-tertiary" />
+        <p className="mt-2 text-sm font-semibold text-tertiary">Drag File</p>
+        <p className="text-xs text-tertiary">
           Click to upload file &#40;files should be under 10 MB&#41;
         </p>
       </div>
 
       {uploadedFile && (
         <div className="mt-4">
-          <Label className="text-tertiary-700 text-sm font-medium">
+          <Label className="text-sm font-medium text-tertiary">
             Selected File:
           </Label>
           <div className="mt-2 flex items-center gap-4 rounded-lg border border-border p-4">
@@ -143,10 +141,10 @@ export const DropZone = ({ setUploadedFile }) => {
 
             {/* File info */}
             <div className="flex-1">
-              <p className="text-tertiary-900 text-sm font-medium">
+              <p className="text-sm font-medium text-tertiary">
                 {uploadedFile.name}
               </p>
-              <p className="text-tertiary-500 text-xs">
+              <p className="text-xs text-tertiary">
                 {(uploadedFile.size / 1024).toFixed(2)} KB
               </p>
             </div>

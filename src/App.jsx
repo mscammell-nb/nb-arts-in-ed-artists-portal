@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Provider } from "react-redux";
 import { Navigate, Route, Routes } from "react-router-dom";
 import FirebaseAuthListener from "./auth/FirebaseAuthListener";
@@ -7,6 +8,7 @@ import MainLayoutNoSidebar from "./layouts/MainLayoutNoSidebar";
 import ArtistDocumentsPage from "./pages/ArtistDocumentsPage";
 import ArtistEvaluationsPage from "./pages/ArtistEvaluationsPage";
 import ArtistInformationPage from "./pages/ArtistInformationPage";
+import ArtistInvoicesPage from "./pages/ArtistInvoicesPage";
 import ArtistRegistrationsPage from "./pages/ArtistRegistrationsPage";
 import DONOTTOUCH from "./pages/DONOTTOUCH";
 import EvaluationPage from "./pages/EvaluationPage";
@@ -20,11 +22,34 @@ import RegistrationGate from "./pages/RegistrationGate";
 import RegistrationPage from "./pages/RegistrationPage";
 import RegistrationRenewalPage from "./pages/RegistrationRenewalPage";
 import store from "./redux/store";
-import ArtistInvoicesPage from "./pages/ArtistInvoicesPage";
 
 function App() {
   const title = "Arts in Education: Artists";
   document.title = import.meta.env.VITE_MODE ? "Dev - " + title : title;
+
+  useEffect(() => {
+    // Check system preference and add/remove dark class
+    const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+    if (isDark) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+
+    // Listen for changes in system preference
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const handleChange = (e) => {
+      if (e.matches) {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+    };
+
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, []);
 
   return (
     <Provider store={store}>
@@ -49,10 +74,7 @@ function App() {
               path="/artist-registrations"
               element={<ArtistRegistrationsPage />}
             />
-            <Route
-              path="/artist-invoices"
-              element={<ArtistInvoicesPage />}
-            />
+            <Route path="/artist-invoices" element={<ArtistInvoicesPage />} />
             <Route
               path="/keyword-list"
               element={<PrintableKeywordListPage />}
