@@ -144,7 +144,7 @@ export function AppSidebar({ ...props }) {
               </div>
               <div className="flex flex-col gap-0.5 overflow-clip leading-none">
                 <span className="font-semibold">Arts in Education</span>
-                <span className=" text-xs font-normal leading-tight text-foreground/60">
+                <span className=" text-xs font-normal leading-tight text-neutral-400">
                   {artistsData
                     ? artistsData.data[0][6].value
                     : "Artists Portal"}
@@ -224,7 +224,7 @@ export function AppSidebar({ ...props }) {
           </div>
           <div className="flex flex-col gap-0.5 overflow-clip leading-none">
             <span className="font-semibold">Arts in Education</span>
-            <span className=" text-text-secondary/60 text-xs font-normal leading-tight">
+            <span className=" text-xs font-normal leading-tight text-neutral-400">
               {artistsData ? artistsData.data[0][6].value : "Artists Portal"}
             </span>
           </div>

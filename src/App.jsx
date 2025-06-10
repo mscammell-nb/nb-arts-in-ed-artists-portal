@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Provider } from "react-redux";
 import { Navigate, Route, Routes } from "react-router-dom";
 import FirebaseAuthListener from "./auth/FirebaseAuthListener";
@@ -26,15 +26,21 @@ import store from "./redux/store";
 function App() {
   const title = "Arts in Education: Artists";
   document.title = import.meta.env.VITE_MODE ? "Dev - " + title : title;
+  const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
     // Check system preference and add/remove dark class
-    const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const isDarkMode = window.matchMedia(
+      "(prefers-color-scheme: dark)",
+    ).matches;
 
-    if (isDark) {
+    // Update both the document class and state
+    if (isDarkMode) {
       document.documentElement.classList.add("dark");
+      setIsDark(true);
     } else {
       document.documentElement.classList.remove("dark");
+      setIsDark(false);
     }
 
     // Listen for changes in system preference
@@ -42,8 +48,10 @@ function App() {
     const handleChange = (e) => {
       if (e.matches) {
         document.documentElement.classList.add("dark");
+        setIsDark(true);
       } else {
         document.documentElement.classList.remove("dark");
+        setIsDark(false);
       }
     };
 

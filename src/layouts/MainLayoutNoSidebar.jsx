@@ -12,9 +12,9 @@ const MainLayout = () => {
     navigate("/login");
   };
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col bg-background">
       <header>
-        <nav className="flex items-center justify-between border border-slate-200 p-5 shadow-lg">
+        <nav className="flex items-center justify-between border-b border-slate-200 p-5 shadow-lg dark:bg-white">
           <div className="max-w-36">
             <img
               src="https://nassauboces.quickbase.com/up/bpt5wxg92/a/r1/e7/v0"
@@ -24,7 +24,7 @@ const MainLayout = () => {
         </nav>
       </header>
 
-      <main className="grow bg-slate-50 p-14 flex flex-col">
+      <main className="bg-backgrund flex grow flex-col p-14">
         <Outlet />
       </main>
 

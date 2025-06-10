@@ -16,6 +16,7 @@ import {
   PROGRAMS_EDITABLE_FIELDS,
   SERVICE_TYPE_DEFINITIONS,
 } from "@/constants/constants";
+import { cn } from "@/lib/utils";
 import {
   useAddOrUpdateRecordMutation,
   useQueryForDataQuery,
@@ -227,7 +228,10 @@ const ProgramsPage = () => {
                         key={index}
                         to={link.url}
                         target={link.isTargetBlank ? "_blank" : null}
-                        className={buttonVariants({ variant: "lighter" })}
+                        className={cn(
+                          buttonVariants({ variant: "lighter" }),
+                          "border dark:border-white",
+                        )}
                       >
                         {link.label}
                       </Link>
