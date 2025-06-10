@@ -3,7 +3,10 @@ import { signOut } from "@/redux/slices/authSlice";
 import { useDispatch } from "react-redux";
 import { Outlet, useNavigate } from "react-router-dom";
 
-const MainLayout = () => {
+const MainLayout = ({ isDark }) => {
+  const imageSource = isDark
+    ? "https://resources.finalsite.net/images/f_auto,q_auto/v1726066239/Branding/na8arirrgrexylovc6ap/NB-Logo-2color-White.png"
+    : "https://resources.finalsite.net/images/f_auto,q_auto/v1726066240/Branding/fczgbgadj3knyvi9wura/NB-Logo-Color.png";
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const handleClick = async () => {
@@ -14,12 +17,16 @@ const MainLayout = () => {
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <header>
-        <nav className="flex items-center justify-between border-b border-slate-200 p-5 shadow-lg dark:bg-white">
+        <nav className="flex items-center justify-between border-b border-border p-5 shadow-lg ">
           <div className="max-w-36">
+            {/* Old image 
             <img
               src="https://nassauboces.quickbase.com/up/bpt5wxg92/a/r1/e7/v0"
               alt="Nassau BOCES logo"
-            />
+            /> */}
+
+            {/* New hi-res image */}
+            <img src={imageSource} alt="Nassau BOCES logo" />
           </div>
         </nav>
       </header>

@@ -90,7 +90,7 @@ function App() {
           </Route>
         </Route>
 
-        <Route element={<MainLayoutNoSidebar />}>
+        <Route element={<MainLayoutNoSidebar isDark={isDark} />}>
           <Route path="/registration" element={<RegistrationPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/" element={<ProtectedRoutesWrapper />}>
