@@ -54,7 +54,7 @@ const RegistrationGate = () => {
     user
       ? {
           from: import.meta.env.VITE_QUICKBASE_ARTISTS_TABLE_ID,
-          select: [3, 6, 29, 30, 48, 58, 62, 63],
+          select: [3, 6, 29, 30, 46, 48, 58, 62, 63],
           where: `{10.EX.'${user.uid}'}`,
         }
       : { skip: !user, refetchOnMountOrArgChange: true },
@@ -82,6 +82,7 @@ const RegistrationGate = () => {
         setArtistData({
           artistOrg: artistData.data[0][6].value,
           artistRecordId: artistData.data[0][3].value,
+          vendorType: artistData.data[0][46].value,
         }),
         dispatch(
           updateCutoffDates({

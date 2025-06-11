@@ -5,6 +5,7 @@ const initialState = {
   artistOrg: null,
   artistRecordId: null,
   has3References: false,
+  vendorType: null,
 };
 
 export const artistSlice = createSlice({
@@ -12,11 +13,13 @@ export const artistSlice = createSlice({
   initialState,
   reducers: {
     setArtistData: (state, action) => {
-      const { artistOrg, artistRecordId, has3References } = action.payload;
+      const { artistOrg, artistRecordId, has3References, vendorType } =
+        action.payload;
       state.artistOrg = artistOrg;
       state.artistRecordId = artistRecordId;
       state.error = null;
       state.has3References = has3References;
+      state.vendorType = vendorType;
     },
 
     updateArtistOrg: (state, action) => {
@@ -24,6 +27,9 @@ export const artistSlice = createSlice({
     },
     updateReferences: (state, action) => {
       state.has3References = action.payload;
+    },
+    updateVendorType: (state, action) => {
+      state.vendorType = action.payload;
     },
 
     setArtistLoading: (state, action) => {
