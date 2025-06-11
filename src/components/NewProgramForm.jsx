@@ -37,9 +37,16 @@ import { useToast } from "./ui/use-toast";
 
 function NewProgramForm({ selectedArtist = null, onSubmitSuccess = () => {} }) {
   const { toast } = useToast();
+  const vendorType = useSelector((state) => state.artist?.vendorType);
   const artistRecordId = selectedArtist
     ? selectedArtist[3].value
     : useSelector((state) => state.artist?.artistRecordId);
+  const programCutoffStartDate = useSelector(
+    (state) => state.cutoff.programCutoffStartDate,
+  );
+  const programCutoffEndDate = useSelector(
+    (state) => state.cutoff.programCutoffEndDate,
+  );
 
   const [selectedKeywords, setSelectedKeywords] = useState([]);
   const [tempCategories, setTempCategories] = useState([]);
@@ -70,6 +77,7 @@ function NewProgramForm({ selectedArtist = null, onSubmitSuccess = () => {} }) {
     length: null,
     performers: 0,
     costDetails: "",
+    ticketed: vendorType === "Ticket Vendor" ? true : false,
   });
 
   const [formErrors, setFormErrors] = useState({
@@ -78,6 +86,10 @@ function NewProgramForm({ selectedArtist = null, onSubmitSuccess = () => {} }) {
       message: "",
     },
     descriptionError: {
+      isTriggered: false,
+      message: "",
+    },
+    ticketedError: {
       isTriggered: false,
       message: "",
     },
@@ -310,12 +322,6 @@ function NewProgramForm({ selectedArtist = null, onSubmitSuccess = () => {} }) {
     setTempCategories([]);
     setSelectedKeywords([]);
 
-    const programCutoffStartDate = useSelector(
-      (state) => state.cutoff.programCutoffStartDate,
-    );
-    const programCutoffEndDate = useSelector(
-      (state) => state.cutoff.programCutoffEndDate,
-    );
     const tempCutoffStartDate = new Date(programCutoffStartDate);
     const startMonth = tempCutoffStartDate.getMonth();
     const startDay = tempCutoffStartDate.getDate();
@@ -377,6 +383,9 @@ function NewProgramForm({ selectedArtist = null, onSubmitSuccess = () => {} }) {
           },
           32: {
             value: "Pending Review",
+          },
+          56: {
+            value: formValues.ticketed,
           },
         },
       ],
@@ -490,6 +499,53 @@ function NewProgramForm({ selectedArtist = null, onSubmitSuccess = () => {} }) {
           <p className="text-red-500">{formErrors.descriptionError.message}</p>
         )}
       </div>
+
+      {vendorType == "Artist & Ticket Vendor" && (
+        <RadioGroup
+          value={formValues.ticketed}
+          onValueChange={(value) => {
+            setFormValues((prev) => ({ ...prev, ticketed: value }));
+            setFormErrors((prev) => ({
+              ...prev,
+              ticketedError: { isTriggered: false, message: "" },
+            }));
+          }}
+        >
+          <h2>
+            Ticketed
+            <span className="font-extrabold text-red-500">*</span>
+          </h2>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem
+              value={true}
+              id="is-ticketed"
+              onChange={() =>
+                setFormValues((prev) => ({
+                  ...prev,
+                  ticketed: e.target.value,
+                }))
+              }
+            />
+            <Label htmlFor="is-ticketed">Yes</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem
+              value={false}
+              id="not-ticketed"
+              onChange={() =>
+                setFormValues((prev) => ({
+                  ...prev,
+                  ticketed: e.target.value,
+                }))
+              }
+            />
+            <Label htmlFor="not-ticketed">No</Label>
+          </div>
+          {formErrors.locationError.isTriggered && (
+            <p className="text-red-500">{formErrors.locationError.message}</p>
+          )}
+        </RadioGroup>
+      )}
 
       <RadioGroup
         value={formValues.location}
