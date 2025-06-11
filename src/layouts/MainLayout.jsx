@@ -26,7 +26,7 @@ const MainLayout = () => {
           >
             <Outlet />
           </div>
-          <footer className="text-text-secondary flex flex-col items-center bg-primary p-5 text-sm">
+          <footer className="text-tertiary flex flex-col items-center bg-primary p-5 text-sm">
             <p>
               &copy; {new Date().getUTCFullYear()} Nassau BOCES. All Rights
               Reserved.
