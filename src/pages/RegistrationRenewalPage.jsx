@@ -97,6 +97,12 @@ const schema = yup.object({
 });
 
 const RegistrationRenewalPage = () => {
+  const cutoffStartDate = useSelector(
+    (state) => state.cutoff.registrationCutoffStartDate,
+  );
+  const cutoffEndDate = useSelector(
+    (state) => state.cutoff.registrationCutoffEndDate,
+  );
   const auth = getAuth();
   const user = useSelector((state) => state.auth.user);
   const navigate = useNavigate();
@@ -222,12 +228,6 @@ const RegistrationRenewalPage = () => {
   }, [documentsData, isDocumentsDataLoading]);
 
   const formatDataForQuickbase = async (data) => {
-    const cutoffStartDate = useSelector(
-      (state) => state.cutoff.registrationCutoffStartDate,
-    );
-    const cutoffEndDate = useSelector(
-      (state) => state.cutoff.registrationCutoffEndDate,
-    );
     const startMonth = new Date(cutoffStartDate).getMonth();
     const startDay = new Date(cutoffStartDate).getDate();
     const endMonth = new Date(cutoffEndDate).getMonth();

@@ -106,14 +106,14 @@ const RegistrationGate = () => {
   if (registrationData?.data[0] && !registrationData.data[0][6].value) {
     return (
       <div className=" -mt-14 flex w-full flex-1 flex-col items-center justify-center">
-        <div className=" max-w-[500px] rounded-xl border border-slate-200 bg-foreground p-8 text-center shadow-lg ">
+        <div className=" max-w-[500px] rounded-xl border border-border bg-foreground p-8 text-center shadow-lg ">
           <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-amber-100">
             <Clock className="h-8 w-8 text-amber-600" />
           </div>
-          <h1 className="mb-3 text-xl font-semibold text-slate-800">
+          <h1 className="mb-3 text-xl font-semibold text-primary">
             Registration Pending
           </h1>
-          <p className="mb-8 leading-relaxed text-slate-600">
+          <p className="mb-8 leading-relaxed text-secondary">
             Your registration request is currently being processed. We'll notify
             you once it's complete.
           </p>
@@ -143,7 +143,7 @@ const RegistrationGate = () => {
           </AlertDescription>
         </Alert>
 
-        <div className="flex flex-col gap-6 rounded-lg border border-slate-200 bg-foreground p-8 shadow-md">
+        <div className="flex flex-col gap-6 rounded-lg border border-border bg-foreground p-8 shadow-md">
           <div className="flex items-start space-x-4 rounded-lg border border-blue-200 bg-blue-50 p-6">
             <Calendar className="mt-0.5 h-6 w-6 flex-shrink-0 text-blue-600" />
             <div>
@@ -158,19 +158,19 @@ const RegistrationGate = () => {
           </div>
 
           {/* Additional Information */}
-          <div className="mt-8 rounded-lg border border-slate-200 bg-slate-50 p-6">
+          <div className="mt-8 rounded-lg border border-border bg-background p-6">
             <div className="flex items-start space-x-3">
               <FileText className="mt-0.5 h-5 w-5 text-slate-600" />
               <div>
-                <h4 className="mb-2 font-medium text-slate-800">
+                <h4 className="mb-2 font-medium text-primary">
                   What happens next?
                 </h4>
-                <p className="mb-3 text-sm leading-relaxed text-slate-600">
+                <p className="mb-3 text-sm leading-relaxed text-secondary">
                   We will review your registration request and notify you of the
                   status. If you are approved you can access the website at the
                   start of the next fiscal year.
                 </p>
-                <p className="text-sm text-slate-600">
+                <p className="text-sm text-secondary">
                   If you have any questions, please contact "ENTER SUPPORT EMAIL
                   HERE".
                 </p>
@@ -192,14 +192,14 @@ const RegistrationGate = () => {
   if (artistData.data[0][30].value) {
     return (
       <div className=" -mt-14 flex w-full flex-1 flex-col items-center justify-center">
-        <div className=" max-w-[500px] rounded-xl border border-slate-200 bg-foreground p-8 text-center shadow-lg">
+        <div className=" max-w-[500px] rounded-xl border border-border bg-foreground p-8 text-center shadow-lg">
           <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
             <AlertTriangle className="h-8 w-8 text-red-600" />
           </div>
-          <h1 className="mb-3 text-xl font-semibold text-slate-800">
+          <h1 className="mb-3 text-xl font-semibold text-primary">
             Registration Expired
           </h1>
-          <p className="mb-8 leading-relaxed text-slate-600">
+          <p className="mb-8 leading-relaxed text-secondary">
             Your registration has expired. Please go to the{" "}
             <Link to={"/registration-renewal"} className="underline">
               Registration Renewal
