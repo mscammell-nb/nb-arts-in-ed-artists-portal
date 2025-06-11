@@ -7,7 +7,10 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { TICKET_VENDOR } from "@/constants/constants";
+import {
+  TICKET_VENDOR,
+  TICKET_VENDOR_EXCEPTION_SIDEBAR,
+} from "@/constants/constants";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { useQueryForDataQuery } from "@/redux/api/quickbaseApi";
