@@ -278,6 +278,11 @@ function DataGrid({
           <span>{addButtonText}</span>
         </Button>
       )}
+      {selectAction && selectedRows.length > 0 && (
+        <Button onClick={() => selectAction(selectedRows)}>
+          {selectActionText}
+        </Button>
+      )}
       {!readOnly && (
         <Tooltip>
           <TooltipTrigger asChild>
@@ -294,11 +299,6 @@ function DataGrid({
             <p>Enable Editing</p>
           </TooltipContent>
         </Tooltip>
-      )}
-      {selectAction && selectedRows.length > 0 && (
-        <Button onClick={() => selectAction(selectedRows)}>
-          {selectActionText}
-        </Button>
       )}
     </div>
   );
