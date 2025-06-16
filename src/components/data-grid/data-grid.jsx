@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { useCallback, useState } from "react";
 import { Button } from "../ui/button";
+import { Checkbox } from "../ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -65,7 +66,35 @@ function DataGrid({
   const [sheetOpen, setSheetOpen] = useState(false);
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState({});
-  let columnsCopy = [...columns];
+  const [rowSelection, setRowSelection] = useState({});
+  let columnsCopy = [
+    {
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all rows"
+          className="flex items-center justify-center"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+          className="flex items-center justify-center"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+      size: 40,
+    },
+    ...columns,
+  ];
 
   if (rowDelete) {
     columnsCopy = [
@@ -116,13 +145,21 @@ function DataGrid({
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onGlobalFilterChange: setGlobalFilter,
+    onRowSelectionChange: setRowSelection,
     globalFilterFn: "includesString",
     state: {
       sorting,
       columnFilters,
       globalFilter,
+      rowSelection,
     },
   });
+
+  const selectedRows = table.getFilteredSelectedRowModel().rows;
+  const selectedRowIds = Object.keys(rowSelection);
+
+  console.log("Selected rows:", selectedRows);
+  console.log("Selected row IDs:", selectedRowIds);
 
   // Memoize event handlers to prevent unnecessary re-renders
   const handleAddNew = useCallback(() => {
