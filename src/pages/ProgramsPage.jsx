@@ -31,6 +31,7 @@ import {
   isDuringCutoff,
 } from "@/utils/utils";
 import { AlertCircle } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
@@ -114,12 +115,18 @@ const ProgramsPage = () => {
   const fiscalYear = getCurrentFiscalYear();
   const nextFiscalYear = getNextFiscalYear();
   const tempCutoffStartDate = new Date(programCutoffStartDate);
-  const startMonth = tempCutoffStartDate.getMonth();
-  const startDay = tempCutoffStartDate.getDate();
-  const tempCutoffEndDate = new Date(programCutoffEndDate);
-  const endMonth = tempCutoffEndDate.getMonth();
-  const endDay = tempCutoffEndDate.getDate();
-  const duringCutoff = isDuringCutoff(startMonth, startDay, endMonth, endDay);
+
+  const [duringCutoff, setDuringCutoff] = useState(false);
+
+  useEffect(() => {
+    if (!programCutoffStartDate || !programCutoffEndDate) return;
+    const startMonth = tempCutoffStartDate.getMonth();
+    const startDay = tempCutoffStartDate.getDate();
+    const tempCutoffEndDate = new Date(programCutoffEndDate);
+    const endMonth = tempCutoffEndDate.getMonth();
+    const endDay = tempCutoffEndDate.getDate();
+    setDuringCutoff(isDuringCutoff(startMonth, startDay, endMonth, endDay));
+  }, [programCutoffStartDate, programCutoffEndDate]);
 
   const {
     data: programsData,
@@ -335,7 +342,6 @@ const ProgramsPage = () => {
       });
     }
   };
-
   const getActionText = () => {
     if (duringCutoff) return "Copy into " + nextFiscalYear;
     return "Copy into " + getCurrentFiscalYear();
@@ -393,11 +399,17 @@ const ProgramsPage = () => {
           selectAction={copyProgram}
           selectActionText={getActionText()}
           {...(has3References &&
-            selectedFiscalYear === nextFiscalYear && {
-              CustomAddComponent: AddProgramSheet,
-              sheetProps: { title: "Add New Program" },
-              addButtonText: "Add New Program",
-            })}
+            (duringCutoff
+              ? selectedFiscalYear === nextFiscalYear && {
+                  CustomAddComponent: AddProgramSheet,
+                  sheetProps: { title: "Add New Program" },
+                  addButtonText: "Add New Program",
+                }
+              : selectedFiscalYear === getCurrentFiscalYear() && {
+                  CustomAddComponent: AddProgramSheet,
+                  sheetProps: { title: "Add New Program" },
+                  addButtonText: "Add New Program",
+                }))}
         />
       </div>
     </div>

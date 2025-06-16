@@ -38,11 +38,24 @@ export const isDuringCutoff = (
   const currMonth = date.getMonth();
   const currDay = date.getDate();
 
-  return (
-    (currMonth > cutoffStartMonth && currMonth < cutoffEndMonth) ||
-    (currMonth == cutoffStartMonth && currDay >= cutoffStartDay) ||
-    (currMonth == cutoffEndMonth && currDay <= cutoffEndDay)
+  const currentDate = new Date(date.getFullYear(), currMonth, currDay);
+  const startDate = new Date(
+    date.getFullYear(),
+    cutoffStartMonth,
+    cutoffStartDay,
   );
+  let endDate = new Date(date.getFullYear(), cutoffEndMonth, cutoffEndDay);
+
+  // Handle cross-year scenarios
+  if (
+    cutoffEndMonth < cutoffStartMonth ||
+    (cutoffEndMonth === cutoffStartMonth && cutoffEndDay < cutoffStartDay)
+  ) {
+    // End date is in the next year
+    endDate = new Date(date.getFullYear() + 1, cutoffEndMonth, cutoffEndDay);
+  }
+
+  return currentDate >= startDate && currentDate <= endDate;
 };
 
 /**
