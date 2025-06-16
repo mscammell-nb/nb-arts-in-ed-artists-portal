@@ -46,15 +46,6 @@ export const isDuringCutoff = (
   );
   let endDate = new Date(date.getFullYear(), cutoffEndMonth, cutoffEndDay);
 
-  // Handle cross-year scenarios
-  if (
-    cutoffEndMonth < cutoffStartMonth ||
-    (cutoffEndMonth === cutoffStartMonth && cutoffEndDay < cutoffStartDay)
-  ) {
-    // End date is in the next year
-    endDate = new Date(date.getFullYear() + 1, cutoffEndMonth, cutoffEndDay);
-  }
-
   return currentDate >= startDate && currentDate <= endDate;
 };
 
