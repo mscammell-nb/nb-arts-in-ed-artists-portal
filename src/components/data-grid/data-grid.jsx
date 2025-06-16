@@ -59,6 +59,8 @@ function DataGrid({
   handleRowDelete = () => {},
   handleRowDeleteObject = {},
   isDeleteLoading = false,
+  selectAction = null,
+  selectActionText = null,
 }) {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
@@ -157,9 +159,6 @@ function DataGrid({
 
   const selectedRows = table.getFilteredSelectedRowModel().rows;
   const selectedRowIds = Object.keys(rowSelection);
-
-  console.log("Selected rows:", selectedRows);
-  console.log("Selected row IDs:", selectedRowIds);
 
   // Memoize event handlers to prevent unnecessary re-renders
   const handleAddNew = useCallback(() => {
@@ -295,6 +294,11 @@ function DataGrid({
             <p>Enable Editing</p>
           </TooltipContent>
         </Tooltip>
+      )}
+      {selectAction && selectedRows.length > 0 && (
+        <Button onClick={() => selectAction(selectedRows)}>
+          {selectActionText}
+        </Button>
       )}
     </div>
   );

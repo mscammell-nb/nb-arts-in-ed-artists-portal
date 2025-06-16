@@ -24,7 +24,9 @@ import {
 import { programTableColumns } from "@/utils/TableColumns";
 import {
   getCurrentFiscalYear,
+  getCurrentFiscalYearKey,
   getNextFiscalYear,
+  getNextFiscalYearKey,
   groupByIdAndField,
   isDuringCutoff,
 } from "@/utils/utils";
@@ -89,6 +91,7 @@ const formatProgramsData = (programsData) => {
       record[32].value === "Accepted"
         ? ["program", "cost", "description"]
         : null,
+    rawData: record,
   }));
 };
 
@@ -127,7 +130,10 @@ const ProgramsPage = () => {
     artistRecordId
       ? {
           from: import.meta.env.VITE_QUICKBASE_PROGRAMS_TABLE_ID,
-          select: [1, 3, 8, 11, 12, 16, 20, 22, 24, 25, 26, 27, 29, 30, 32, 33],
+          select: [
+            1, 3, 8, 11, 12, 16, 13, 15, 20, 21, 22, 23, 24, 25, 26, 27, 29, 30,
+            32, 33, 34, 38, 41, 56,
+          ],
           where: `{8.EX.'${artistRecordId}'}`,
           sortBy: [{ fieldId: 11 }, { order: "DESC" }],
         }
@@ -185,6 +191,156 @@ const ProgramsPage = () => {
     });
   };
 
+  const copyProgram = (selectedPrograms) => {
+    // If duringCutoff, copy into next fiscal year, else copy into current fiscal year
+    if (duringCutoff) {
+      let updateData = selectedPrograms.map((program) => {
+        const data = program.original.rawData;
+        return {
+          8: {
+            value: data[8].value,
+          },
+          11: {
+            value: data[11].value,
+          },
+          12: {
+            value: data[12].value,
+          },
+          13: {
+            value: data[13].value,
+          },
+          15: {
+            value: getNextFiscalYearKey(),
+          },
+          20: {
+            value: data[20].value,
+          },
+          21: {
+            value: data[21].value,
+          },
+          22: {
+            value: data[22].value,
+          },
+          23: {
+            value: data[23].value,
+          },
+          25: {
+            value: data[25].value,
+          },
+          26: {
+            value: data[26].value,
+          },
+          27: {
+            value: data[27].value,
+          },
+          29: {
+            value: data[29].value,
+          },
+          30: {
+            value: data[30].value,
+          },
+          32: {
+            value: "Pending Review",
+          },
+          33: {
+            value: data[33].value,
+          },
+          34: {
+            value: data[34].value,
+          },
+          38: {
+            value: data[38].value,
+          },
+          41: {
+            value: data[41].value,
+          },
+          56: {
+            value: data[56].value,
+          },
+        };
+      });
+      updateRecord({
+        to: import.meta.env.VITE_QUICKBASE_PROGRAMS_TABLE_ID,
+        data: updateData, // Need everything, 8, 11, 12, 13, 15, 20, 21, 22, 23, 25, 26, 27, 29, 30, 32, 33, 34, 38, 41, 56 --- 15 is what we need to set as the next fiscal year, by key
+      });
+    } else {
+      let updateData = selectedPrograms.map((program) => {
+        const data = program.original.rawData;
+        return {
+          8: {
+            value: data[8].value,
+          },
+          11: {
+            value: data[11].value,
+          },
+          12: {
+            value: data[12].value,
+          },
+          13: {
+            value: data[13].value,
+          },
+          15: {
+            value: getCurrentFiscalYearKey(),
+          },
+          20: {
+            value: data[20].value,
+          },
+          21: {
+            value: data[21].value,
+          },
+          22: {
+            value: data[22].value,
+          },
+          23: {
+            value: data[23].value,
+          },
+          25: {
+            value: data[25].value,
+          },
+          26: {
+            value: data[26].value,
+          },
+          27: {
+            value: data[27].value,
+          },
+          29: {
+            value: data[29].value,
+          },
+          30: {
+            value: data[30].value,
+          },
+          32: {
+            value: "Pending Review",
+          },
+          33: {
+            value: data[33].value,
+          },
+          34: {
+            value: data[34].value,
+          },
+          38: {
+            value: data[38].value,
+          },
+          41: {
+            value: data[41].value,
+          },
+          56: {
+            value: data[56].value,
+          },
+        };
+      });
+      updateRecord({
+        to: import.meta.env.VITE_QUICKBASE_PROGRAMS_TABLE_ID,
+        data: updateData, // Need everything, 8, 11, 12, 13, 15, 20, 21, 22, 23, 25, 26, 27, 29, 30, 32, 33, 34, 38, 41, 56 --- 15 is what we need to set as the current fiscal year, by key
+      });
+    }
+  };
+
+  const getActionText = () => {
+    if (duringCutoff) return "Copy into " + nextFiscalYear;
+    return "Copy into " + getCurrentFiscalYear();
+  };
+
   // Filter data based on selected fiscal year
   const filteredProgramsData = programsData
     ? {
@@ -234,6 +390,8 @@ const ProgramsPage = () => {
           updateFunction={updateFunction}
           editableFields={PROGRAMS_EDITABLE_FIELDS}
           rowSpecificEditing
+          selectAction={copyProgram}
+          selectActionText={getActionText()}
           {...(has3References &&
             selectedFiscalYear === nextFiscalYear && {
               CustomAddComponent: AddProgramSheet,
