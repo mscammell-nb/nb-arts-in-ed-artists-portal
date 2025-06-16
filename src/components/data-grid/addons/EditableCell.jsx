@@ -40,7 +40,6 @@ const defaultCellRenderer = ({ getValue }) => {
  */
 const editableColumns = (
   columns,
-  setEditing,
   editing,
   editableFields,
   form,
@@ -275,7 +274,7 @@ const editableColumns = (
                   value={inputValue || ""}
                   onChange={handleInputChange}
                   className={cn(
-                    "w-full rounded border border-border p-1 text-tertiary placeholder:text-tertiary",
+                    "text-tertiary placeholder:text-tertiary w-full rounded border border-border p-1",
                     inputValue === originalValue
                       ? "bg-foreground"
                       : "bg-yellow-200",

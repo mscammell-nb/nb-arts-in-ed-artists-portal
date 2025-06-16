@@ -103,7 +103,6 @@ function DataGrid({
     data,
     columns: editableColumns(
       columnsCopy,
-      setEditing,
       editing,
       editableFields,
       form,
@@ -206,14 +205,14 @@ function DataGrid({
         <Button
           variant="outline"
           onClick={clearAllFilters}
-          className="whitespace-nowrap text-tertiary"
+          className="text-tertiary whitespace-nowrap"
         >
           Clear Filters
         </Button>
       )}
       {allowExport && (
         <DropdownMenu>
-          <DropdownMenuTrigger className="flex w-full max-w-[600px] items-center rounded-lg border border-border px-3 py-2 text-tertiary transition-all hover:border-gray-500 sm:w-auto">
+          <DropdownMenuTrigger className="text-tertiary flex w-full max-w-[600px] items-center rounded-lg border border-border px-3 py-2 transition-all hover:border-gray-500 sm:w-auto">
             <span className="mr-2 text-nowrap text-sm">Export as</span>
             <CaretDownIcon />
           </DropdownMenuTrigger>
@@ -247,7 +246,7 @@ function DataGrid({
         <Tooltip>
           <TooltipTrigger asChild>
             <div
-              className="cursor-pointer rounded border border-border p-2 text-tertiary transition-all hover:border-[hsl(var(--text-secondary))] hover:text-secondary"
+              className="text-tertiary cursor-pointer rounded border border-border p-2 transition-all hover:border-[hsl(var(--text-secondary))] hover:text-secondary"
               onClick={() => {
                 setEditing(true);
               }}
