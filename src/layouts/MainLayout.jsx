@@ -8,10 +8,6 @@ import { Outlet } from "react-router-dom";
 
 const MainLayout = () => {
   const isMobile = useIsMobile();
-  console.log(
-    "Dark mode ? ",
-    window.matchMedia(`(prefers-color-scheme: dark`).matches,
-  );
 
   return (
     <div className="max-w-screen flex min-h-screen flex-col overflow-x-hidden bg-background  text-primary">

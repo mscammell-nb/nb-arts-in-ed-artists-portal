@@ -1,4 +1,5 @@
 import DataGrid from "@/components/data-grid/data-grid";
+import { FiscalYearSelector } from "@/components/fiscalYearSelector";
 import NewProgramForm from "@/components/NewProgramForm";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { buttonVariants } from "@/components/ui/button";
@@ -11,7 +12,6 @@ import {
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Spinner from "@/components/ui/Spinner";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   PROGRAMS_EDITABLE_FIELDS,
   SERVICE_TYPE_DEFINITIONS,
@@ -24,11 +24,14 @@ import {
 import { programTableColumns } from "@/utils/TableColumns";
 import {
   getCurrentFiscalYear,
+  getCurrentFiscalYearKey,
   getNextFiscalYear,
+  getNextFiscalYearKey,
   groupByIdAndField,
   isDuringCutoff,
 } from "@/utils/utils";
 import { AlertCircle } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
@@ -55,6 +58,7 @@ const BUTTON_LINKS = [
   { label: "View Contracts", url: "/program-contracts", isTargetBlank: false },
   { label: "Step-by-Step Help", url: "#", isTargetBlank: true },
 ];
+
 const formatDate = (timestamp) => {
   const date = new Date(timestamp);
 
@@ -88,6 +92,7 @@ const formatProgramsData = (programsData) => {
       record[32].value === "Accepted"
         ? ["program", "cost", "description"]
         : null,
+    rawData: record,
   }));
 };
 
@@ -103,15 +108,25 @@ const ProgramsPage = () => {
     (state) => state.cutoff.programCutoffEndDate,
   );
 
+  const selectedFiscalYear = useSelector(
+    (state) => state.fiscalYear.fiscalYear,
+  );
+
   const fiscalYear = getCurrentFiscalYear();
   const nextFiscalYear = getNextFiscalYear();
   const tempCutoffStartDate = new Date(programCutoffStartDate);
-  const startMonth = tempCutoffStartDate.getMonth();
-  const startDay = tempCutoffStartDate.getDate();
-  const tempCutoffEndDate = new Date(programCutoffEndDate);
-  const endMonth = tempCutoffEndDate.getMonth();
-  const endDay = tempCutoffEndDate.getDate();
-  const duringCutoff = isDuringCutoff(startMonth, startDay, endMonth, endDay);
+
+  const [duringCutoff, setDuringCutoff] = useState(false);
+
+  useEffect(() => {
+    if (!programCutoffStartDate || !programCutoffEndDate) return;
+    const startMonth = tempCutoffStartDate.getMonth();
+    const startDay = tempCutoffStartDate.getDate();
+    const tempCutoffEndDate = new Date(programCutoffEndDate);
+    const endMonth = tempCutoffEndDate.getMonth();
+    const endDay = tempCutoffEndDate.getDate();
+    setDuringCutoff(isDuringCutoff(startMonth, startDay, endMonth, endDay));
+  }, [programCutoffStartDate, programCutoffEndDate]);
 
   const {
     data: programsData,
@@ -122,7 +137,10 @@ const ProgramsPage = () => {
     artistRecordId
       ? {
           from: import.meta.env.VITE_QUICKBASE_PROGRAMS_TABLE_ID,
-          select: [1, 3, 8, 11, 12, 16, 20, 22, 24, 25, 26, 27, 29, 30, 32, 33],
+          select: [
+            1, 3, 8, 11, 12, 16, 13, 15, 20, 21, 22, 23, 24, 25, 26, 27, 29, 30,
+            32, 33, 34, 38, 41, 56,
+          ],
           where: `{8.EX.'${artistRecordId}'}`,
           sortBy: [{ fieldId: 11 }, { order: "DESC" }],
         }
@@ -180,6 +198,164 @@ const ProgramsPage = () => {
     });
   };
 
+  const copyProgram = (selectedPrograms) => {
+    // If duringCutoff, copy into next fiscal year, else copy into current fiscal year
+    if (duringCutoff) {
+      let updateData = selectedPrograms.map((program) => {
+        const data = program.original.rawData;
+        return {
+          8: {
+            value: data[8].value,
+          },
+          11: {
+            value: data[11].value,
+          },
+          12: {
+            value: data[12].value,
+          },
+          13: {
+            value: data[13].value,
+          },
+          15: {
+            value: getNextFiscalYearKey(),
+          },
+          20: {
+            value: data[20].value,
+          },
+          21: {
+            value: data[21].value,
+          },
+          22: {
+            value: data[22].value,
+          },
+          23: {
+            value: data[23].value,
+          },
+          25: {
+            value: data[25].value,
+          },
+          26: {
+            value: data[26].value,
+          },
+          27: {
+            value: data[27].value,
+          },
+          29: {
+            value: data[29].value,
+          },
+          30: {
+            value: data[30].value,
+          },
+          32: {
+            value: "Pending Review",
+          },
+          33: {
+            value: data[33].value,
+          },
+          34: {
+            value: data[34].value,
+          },
+          38: {
+            value: data[38].value,
+          },
+          41: {
+            value: data[41].value,
+          },
+          56: {
+            value: data[56].value,
+          },
+        };
+      });
+      updateRecord({
+        to: import.meta.env.VITE_QUICKBASE_PROGRAMS_TABLE_ID,
+        data: updateData, // Need everything, 8, 11, 12, 13, 15, 20, 21, 22, 23, 25, 26, 27, 29, 30, 32, 33, 34, 38, 41, 56 --- 15 is what we need to set as the next fiscal year, by key
+      });
+    } else {
+      let updateData = selectedPrograms.map((program) => {
+        const data = program.original.rawData;
+        return {
+          8: {
+            value: data[8].value,
+          },
+          11: {
+            value: data[11].value,
+          },
+          12: {
+            value: data[12].value,
+          },
+          13: {
+            value: data[13].value,
+          },
+          15: {
+            value: getCurrentFiscalYearKey(),
+          },
+          20: {
+            value: data[20].value,
+          },
+          21: {
+            value: data[21].value,
+          },
+          22: {
+            value: data[22].value,
+          },
+          23: {
+            value: data[23].value,
+          },
+          25: {
+            value: data[25].value,
+          },
+          26: {
+            value: data[26].value,
+          },
+          27: {
+            value: data[27].value,
+          },
+          29: {
+            value: data[29].value,
+          },
+          30: {
+            value: data[30].value,
+          },
+          32: {
+            value: "Pending Review",
+          },
+          33: {
+            value: data[33].value,
+          },
+          34: {
+            value: data[34].value,
+          },
+          38: {
+            value: data[38].value,
+          },
+          41: {
+            value: data[41].value,
+          },
+          56: {
+            value: data[56].value,
+          },
+        };
+      });
+      updateRecord({
+        to: import.meta.env.VITE_QUICKBASE_PROGRAMS_TABLE_ID,
+        data: updateData, // Need everything, 8, 11, 12, 13, 15, 20, 21, 22, 23, 25, 26, 27, 29, 30, 32, 33, 34, 38, 41, 56 --- 15 is what we need to set as the current fiscal year, by key
+      });
+    }
+  };
+  const getActionText = () => {
+    if (duringCutoff) return "Copy into " + nextFiscalYear;
+    return "Copy into " + getCurrentFiscalYear();
+  };
+
+  // Filter data based on selected fiscal year
+  const filteredProgramsData = programsData
+    ? {
+        data: programsData.data.filter((record) => {
+          return record[16].value === selectedFiscalYear;
+        }),
+      }
+    : { data: [] };
+
   return (
     <div className="w-full">
       {!has3References && (
@@ -192,118 +368,12 @@ const ProgramsPage = () => {
           </AlertDescription>
         </Alert>
       )}
-      {duringCutoff && (
-        <Tabs defaultValue={fiscalYear} className="w-full">
-          <TabsContent value={fiscalYear}>
-            <div className="flex w-full flex-col justify-center gap-5 pb-10">
-              <DataGrid
-                columns={programTableColumns}
-                data={formatProgramsData({
-                  data: programsData.data.filter((record) => {
-                    return record[16].value == fiscalYear;
-                  }),
-                })}
-                tableTitle={
-                  <div className="flex w-72 gap-x-6">
-                    <TabsList className="mb-4 grid min-w-full grid-cols-2">
-                      <TabsTrigger className="font-semibold" value={fiscalYear}>
-                        {fiscalYear}
-                      </TabsTrigger>
-                      <TabsTrigger
-                        className="font-semibold"
-                        value={nextFiscalYear}
-                      >
-                        {nextFiscalYear}
-                      </TabsTrigger>
-                    </TabsList>
-                  </div>
-                }
-                usePagination
-                allowExport
-                customButtons={BUTTON_LINKS.map(
-                  (link, index) =>
-                    (link.label !== "New Program" ||
-                      fiscalYear === getCurrentFiscalYear()) && (
-                      <Link
-                        key={index}
-                        to={link.url}
-                        target={link.isTargetBlank ? "_blank" : null}
-                        className={cn(
-                          buttonVariants({ variant: "lighter" }),
-                          "border dark:border-white",
-                        )}
-                      >
-                        {link.label}
-                      </Link>
-                    ),
-                )}
-                updateFunction={updateFunction}
-                editableFields={PROGRAMS_EDITABLE_FIELDS}
-                rowSpecificEditing
-                sheetProps={{ title: "Add New Program" }}
-              />
-            </div>
-          </TabsContent>
-          <TabsContent value={nextFiscalYear}>
-            <div className="flex w-full flex-col justify-center gap-5 pb-10">
-              <DataGrid
-                columns={programTableColumns}
-                data={formatProgramsData({
-                  data: programsData.data.filter((record) => {
-                    return record[16].value == nextFiscalYear;
-                  }),
-                })}
-                tableTitle={
-                  <div className="flex w-72 gap-x-6">
-                    <TabsList className="mb-4 grid min-w-full grid-cols-2">
-                      <TabsTrigger className="font-semibold" value={fiscalYear}>
-                        {fiscalYear}
-                      </TabsTrigger>
-                      <TabsTrigger
-                        className="font-semibold"
-                        value={nextFiscalYear}
-                      >
-                        {nextFiscalYear}
-                      </TabsTrigger>
-                    </TabsList>
-                  </div>
-                }
-                usePagination
-                allowExport
-                customButtons={BUTTON_LINKS.map(
-                  (link, index) =>
-                    (link.label !== "New Program" ||
-                      fiscalYear === getCurrentFiscalYear()) && (
-                      <Link
-                        key={index}
-                        to={link.url}
-                        target={link.isTargetBlank ? "_blank" : null}
-                        className={buttonVariants({ variant: "lighter" })}
-                      >
-                        {link.label}
-                      </Link>
-                    ),
-                )}
-                updateFunction={updateFunction}
-                editableFields={PROGRAMS_EDITABLE_FIELDS}
-                {...(has3References && {
-                  CustomAddComponent: AddProgramSheet,
-                  sheetProps: { title: "Add New Program" },
-                  addButtonText: "Add New Program",
-                })}
-              />
-            </div>
-          </TabsContent>
-        </Tabs>
-      )}
-      {!duringCutoff && (
+
+      <div className="flex w-full flex-col justify-center gap-5 pb-10">
         <DataGrid
           columns={programTableColumns}
-          data={formatProgramsData({
-            data: programsData.data.filter((record) => {
-              return record[16].value == fiscalYear;
-            }),
-          })}
+          data={formatProgramsData(filteredProgramsData)}
+          tableTitle={<FiscalYearSelector />}
           usePagination
           allowExport
           customButtons={BUTTON_LINKS.map(
@@ -314,7 +384,10 @@ const ProgramsPage = () => {
                   key={index}
                   to={link.url}
                   target={link.isTargetBlank ? "_blank" : null}
-                  className={buttonVariants({ variant: "lighter" })}
+                  className={cn(
+                    buttonVariants({ variant: "lighter" }),
+                    "border dark:border-white",
+                  )}
                 >
                   {link.label}
                 </Link>
@@ -323,13 +396,22 @@ const ProgramsPage = () => {
           updateFunction={updateFunction}
           editableFields={PROGRAMS_EDITABLE_FIELDS}
           rowSpecificEditing
-          {...(has3References && {
-            CustomAddComponent: AddProgramSheet,
-            sheetProps: { title: "Add New Program" },
-            addButtonText: "Add New Program",
-          })}
+          selectAction={copyProgram}
+          selectActionText={getActionText()}
+          {...(has3References &&
+            (duringCutoff
+              ? selectedFiscalYear === nextFiscalYear && {
+                  CustomAddComponent: AddProgramSheet,
+                  sheetProps: { title: "Add New Program" },
+                  addButtonText: "Add New Program",
+                }
+              : selectedFiscalYear === getCurrentFiscalYear() && {
+                  CustomAddComponent: AddProgramSheet,
+                  sheetProps: { title: "Add New Program" },
+                  addButtonText: "Add New Program",
+                }))}
         />
-      )}
+      </div>
     </div>
   );
 };

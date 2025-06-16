@@ -38,11 +38,15 @@ export const isDuringCutoff = (
   const currMonth = date.getMonth();
   const currDay = date.getDate();
 
-  return (
-    (currMonth > cutoffStartMonth && currMonth < cutoffEndMonth) ||
-    (currMonth == cutoffStartMonth && currDay >= cutoffStartDay) ||
-    (currMonth == cutoffEndMonth && currDay <= cutoffEndDay)
+  const currentDate = new Date(date.getFullYear(), currMonth, currDay);
+  const startDate = new Date(
+    date.getFullYear(),
+    cutoffStartMonth,
+    cutoffStartDay,
   );
+  let endDate = new Date(date.getFullYear(), cutoffEndMonth, cutoffEndDay);
+
+  return currentDate >= startDate && currentDate <= endDate;
 };
 
 /**
