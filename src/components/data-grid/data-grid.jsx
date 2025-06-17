@@ -69,34 +69,32 @@ function DataGrid({
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState({});
   const [rowSelection, setRowSelection] = useState({});
-  let columnsCopy = [
-    {
-      id: "select",
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all rows"
-          className="flex items-center justify-center"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-          className="flex items-center justify-center"
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-      size: 40,
-    },
-    ...columns,
-  ];
+  const selectCol = {
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all rows"
+        className="flex items-center justify-center"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+        className="flex items-center justify-center"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+    size: 40,
+  };
+  let columnsCopy = selectAction ? [selectCol, ...columns] : [...columns];
 
   if (rowDelete) {
     columnsCopy = [
