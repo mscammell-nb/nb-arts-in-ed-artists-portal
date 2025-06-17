@@ -10,7 +10,7 @@ const Steps = ({ stepTitles, formStep }) => {
           {stepTitles.map((stepTitle, index) => (
             <li
               key={index}
-              className={`relative flex items-center gap-2 p-2 ${
+              className={`relative flex items-center gap-2 bg-background p-2 ${
                 index < stepTitles.length - 1 &&
                 `after:absolute after:left-full after:top-1/2 after:h-0.5 after:w-full after:-translate-y-1/2 ${index < formStep ? "after:bg-primary" : "after:bg-gray-300"} after:content-[""]`
               }`}
