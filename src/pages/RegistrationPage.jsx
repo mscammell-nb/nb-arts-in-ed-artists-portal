@@ -442,6 +442,7 @@ const RegistrationPage = () => {
             setFormStep((prev) => prev + 1);
           }}
           disabled={!isValid}
+          variant="secondary"
           type="button"
         >
           Next
@@ -854,7 +855,7 @@ const RegistrationPage = () => {
                   onClick={() => {
                     setFormStep((prev) => prev - 1);
                   }}
-                  variant="secondary"
+                  variant="outline"
                   disabled={formStep < 1}
                   type="button"
                 >
