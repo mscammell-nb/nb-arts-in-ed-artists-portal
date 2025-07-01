@@ -359,7 +359,7 @@ const ProgramsPage = () => {
   return (
     <div className="w-full">
       {!has3References && (
-        <Alert variant="destructive">
+        <Alert variant="destructive" className="mb-5">
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>Not enough references!</AlertTitle>
           <AlertDescription>
