@@ -29,6 +29,7 @@ import {
   useAddOrUpdateRecordMutation,
   useQueryForDataQuery,
 } from "@/redux/api/quickbaseApi";
+import { setArtistData } from "@/redux/slices/artistSlice";
 import { signUp } from "@/redux/slices/authSlice";
 import { capitalizeString, getCutoffFiscalYearKey } from "@/utils/utils";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -479,8 +480,9 @@ const RegistrationPage = () => {
             formatDataForTheArtistTable(data, uid),
           );
           const artistRecordId = response.data.data[0][3].value;
+
           dispatch(
-            setArtist({
+            setArtistData({
               // artistOrg: response.data.data[0][6].value,
               artistRecordId,
             }),
