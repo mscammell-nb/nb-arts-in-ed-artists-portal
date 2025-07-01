@@ -180,7 +180,9 @@ export const getCutoffFiscalYearKey = (
     cutoffEndMonth,
     cutoffEndDay,
   );
-  return isCutoff ? getSecondFiscalYearKey() : getFirstFiscalYearKey();
+  return isCutoff || isSecondFiscalYear()
+    ? getSecondFiscalYearKey()
+    : getFirstFiscalYearKey();
 };
 
 export const getCutoffFiscalYear = (
