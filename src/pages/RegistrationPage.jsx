@@ -231,6 +231,9 @@ const RegistrationPage = () => {
           13: {
             value: data.street1,
           },
+          14: {
+            value: data.street2,
+          },
           15: {
             value: data.city,
           },
@@ -368,6 +371,9 @@ const RegistrationPage = () => {
           15: {
             value: data.street1,
           },
+          16: {
+            value: data.street2,
+          },
           17: {
             value: data.city,
           },
@@ -379,6 +385,9 @@ const RegistrationPage = () => {
           },
           20: {
             value: "United States",
+          },
+          23: {
+            value: data.website,
           },
           24: {
             value: fiscalYearKey,
