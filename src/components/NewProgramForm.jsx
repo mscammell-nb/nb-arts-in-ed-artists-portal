@@ -800,7 +800,7 @@ function NewProgramForm({ selectedArtist = null, onSubmitSuccess = () => {} }) {
                 isTriggered: isValid ? false : true,
                 message: isValid
                   ? ""
-                  : `This artist only has ${maxPerformers} active performers.`,
+                  : `You only have ${maxPerformers} active performers.`,
               },
             }));
           }}
