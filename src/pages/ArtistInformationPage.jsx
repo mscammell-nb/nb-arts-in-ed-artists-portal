@@ -1,6 +1,7 @@
 import DataGrid from "@/components/data-grid/data-grid";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import CustomSelect from "@/components/ui/CustomSelect";
 import {
   Form,
@@ -76,12 +77,11 @@ const ArtistItem = ({ label, value, icon = null, link = false }) => {
     <div className="flex items-center space-x-3">
       {icon}
       <div>
-        <span className="font-secondary block text-sm text-tertiary">
+        <span className="font-secondary text-tertiary block text-sm">
           {label}
         </span>
         {link ? (
           <span className="text-accent hover:underline">
-            {console.log(value)}
             <a href={formatUrl(value)} target="_blank">
               {value}
             </a>
@@ -119,7 +119,25 @@ const referenceSchema = yup.object({
     .string()
     .phone("US", "Please enter a valid phone number")
     .required("A Phone number is required"),
-  district: yup.object().required("District is required"),
+  jobTitle: yup.string().required("Job title is required"),
+  street1: yup.string().required("Address is required"),
+  street2: yup.string().notRequired(),
+  city: yup.string().required("City is required"),
+  state: yup.string().required("State is required"),
+  zipCode: yup.string().required("Zip code is required"),
+  inNassau: yup.boolean().required(),
+  district: yup.object().when("inNassau", {
+    is: true,
+    then: (schema) =>
+      schema
+        .shape({
+          id: yup.number().required("District ID is required"),
+          identifier: yup.number().required("District identifier is required"),
+          name: yup.string().required("District name is required"),
+        })
+        .required("District is required when reference is in Nassau"),
+    otherwise: (schema) => schema.notRequired(),
+  }),
 });
 
 const AddReferenceForm = ({ sheetProps, onOpenChange }) => {
@@ -131,9 +149,20 @@ const AddReferenceForm = ({ sheetProps, onOpenChange }) => {
       lastName: "",
       referenceEmail: "",
       referencePhone: "",
-      district: "",
+      jobTitle: "",
+      street1: "",
+      street2: "",
+      city: "",
+      state: "",
+      zipCode: "",
+      inNassau: false,
+      district: null,
     },
   });
+
+  // Watch the inNassau field to clear district when unchecked
+  const inNassauValue = referenceForm.watch("inNassau");
+
   const addReferenceSubmit = async (data) => {
     try {
       await addReference({
@@ -152,11 +181,32 @@ const AddReferenceForm = ({ sheetProps, onOpenChange }) => {
             9: {
               value: data.referencePhone,
             },
-            10: {
-              value: data.district.identifier,
-            },
             12: {
               value: sheetProps.artistRecordId,
+            },
+            14: {
+              value: data.jobTitle,
+            },
+            15: {
+              value: data.inNassau,
+            },
+            17: {
+              value: data.street1,
+            },
+            18: {
+              value: data.street2,
+            },
+            19: {
+              value: data.city,
+            },
+            20: {
+              value: data.state,
+            },
+            21: {
+              value: data.zipCode,
+            },
+            22: {
+              value: "United States",
             },
           },
         ],
@@ -167,84 +217,235 @@ const AddReferenceForm = ({ sheetProps, onOpenChange }) => {
       console.error(error);
     }
   };
+
   return (
     <Form {...referenceForm}>
       <form
         onSubmit={referenceForm.handleSubmit(addReferenceSubmit)}
-        className="flex w-full flex-col gap-3 text-primary"
+        className="flex w-full flex-col gap-4 text-primary"
       >
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+          <FormField
+            control={referenceForm.control}
+            name="firstName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>First Name</FormLabel>
+                <FormControl>
+                  <Input placeholder="First Name" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={referenceForm.control}
+            name="lastName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Last Name</FormLabel>
+                <FormControl>
+                  <Input placeholder="Last Name" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+          <FormField
+            control={referenceForm.control}
+            name="referenceEmail"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input type="email" placeholder="Email" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={referenceForm.control}
+            name="referencePhone"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Phone</FormLabel>
+                <FormControl>
+                  <Input type="tel" placeholder="Phone" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
         <FormField
           control={referenceForm.control}
-          name="firstName"
+          name="jobTitle"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>First Name</FormLabel>
+              <FormLabel>Job Title</FormLabel>
               <FormControl>
-                <Input placeholder="First Name" {...field} />
+                <Input placeholder="Job Title" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
+
+        {/* Address Section */}
+        <div className="space-y-3">
+          <h4 className="text-sm font-medium text-secondary">Address</h4>
+
+          <FormField
+            control={referenceForm.control}
+            name="street1"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-secondary">Street Address</FormLabel>
+                <FormControl>
+                  <Input placeholder="123 Main Street" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={referenceForm.control}
+            name="street2"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-secondary">
+                  Street Address 2
+                  <span className="text-tertiary ml-1 text-xs">(Optional)</span>
+                </FormLabel>
+                <FormControl>
+                  <Input placeholder="Apartment, suite, etc." {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+            <FormField
+              control={referenceForm.control}
+              name="city"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-secondary">City</FormLabel>
+                  <FormControl>
+                    <Input placeholder="City" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={referenceForm.control}
+              name="state"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-secondary">State</FormLabel>
+                  <FormControl>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="State" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {STATES.map((state) => (
+                          <SelectItem key={state} value={state}>
+                            {state}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={referenceForm.control}
+              name="zipCode"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-secondary">Zip Code</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      className="[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                      placeholder="11801"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
+
+        {/* District Checkbox as Form Field */}
         <FormField
           control={referenceForm.control}
-          name="lastName"
+          name="inNassau"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Last Name</FormLabel>
-              <FormControl>
-                <Input placeholder="Last Name" {...field} />
-              </FormControl>
+              <div className="flex items-center space-x-2">
+                <FormControl>
+                  <Checkbox
+                    id="inNassau"
+                    checked={field.value}
+                    onCheckedChange={(checked) => {
+                      field.onChange(checked);
+                      if (!checked) {
+                        referenceForm.setValue("district", null);
+                        referenceForm.clearErrors("district");
+                      }
+                    }}
+                  />
+                </FormControl>
+                <label
+                  htmlFor="inNassau"
+                  className="text-sm font-medium leading-none text-secondary peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  Reference is in Nassau
+                </label>
+              </div>
               <FormMessage />
             </FormItem>
           )}
         />
-        <FormField
-          control={referenceForm.control}
-          name="referenceEmail"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input placeholder="Email" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={referenceForm.control}
-          name="referencePhone"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Phone</FormLabel>
-              <FormControl>
-                <Input placeholder="Phone" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={referenceForm.control}
-          name="district"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <CustomSelect
-                  data={ALL_DISTRICTS}
-                  label={"District"}
-                  placeholder="District"
-                  value={field.value}
-                  setValue={field.onChange}
-                  nameOnly
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type="submit" isLoading={isLoading}>
+
+        {/* District Field - Conditional */}
+        {inNassauValue && (
+          <FormField
+            control={referenceForm.control}
+            name="district"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <CustomSelect
+                    data={ALL_DISTRICTS}
+                    label={"District"}
+                    placeholder="District"
+                    value={field.value}
+                    setValue={field.onChange}
+                    nameOnly
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
+
+        <Button type="submit" isLoading={isLoading} className="mt-2">
           Submit
         </Button>
       </form>
@@ -335,7 +536,7 @@ const ArtistInformationPage = () => {
       artistRecordId
         ? {
             from: import.meta.env.VITE_QUICKBASE_REFERENCES_TABLE_ID,
-            select: [3, 6, 7, 8, 9, 10, 11, 12],
+            select: [3, 6, 7, 8, 9, 10, 11, 12, 14],
             where: `{12.EX.'${artistRecordId}'}`,
           }
         : { skip: true, refetchOnMountOrArgChange: true },
@@ -545,7 +746,6 @@ const ArtistInformationPage = () => {
     if (artistData) {
       resetInformation();
     }
-    console.log(artistData);
   }, [artistData]);
 
   useEffect(() => {
@@ -618,6 +818,7 @@ const ArtistInformationPage = () => {
         email: record[8].value,
         phone: record[9].value,
         district: record[11].value,
+        jobTitle: record[14].value,
       };
     });
   };
@@ -673,7 +874,7 @@ const ArtistInformationPage = () => {
               <h2 className="text-lg font-medium text-primary">
                 General Information
               </h2>
-              <p className="mt-1 text-sm text-tertiary">
+              <p className="text-tertiary mt-1 text-sm">
                 General information about artist
               </p>
             </div>
@@ -736,7 +937,7 @@ const ArtistInformationPage = () => {
                       editing ? (
                         <FormItem>
                           <FormLabel className="flex items-center gap-2 text-secondary">
-                            <Mail className="h-4 w-4 text-tertiary" />
+                            <Mail className="text-tertiary h-4 w-4" />
                             Email
                           </FormLabel>
                           <FormControl>
@@ -746,7 +947,7 @@ const ArtistInformationPage = () => {
                         </FormItem>
                       ) : (
                         <ArtistItem
-                          icon={<Mail className="h-4 w-4 text-tertiary" />}
+                          icon={<Mail className="text-tertiary h-4 w-4" />}
                           label="Email"
                           value={emailVal}
                           setValue={setEmailVal}
@@ -761,7 +962,7 @@ const ArtistInformationPage = () => {
                       editing ? (
                         <FormItem>
                           <FormLabel className="flex items-center gap-2 text-secondary">
-                            <Phone className="h-4 w-4 text-tertiary" />
+                            <Phone className="text-tertiary h-4 w-4" />
                             Phone
                           </FormLabel>
                           <FormControl>
@@ -771,7 +972,7 @@ const ArtistInformationPage = () => {
                         </FormItem>
                       ) : (
                         <ArtistItem
-                          icon={<Phone className="h-4 w-4 text-tertiary" />}
+                          icon={<Phone className="text-tertiary h-4 w-4" />}
                           label="Phone"
                           value={phoneVal}
                           setValue={setPhoneVal}
@@ -782,7 +983,7 @@ const ArtistInformationPage = () => {
                   {editing ? (
                     <div>
                       <div className="mb-4 flex items-center space-x-2">
-                        <MapPin className="h-4 w-4 text-tertiary" />
+                        <MapPin className="text-tertiary h-4 w-4" />
                         <label className="text-sm font-medium text-secondary">
                           Address
                         </label>
@@ -813,7 +1014,7 @@ const ArtistInformationPage = () => {
                             <FormItem>
                               <FormLabel className="flex items-center gap-2 text-secondary">
                                 Street 2
-                                <span className="text-xs text-tertiary">
+                                <span className="text-tertiary text-xs">
                                   (Optional)
                                 </span>
                               </FormLabel>
@@ -881,7 +1082,7 @@ const ArtistInformationPage = () => {
                     </div>
                   ) : (
                     <ArtistItem
-                      icon={<MapPin className="h-4 w-4 text-tertiary" />}
+                      icon={<MapPin className="text-tertiary h-4 w-4" />}
                       label="Address"
                       value={addressVal}
                       setValue={setAddressVal}
@@ -894,7 +1095,7 @@ const ArtistInformationPage = () => {
                       editing ? (
                         <FormItem>
                           <FormLabel className="flex items-center gap-2 text-secondary">
-                            <Globe className="h-4 w-4 text-tertiary" />
+                            <Globe className="text-tertiary h-4 w-4" />
                             Website
                           </FormLabel>
                           <FormControl>
@@ -904,7 +1105,7 @@ const ArtistInformationPage = () => {
                         </FormItem>
                       ) : (
                         <ArtistItem
-                          icon={<Globe className="h-4 w-4 text-tertiary" />}
+                          icon={<Globe className="text-tertiary h-4 w-4" />}
                           label="Website"
                           value={websiteVal}
                           setValue={setWebsiteVal}
@@ -920,7 +1121,7 @@ const ArtistInformationPage = () => {
                       editing ? (
                         <FormItem>
                           <FormLabel className="flex items-center gap-2 text-secondary">
-                            <Users className="h-4 w-4 text-tertiary" />
+                            <Users className="text-tertiary h-4 w-4" />
                             Number of Performers
                           </FormLabel>
                           <FormControl>
@@ -945,7 +1146,7 @@ const ArtistInformationPage = () => {
                         </FormItem>
                       ) : (
                         <ArtistItem
-                          icon={<Users className="h-4 w-4 text-tertiary" />}
+                          icon={<Users className="text-tertiary h-4 w-4" />}
                           label="Number of Performers"
                           value={performersVal}
                           setValue={setPerformersVal}
@@ -1000,7 +1201,7 @@ const ArtistInformationPage = () => {
                             </FormItem>
                           ) : (
                             <ArtistItem
-                              icon={<Mail className="h-4 w-4 text-tertiary" />}
+                              icon={<Mail className="text-tertiary h-4 w-4" />}
                               label="Email"
                               value={emailVal}
                               setValue={setEmailVal}
@@ -1082,7 +1283,7 @@ const ArtistInformationPage = () => {
             <h2 className="text-lg font-medium text-primary">
               Payment Information
             </h2>
-            <p className="mt-1 text-sm text-tertiary">
+            <p className="text-tertiary mt-1 text-sm">
               Payment information about artist
             </p>
           </div>

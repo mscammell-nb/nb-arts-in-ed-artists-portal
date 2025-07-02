@@ -432,6 +432,7 @@ export const referencesColumns = createColumns([
   "email",
   "phone",
   "district",
+  "jobTitle",
 ]);
 
 export const baseContractColumns = [
@@ -452,7 +453,7 @@ export const baseContractColumns = [
       header: "Requestor",
       cell: ({ row }) => (
         <Dialog>
-          <DialogTrigger className="text-sm text-tertiary hover:text-blue-400 hover:underline">
+          <DialogTrigger className="text-tertiary text-sm hover:text-blue-400 hover:underline">
             {row.original.requestor}
           </DialogTrigger>
           <DialogContent>
