@@ -60,7 +60,7 @@ const ProtectedRoutesWrapper = () => {
     }
   }, [expired, approved, authReady, user, navigate]);
 
-  if (!authReady || isArtistLoading || !artistsData.data) {
+  if (!authReady || isArtistLoading || !artistsData?.data) {
     return (
       <div className="flex h-screen w-full items-center justify-center">
         <Spinner />
