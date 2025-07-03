@@ -6,9 +6,9 @@
   :root {
     --background: 210 35% 98%;
     --foreground: 0 0% 100%;
-    --text-primary: 0 0% 25%;
-    --text-secondary: 0 0% 35%;
-    --text-tertiary: 0 0% 55%;
+    --text-primary: 0 0% 25%;     
+    --text-secondary: 0 0% 35%;   
+    --text-tertiary: 0 0% 55%;    
     --card: 0 0% 100%;
     --card-foreground: 224 71.4% 4.1%;
     --popover: 0 0% 100%;
@@ -40,13 +40,13 @@
   .dark {
     --background: 0 0% 9%;
     --foreground: 0 0% 12%;
-    --border: 0 0% 18%; /* Default border */
-    --text-primary: 0 0% 85%;
-    --text-secondary: 0 0% 65%;
+    --border: 0 0% 18%;           /* Default border */
+    --text-primary: 0 0% 85%;    
+    --text-secondary: 0 0% 65%;  
     --text-tertiary: 0 0% 45%;
     --card: 0 0% 12%;
     --card-foreground: 210 20% 98%;
-    --popover: 224 71.4% 4.1%;
+    --popover: 0 0% 12%;
     --popover-foreground: 210 20% 98%;
     --primary: 210 100% 20%;
     --primary-foreground: 210 20% 98%;

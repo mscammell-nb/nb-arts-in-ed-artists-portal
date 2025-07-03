@@ -331,6 +331,7 @@ export const handleSignout = async (dispatch, navigate) => {
 };
 
 export const formatCurrency = (value) => {
+  if(value === null || value === undefined) return '$0';
   return value.toLocaleString("en-US", {
     style: "currency",
     currency: "USD",

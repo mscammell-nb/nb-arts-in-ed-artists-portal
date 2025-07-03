@@ -1,12 +1,17 @@
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import {
   AlertCircle,
+  BookOpen,
+  CalendarDays,
   Check,
   CheckCircle,
   ClipboardCheck,
   Clock,
   Fingerprint,
+  GraduationCap,
+  Users,
   X,
   XCircle,
 } from "lucide-react";
@@ -139,7 +144,7 @@ export const dualColumn = (key, primaryField, secondaryField, headerText) => ({
   cell: ({ row }) => (
     <div>
       <div>{row.original[primaryField]}</div>
-      <div className="text-sm text-tertiary">
+      <div className="text-tertiary text-sm">
         {row.original[secondaryField]}
       </div>
     </div>
@@ -149,52 +154,54 @@ export const dualColumn = (key, primaryField, secondaryField, headerText) => ({
 /**
  * Helper to create a status column with badge
  */
-export const statusColumn = (key, options = {}) => ({
-  accessorKey: key,
-  header: options.header || formatHeader(key),
-  accessorFn: (row) => row[key].status,
-  cell: ({ row }) => {
-    const statusConfig = {
-      "not-reviewed": {
-        label: "Not Yet Reviewed",
-        color: "bg-gray-100 text-tertiary",
-        icon: <Clock className="mr-1 h-3 w-3" />,
-      },
-      approved: {
-        label: "Approved",
-        color: "bg-green-100 text-green-800",
-        icon: <CheckCircle className="mr-1 h-3 w-3" />,
-      },
-      denied: {
-        label: "Denied",
-        color: "bg-red-100 text-red-800",
-        icon: <XCircle className="mr-1 h-3 w-3" />,
-      },
-      cancelled: {
-        label: "Cancelled",
-        color: "bg-amber-100 text-amber-800",
-        icon: <AlertCircle className="mr-1 h-3 w-3" />,
-      },
-    };
+export const statusColumn = (key, options = {}) => {
+  return {
+    accessorKey: key,
+    header: options.header || formatHeader(key),
+    accessorFn: (row) => row[key].status,
+    cell: ({ row }) => {
+      const statusConfig = {
+        "not-reviewed": {
+          label: "Not Yet Reviewed",
+          color: "bg-gray-100 dark:bg-gray-800 text-primary",
+          icon: <Clock className="mr-1 h-3 w-3" />,
+        },
+        approved: {
+          label: "Approved",
+          color: "bg-green-100 text-green-800",
+          icon: <CheckCircle className="mr-1 h-3 w-3" />,
+        },
+        denied: {
+          label: "Denied",
+          color: "bg-red-100 text-red-800",
+          icon: <XCircle className="mr-1 h-3 w-3" />,
+        },
+        cancelled: {
+          label: "Cancelled",
+          color: "bg-amber-100 text-amber-800",
+          icon: <AlertCircle className="mr-1 h-3 w-3" />,
+        },
+      };
 
-    return (
-      <div className="flex flex-col items-start">
-        {row.original[key].date && (
-          <div className="mb-1 text-xs text-tertiary">
-            {row.original[key].date}
-          </div>
-        )}
-        <StatusBadge
-          status={
-            statusConfig[row.original[key].status.toLowerCase()] ||
-            statusConfig["not-reviewed"]
-          }
-        />
-      </div>
-    );
-  },
-  meta: options.meta,
-});
+      return (
+        <div className="flex flex-col items-start">
+          {row.original[key].date && (
+            <div className="text-tertiary mb-1 text-xs">
+              {row.original[key].date}
+            </div>
+          )}
+          <StatusBadge
+            status={
+              statusConfig[row.original[key].status.toLowerCase()] ||
+              statusConfig["not-reviewed"]
+            }
+          />
+        </div>
+      );
+    },
+    meta: options.meta,
+  };
+};
 
 /**
  * Helper to create a Board approval status column with badge
@@ -207,7 +214,7 @@ export const boardApprovalColumn = (key, options = {}) => ({
     const statusConfig = {
       "not-reviewed": {
         label: "Not Yet Reviewed",
-        color: "bg-gray-100 text-tertiary",
+        color: "bg-gray-100 text-primary",
         icon: <Clock className="mr-1 h-3 w-3" />,
       },
       accepted: {
@@ -288,9 +295,7 @@ export const checkColumn = (key, options = {}) => ({
       return (
         <Badge
           variant="outline"
-          className={
-            "text-nowrap rounded-full border-none bg-primary/20 font-normal text-primary"
-          }
+          className={"text-nowrap border-gray-400 bg-gray-200"}
         >
           N/A
         </Badge>
@@ -339,7 +344,7 @@ export const badgeColumn = (key, color, options = {}) => ({
               <Badge
                 key={element}
                 variant="outline"
-                className={cn("min-w-fit rounded-xl border-none", colorClass)}
+                className={cn("min-w-fit rounded-full border-none", colorClass)}
               >
                 {element}
               </Badge>
@@ -370,6 +375,137 @@ export const currencyColumn = (key, options = {}) => ({
   },
 });
 
+export const requestedDateInner = (value) => {
+  if (!value) return null;
+
+  // Helper function to format date to MM/DD/YYYY
+  const formatDate = (dateStr) => {
+    if (!dateStr) return dateStr;
+
+    const [year, month, day] = dateStr.split("-");
+
+    return `${month}/${day}/${year}`;
+  };
+
+  // Helper function to format performance count
+  const formatPerformances = (count) => {
+    if (!count || count === "0") return null;
+    const num = parseInt(count);
+    return `${num} Performance${num !== 1 ? "s" : ""}`;
+  };
+
+  // Helper function to format workshops
+  const formatWorkshops = (workshops) => {
+    if (!workshops || workshops.toLowerCase() === "none" || workshops === "0")
+      return null;
+    return workshops.includes("Workshop")
+      ? workshops
+      : `${workshops} Workshops`;
+  };
+
+  // Group data by date
+  const dateGroups = {};
+
+  const entries = Array.isArray(value) ? value : [value];
+
+  entries.forEach((entry) => {
+    const date = formatDate(entry[6]?.value);
+    const school = entry[22]?.value;
+    const performances = entry[15]?.value;
+    const workshops = entry[18]?.value;
+
+    if (!dateGroups[date]) {
+      dateGroups[date] = {
+        schools: [],
+        performances: performances,
+        workshops: workshops,
+      };
+    }
+
+    if (school && !dateGroups[date].schools.includes(school)) {
+      dateGroups[date].schools.push(school);
+    }
+  });
+
+  return (
+    <div className="min-w-[280px] space-y-2">
+      {Object.entries(dateGroups).map(([date, data], index) => {
+        const performanceText = formatPerformances(data.performances);
+        const workshopText = formatWorkshops(data.workshops);
+
+        return (
+          <Card key={index} className="shadow-sm">
+            <CardContent className="space-y-2 p-3">
+              {/* Date header with icon */}
+              <div className="flex items-center gap-2">
+                <CalendarDays className="h-4 w-4 text-muted-foreground" />
+                <span className="text-sm font-semibold">{date}</span>
+              </div>
+
+              {/* Schools - more compact */}
+              <div className="space-y-1">
+                <div className="flex items-center gap-1">
+                  <GraduationCap className="h-3 w-3 text-muted-foreground" />
+                  <span className="text-xs font-medium text-muted-foreground">
+                    Schools
+                  </span>
+                </div>
+                <div className="flex flex-wrap gap-1">
+                  {data.schools.map((school, schoolIndex) => {
+                    // Split schools by newlines if they're combined in a single string
+                    const schoolNames = school.includes("\n")
+                      ? school.split("\n")
+                      : [school];
+
+                    return schoolNames.map((schoolName, nameIndex) => (
+                      <Badge
+                        key={`${schoolIndex}-${nameIndex}`}
+                        variant="secondary"
+                        className="h-5 px-2 py-0.5 text-xs"
+                      >
+                        {schoolName.trim()}
+                      </Badge>
+                    ));
+                  })}
+                </div>
+              </div>
+
+              {/* Activities - more compact */}
+              {(performanceText || workshopText) && (
+                <div className="space-y-1 border-t pt-1">
+                  <div className="flex flex-col flex-wrap gap-1">
+                    {performanceText && (
+                      <Badge variant="outline" className="h-5 gap-1 text-xs">
+                        <Users className="mr-1 h-2.5 w-2.5" />
+                        {performanceText}
+                      </Badge>
+                    )}
+                    {workshopText && (
+                      <Badge variant="outline" className="h-5 gap-1 text-xs">
+                        <BookOpen className="mr-1 h-2.5 w-2.5" />
+                        {workshopText}
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        );
+      })}
+    </div>
+  );
+};
+
+export const requestedDateColumn = (key, options = {}) => ({
+  accessorKey: key,
+  header: options.header || formatHeader(key),
+  cell: ({ row }) => {
+    const value = row.getValue(key) || row.original[key];
+    return requestedDateInner(value);
+  },
+});
+
 export const formattedColumn = (key, displayHeader, options = {}) => {
   const {
     formatter = (value) => value, // Function to format the value
@@ -394,13 +530,13 @@ export const formattedColumn = (key, displayHeader, options = {}) => {
       // Format and display the value
       const formattedValue = formatter(value);
       return (
-        <div className={cn("text-tertiary", cellClassName)}>
+        <div className={cn("text-primary", cellClassName)}>
           {textPrefix && (
-            <span className="mr-1 text-tertiary">{textPrefix}</span>
+            <span className="text-tertiary mr-1">{textPrefix}</span>
           )}
           <span className={className}>{formattedValue}</span>
           {textSuffix && (
-            <span className="ml-1 text-tertiary">{textSuffix}</span>
+            <span className="text-tertiary ml-1">{textSuffix}</span>
           )}
         </div>
       );

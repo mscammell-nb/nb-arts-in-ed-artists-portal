@@ -33,10 +33,9 @@ const multiSelectVariants = cva(
   {
     variants: {
       variant: {
-        default:
-          "border-foreground/10 text-foreground bg-card hover:bg-card/80",
+        default: "text-primary bg-primary hover:bg-primary/80 text-white",
         secondary:
-          "border-foreground/10 bg-secondary text-secondary-foreground hover:bg-secondary/80",
+          "border-foreground/10 bg-secondary text-text-secondary-foreground hover:bg-secondary/80",
         destructive:
           "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
         inverted: "inverted",
@@ -135,13 +134,13 @@ export const MultiSelect = React.forwardRef(
             {...props}
             onClick={handleTogglePopover}
             className={cn(
-              "flex h-auto min-h-10 w-full items-center justify-between rounded-md border bg-inherit p-1 hover:bg-inherit",
+              "flex h-auto min-h-9 w-full items-center justify-between rounded-md border bg-inherit p-1 hover:bg-inherit",
               className,
             )}
           >
             {selectedValues.length > 0 ? (
-              <div className="flex w-full items-center justify-between">
-                <div className="flex flex-wrap items-center">
+              <div className="flex w-full items-center gap-2">
+                <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1">
                   {selectedValues.slice(0, maxCount).map((value) => {
                     const option = options
                       .reduce((acc, cur) => {
@@ -159,15 +158,19 @@ export const MultiSelect = React.forwardRef(
                         className={cn(
                           isAnimating ? "animate-bounce" : "",
                           multiSelectVariants({ variant }),
+                          "flex max-w-[100px] flex-shrink-0 items-center",
                         )}
                         style={{ animationDuration: `${animation}s` }}
+                        title={option?.label} // Show full text on hover
                       >
                         {IconComponent && (
-                          <IconComponent className="mr-2 h-4 w-4" />
+                          <IconComponent className="mr-1 h-3 w-3 flex-shrink-0" />
                         )}
-                        {option?.label}
+                        <span className="min-w-0 flex-1 truncate text-xs">
+                          {option?.label}
+                        </span>
                         <XCircle
-                          className="ml-2 h-4 w-4 cursor-pointer"
+                          className="ml-1 h-3 w-3 flex-shrink-0 cursor-pointer"
                           onClick={(event) => {
                             event.stopPropagation();
                             toggleOption(value);
@@ -179,7 +182,7 @@ export const MultiSelect = React.forwardRef(
                   {selectedValues.length > maxCount && (
                     <Badge
                       className={cn(
-                        "border-foreground/1 bg-transparent text-foreground hover:bg-transparent",
+                        "border-foreground/1 flex-shrink-0 bg-transparent text-xs text-foreground hover:bg-transparent",
                         isAnimating ? "animate-bounce" : "",
                         multiSelectVariants({ variant }),
                       )}
@@ -187,7 +190,7 @@ export const MultiSelect = React.forwardRef(
                     >
                       {`+ ${selectedValues.length - maxCount} more`}
                       <XCircle
-                        className="ml-2 h-4 w-4 cursor-pointer"
+                        className="ml-1 h-3 w-3 cursor-pointer"
                         onClick={(event) => {
                           event.stopPropagation();
                           clearExtraOptions();
@@ -196,19 +199,16 @@ export const MultiSelect = React.forwardRef(
                     </Badge>
                   )}
                 </div>
-                <div className="flex items-center justify-between">
+                <div className="ml-auto flex flex-shrink-0 items-center">
                   <XIcon
-                    className="mx-2 h-4 cursor-pointer text-muted-foreground"
+                    className="h-4 w-4 cursor-pointer text-muted-foreground hover:text-foreground"
                     onClick={(event) => {
                       event.stopPropagation();
                       handleClear();
                     }}
                   />
-                  <Separator
-                    orientation="vertical"
-                    className="flex h-full min-h-6"
-                  />
-                  <ChevronDown className="mx-2 h-4 cursor-pointer text-muted-foreground" />
+                  <Separator orientation="vertical" className="mx-2 h-4" />
+                  <ChevronDown className="h-4 w-4 cursor-pointer text-muted-foreground" />
                 </div>
               </div>
             ) : (
