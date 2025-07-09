@@ -621,6 +621,15 @@ const ArtistInformationPage = () => {
                       }[key]
                     ]?.value;
 
+                  if (
+                    (!originalVal && val == "") ||
+                    (originalVal == "" && !val) ||
+                    ((key == "phone" || key == "altPhone") &&
+                      parsePhoneNumber(originalVal) == parsePhoneNumber(val))
+                  ) {
+                    return acc;
+                  }
+
                   if (val !== originalVal) {
                     acc += `${key}: ${originalVal} --> ${val}\n`;
                   }
