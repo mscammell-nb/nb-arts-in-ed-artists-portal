@@ -21,9 +21,9 @@ import {
   Calendar,
   ChevronRight,
   CreditCard,
+  FileSignature,
   FileText,
   FolderOpen,
-  GalleryVerticalEnd,
   LogOut,
   User,
   Users,
@@ -53,6 +53,12 @@ const data = {
       title: "Artist Registrations",
       url: "/artist-registrations",
       icon: <FileText className="w-4" />,
+      isActive: false,
+    },
+    {
+      title: "Artist Contracts",
+      url: "/artist-contracts",
+      icon: <FileSignature className="w-4" />,
       isActive: false,
     },
     {
@@ -139,7 +145,6 @@ export function AppSidebar({ ...props }) {
           <SidebarHeader className="mb-3 border-b border-secondary pb-3">
             <div className="flex items-start gap-4 ">
               <div className="flex aspect-square size-8 max-h-[250px] items-center justify-center rounded-lg bg-white text-sidebar-primary-foreground">
-                <GalleryVerticalEnd className="size-4" />
                 <img
                   style={{ padding: "4px" }}
                   src="https://nassauboces.quickbase.com/up/butswtb25/a/r74/e8/v0"
@@ -219,7 +224,6 @@ export function AppSidebar({ ...props }) {
       <SidebarHeader className="mb-3 border-b border-secondary pb-3">
         <div className="flex items-start gap-4 ">
           <div className="flex aspect-square size-8 max-h-[250px] items-center justify-center rounded-lg bg-white text-sidebar-primary-foreground">
-            <GalleryVerticalEnd className="size-4" />
             <img
               style={{ padding: "4px" }}
               src="https://nassauboces.quickbase.com/up/butswtb25/a/r74/e8/v0"

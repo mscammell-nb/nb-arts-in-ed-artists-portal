@@ -5,6 +5,7 @@ import FirebaseAuthListener from "./auth/FirebaseAuthListener";
 import ProtectedRoutesWrapper from "./auth/ProtectedRoutesWrapper";
 import MainLayout from "./layouts/MainLayout";
 import MainLayoutNoSidebar from "./layouts/MainLayoutNoSidebar";
+import ArtistContractsPage from "./pages/ArtistContractsPage";
 import ArtistDocumentsPage from "./pages/ArtistDocumentsPage";
 import ArtistEvaluationsPage from "./pages/ArtistEvaluationsPage";
 import ArtistInformationPage from "./pages/ArtistInformationPage";
@@ -82,6 +83,7 @@ function App() {
               path="/artist-registrations"
               element={<ArtistRegistrationsPage />}
             />
+            <Route path="/artist-contracts" element={<ArtistContractsPage />} />
             <Route path="/artist-invoices" element={<ArtistInvoicesPage />} />
             <Route
               path="/keyword-list"
