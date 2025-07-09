@@ -20,6 +20,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 import {
   Tooltip,
   TooltipContent,
@@ -53,10 +55,12 @@ import {
   requestedDateColumn,
   requestedDateInner,
 } from "./createColumns";
-import { capitalizeString, downloadFile, formatCurrency, getCurrentFiscalYearKey, uploadFile } from "./utils";
-import { Label } from "@/components/ui/label";
-import { useSelector } from "react-redux";
-import { Separator } from "@/components/ui/separator";
+import {
+  capitalizeString,
+  downloadFile,
+  formatCurrency,
+  uploadFile,
+} from "./utils";
 
 export const evalTableColumns = createColumns(
   ["programName", "evaluationDate", "approverName", "additionalComments"],
@@ -451,9 +455,9 @@ export const baseContractColumns = [
       "district",
       "requestor",
       "invoiceMade",
-      "dateOfService",
     ],
     currencyColumn("cost"),
+    requestedDateColumn("requestedDates", { header: "Requested Dates" }),
     {
       accessorKey: "requestor",
       header: "Requestor",
@@ -619,10 +623,10 @@ export const requestsAwaitingApprovalColumns = [
       "amount",
       "requestor",
       "district",
-      "requestedDates"
+      "requestedDates",
     ],
-      requestedDateColumn("requestedDates", { header: "Requested Dates" }),
-),
+    requestedDateColumn("requestedDates", { header: "Requested Dates" }),
+  ),
   {
     id: "action",
     header: () => <></>,
@@ -652,7 +656,7 @@ export const requestsAwaitingApprovalColumns = [
             {
               3: { value: id },
               74: { value: "Approved" },
-              75: { value: 'today' },
+              75: { value: "today" },
             },
           ],
         }).then(() => {
@@ -668,7 +672,7 @@ export const requestsAwaitingApprovalColumns = [
             {
               3: { value: id },
               74: { value: "Denied" },
-              75:{ value: 'today'  },  
+              75: { value: "today" },
             },
           ],
         }).then(() => {
@@ -696,83 +700,82 @@ export const requestsAwaitingApprovalColumns = [
         isUpdateDistrictApprovalError,
       ]);
 
+      return (
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger asChild>
+            <Button size="sm" className="bg-blue-500 hover:bg-blue-600">
+              Review
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="flex max-h-[90vh] max-w-md flex-col rounded-lg border-0 shadow-lg sm:max-w-lg">
+            <DialogHeader className="flex-shrink-0 pb-2">
+              <DialogTitle className="text-xl font-semibold text-primary">
+                {program}
+              </DialogTitle>
+              <DialogDescription className="text-tertiary">
+                Review Request details before approval
+              </DialogDescription>
+            </DialogHeader>
 
-        return (
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-              <Button size="sm" className="bg-blue-500 hover:bg-blue-600">
-                Review
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="flex max-h-[90vh] max-w-md flex-col rounded-lg border-0 shadow-lg sm:max-w-lg">
-              <DialogHeader className="flex-shrink-0 pb-2">
-                <DialogTitle className="text-xl font-semibold text-primary">
-                  {program}
-                </DialogTitle>
-                <DialogDescription className="text-tertiary">
-                  Review Request details before approval
-                </DialogDescription>
-              </DialogHeader>
+            <Separator className="my-1 flex-shrink-0" />
 
-              <Separator className="my-1 flex-shrink-0" />
+            {/* Scrollable content area */}
+            <div className="-mr-2 flex-1 overflow-y-auto pr-2">
+              <div className="space-y-5">
+                <div className="rounded-md bg-popover p-4">
+                  <h4 className="mb-2 text-sm font-medium text-text-secondary">
+                    Description
+                  </h4>
+                  <p className="text-sm text-text-secondary">{description}</p>
+                </div>
 
-              {/* Scrollable content area */}
-              <div className="-mr-2 flex-1 overflow-y-auto pr-2">
-                <div className="space-y-5">
-                  <div className="rounded-md bg-popover p-4">
-                    <h4 className="text-text-secondary mb-2 text-sm font-medium">
-                      Description
+                <div className="grid grid-cols-2 gap-5">
+                  <div className="rounded-md bg-popover p-3">
+                    <h4 className="text-tertiary text-xs font-medium uppercase tracking-wider">
+                      amount
                     </h4>
-                    <p className="text-text-secondary text-sm">{description}</p>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-5">
-                    <div className="rounded-md bg-popover p-3">
-                      <h4 className="text-tertiary text-xs font-medium uppercase tracking-wider">
-                        amount
-                      </h4>
-                      <p className="text-text-secondary mt-1 text-sm font-medium">
-                        {formatCurrency(amount)}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="rounded-md bg-popover p-4">
-                    <h4 className="text-text-secondary mb-2 text-sm font-medium">
-                      Requested Dates
-                    </h4>
-                    <div className="text-text-secondary text-sm">
-                      {requestedDateInner(requestedDates)}
-                    </div>
-                  </div>
-                  <div className="pt-2">
-                    <Label className="text-text-secondary font-medium">
-                      Would you like to approve this request?
-                    </Label>
+                    <p className="mt-1 text-sm font-medium text-text-secondary">
+                      {formatCurrency(amount)}
+                    </p>
                   </div>
                 </div>
-              </div>
 
-              <DialogFooter className="mt-6 flex-shrink-0 space-x-2">
-                <Button onClick={handleApprove} isLoading={isButtonLoading}>
-                  Approve
+                <div className="rounded-md bg-popover p-4">
+                  <h4 className="mb-2 text-sm font-medium text-text-secondary">
+                    Requested Dates
+                  </h4>
+                  <div className="text-sm text-text-secondary">
+                    {requestedDateInner(requestedDates)}
+                  </div>
+                </div>
+                <div className="pt-2">
+                  <Label className="font-medium text-text-secondary">
+                    Would you like to approve this request?
+                  </Label>
+                </div>
+              </div>
+            </div>
+
+            <DialogFooter className="mt-6 flex-shrink-0 space-x-2">
+              <Button onClick={handleApprove} isLoading={isButtonLoading}>
+                Approve
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={handleDeny}
+                isLoading={isButtonLoading}
+              >
+                Deny
+              </Button>
+              <DialogClose asChild>
+                <Button variant="outline" isLoading={isButtonLoading}>
+                  Cancel
                 </Button>
-                <Button
-                  variant="destructive"
-                  onClick={handleDeny}
-                  isLoading={isButtonLoading}
-                >
-                  Deny
-                </Button>
-                <DialogClose asChild>
-                  <Button variant="outline" isLoading={isButtonLoading}>
-                    Cancel
-                  </Button>
-                </DialogClose>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        );
-      }
+              </DialogClose>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      );
     },
-  ]
+  },
+];

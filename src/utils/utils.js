@@ -3,6 +3,7 @@ import {
   FISCAL_YEAR_FIRST_MONTH,
 } from "@/constants/constants";
 import { signOut } from "@/redux/slices/authSlice";
+import { compareAsc, format } from "date-fns";
 
 export const capitalizeString = (str) => {
   if (!str) return "";
@@ -331,9 +332,26 @@ export const handleSignout = async (dispatch, navigate) => {
 };
 
 export const formatCurrency = (value) => {
-  if(value === null || value === undefined) return '$0';
+  if (value === null || value === undefined) return "$0";
   return value.toLocaleString("en-US", {
     style: "currency",
     currency: "USD",
   });
+};
+
+export const getLatestDate = (contract, requestedDatesData) => {
+  console.log(contract, requestedDatesData);
+  const dates = requestedDatesData.data.filter(
+    (rd) => rd[9].value === contract[18].value,
+  );
+  let latestDate = format(new Date(), "yyyy-MM-dd");
+  dates.map((date) => {
+    if (
+      compareAsc(date[6].value, latestDate) === 1 ||
+      latestDate === format(new Date(), "yyyy-MM-dd")
+    ) {
+      latestDate = date[6].value;
+    }
+  });
+  return latestDate;
 };

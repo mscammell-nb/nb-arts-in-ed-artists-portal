@@ -21,9 +21,8 @@ import {
   useAddOrUpdateRecordMutation,
   useQueryForDataQuery,
 } from "@/redux/api/quickbaseApi";
-import { programTableColumns, requestsAwaitingApprovalColumns } from "@/utils/TableColumns";
+import { programTableColumns } from "@/utils/TableColumns";
 import {
-  formatCurrency,
   getCurrentFiscalYear,
   getCurrentFiscalYearKey,
   getNextFiscalYear,
@@ -97,26 +96,6 @@ const formatProgramsData = (programsData) => {
   }));
 };
 
-const formatRequestsData = (requestsData, requestsDates) => {
-  const { data } = requestsData;
-  return data.map((record) => {
-    const requestorName = record[24].value + " "  + record[25].value;
-    const id = record[3].value;
-    return {
-      id: id,
-      program: record[7].value,
-      description: record[8].value,
-      amount: formatCurrency(record[9].value),
-      requestor: requestorName,
-      district: record[14].value,
-      requestedDates:
-          requestsDates?.data.length > 0
-            ? requestsDates.data.filter((rd) => rd[9].value === record[3].value)
-            : null,
-    }
-  });
-};
-
 const ProgramsPage = () => {
   const { artistRecordId, has3References } = useSelector(
     (state) => state.artist,
@@ -176,29 +155,9 @@ const ProgramsPage = () => {
     artistRecordId
       ? {
           from: import.meta.env.VITE_QUICKBASE_PROGRAM_REQUESTS_TABLE_ID,
-          select: [
-            3, 7, 8, 9, 14, 22, 24, 25, 26, 27, 74, 75
-          ],
-          where: `{23.EX.'${artistRecordId}'}AND{10.EX.${getCurrentFiscalYear()}}AND{35.EX.'Approved'}AND{36.EX.'Approved'}AND{74.EX.'Not Reviewed'}`, 
+          select: [3, 7, 8, 9, 14, 22, 24, 25, 26, 27, 74, 75],
           // AND if status is not yet reviewed, and if both district and boces are approved
-          sortBy: [{ fieldId: 11 }, { order: "DESC" }],
-        }
-      : { skip: true, refetchOnMountOrArgChange: true },
-  );
-  const {
-    data: requestedDatesData,
-    isLoading: isRequestedDatesDataLoading,
-    isError: isRequestedDatesDataError,
-    error: requestedDatesDataError,
-  } = useQueryForDataQuery(
-    artistRecordId
-      ? {
-          from: import.meta.env.VITE_QUICKBASE_PROGRAM_REQUEST_DATES_TABLE_ID,
-          select: [
-            3, 6, 9, 15, 18, 22
-          ],
-          where: `{24.EX.'${artistRecordId}'}`,
-          sortBy: [{ fieldId: 11 }, { order: "DESC" }],
+          where: `{23.EX.'${artistRecordId}'}AND{10.EX.${getCurrentFiscalYear()}}AND{35.EX.'Approved'}AND{36.EX.'Approved'}AND{74.EX.'Not Reviewed'}`,
         }
       : { skip: true, refetchOnMountOrArgChange: true },
   );
@@ -429,7 +388,12 @@ const ProgramsPage = () => {
         <DataGrid
           columns={programTableColumns}
           data={formatProgramsData(filteredProgramsData)}
-          tableTitle={<div className="flex items-center gap-3"><span>Your Programs for </span><FiscalYearSelector /></div>}
+          tableTitle={
+            <div className="flex items-center gap-3">
+              <span>Your Programs for </span>
+              <FiscalYearSelector />
+            </div>
+          }
           usePagination
           allowExport
           customButtons={BUTTON_LINKS.map(
@@ -467,15 +431,6 @@ const ProgramsPage = () => {
                   addButtonText: "Add New Program",
                 }))}
         />
-        <DataGrid
-          columns={requestsAwaitingApprovalColumns}
-          data={formatRequestsData(requestsData, requestedDatesData)}
-          tableTitle="Reuqests Awaiting Approval"  
-          usePagination
-          allowExport
-          updateFunction={updateFunction}
-          />
-          {/* formatData(programRequests, requestDates) */}
       </div>
     </div>
   );
@@ -483,6 +438,6 @@ const ProgramsPage = () => {
 
 export default ProgramsPage;
 
-// Need to have a way for artists to be able to approve program requests from their side, once approved by district and boces, 
+// Need to have a way for artists to be able to approve program requests from their side, once approved by district and boces,
 // they will be able to approve it themselves, then the program will become a contract.
 // New field needed called ArtistApprovalStatus, and ArtistApprovalDate on program request table
