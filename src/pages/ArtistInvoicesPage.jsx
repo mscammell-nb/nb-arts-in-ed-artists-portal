@@ -23,7 +23,7 @@ export default function ArtistInvoicesPage() {
     artistRecordId
       ? {
           from: import.meta.env.VITE_QUICKBASE_CONTRACTS_TABLE_ID,
-          select: [3, 20, 22, 23, 24, 28, 30, 32, 34, 35, 36, 37],
+          select: [3, 20, 22, 23, 24, 28, 30, 32, 34, 35, 36, 37, 61],
           where: `{33.EX.'${artistRecordId}'}`,
         }
       : { skip: true, refetchOnMountOrArgChange: true },
@@ -69,7 +69,7 @@ export default function ArtistInvoicesPage() {
       requestorPhone: record[37].value,
       programTitle: record[20]?.value,
       fiscalYear: record[24]?.value,
-      cost: record[22]?.value,
+      cost: record[61]?.value,
       dateOfService: record[30]?.value,
       district: record[23]?.value,
       invoiceDate: record[32]?.value,

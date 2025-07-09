@@ -62,7 +62,7 @@ const formatContractsData = (contractsData) => {
     requestorPhone: record[37].value,
     programTitle: record[20]?.value,
     fiscalYear: record[24]?.value,
-    cost: record[22]?.value,
+    cost: record[61]?.value,
     dateOfService: record[30]?.value,
     district: record[23]?.value,
     invoiceDate: record[32]?.value,
@@ -144,7 +144,7 @@ const ArtistEvaluationsPage = () => {
         ? {
             from: import.meta.env.VITE_QUICKBASE_CONTRACTS_TABLE_ID,
             // select: [1, 3, 8, 10, 12, 13, 15, 16, 24, 46, 30],
-            select: [3, 20, 22, 23, 24, 28, 30, 32, 34, 35, 36, 37, 46, 49],
+            select: [3, 20, 22, 23, 24, 28, 30, 32, 34, 35, 36, 37, 46, 49, 61],
 
             where: `{33.EX.'${artistRecordId}'}AND{24.EX.'${getCurrentFiscalYear()}'}`,
           }

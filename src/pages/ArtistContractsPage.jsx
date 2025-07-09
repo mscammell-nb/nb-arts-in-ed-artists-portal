@@ -30,7 +30,7 @@ const formatRequestsAwaitingApprovalData = (
       id: id,
       program: record[7].value,
       description: record[8].value,
-      amount: formatCurrency(record[9].value),
+      amount: formatCurrency(record[77].value),
       requestor: requestorName,
       district: record[14].value,
       requestedDates: requestedDates,
@@ -46,7 +46,7 @@ const formatContractsData = (record) => {
     requestorPhone: record[37].value,
     programTitle: record[20]?.value,
     fiscalYear: record[24]?.value,
-    cost: record[22]?.value,
+    cost: record[61]?.value,
     dateOfService: record[30]?.value,
     district: record[23]?.value,
     invoiceDate: record[32]?.value,
@@ -68,7 +68,7 @@ function ArtistContractsPage() {
     artistRecordId
       ? {
           from: import.meta.env.VITE_QUICKBASE_PROGRAM_REQUESTS_TABLE_ID,
-          select: [3, 7, 8, 9, 14, 22, 24, 25, 26, 27, 74, 75],
+          select: [3, 7, 8, 9, 14, 22, 24, 25, 26, 27, 74, 75, 77],
           // AND if status is not yet reviewed, and if both district and boces are approved
           where: `{23.EX.'${artistRecordId}'}AND{10.EX.${getCurrentFiscalYear()}}AND{35.EX.'Approved'}AND{36.EX.'Approved'}AND{74.EX.'Not Reviewed'}`,
         }
@@ -96,7 +96,7 @@ function ArtistContractsPage() {
         ? {
             from: import.meta.env.VITE_QUICKBASE_CONTRACTS_TABLE_ID,
             select: [
-              3, 6, 9, 15, 18, 20, 22, 23, 24, 28, 30, 32, 34, 35, 37, 36,
+              3, 6, 9, 15, 18, 20, 22, 23, 24, 28, 30, 32, 34, 35, 37, 36, 61,
             ],
             where: `{33.EX.'${artistRecordId}'}`,
             sortBy: [{ fieldId: 11 }, { order: "DESC" }],
