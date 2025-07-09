@@ -69,6 +69,7 @@ const programSchema = yup.object({
   length: yup.string().required("Program length is required"), // TODO: double check this
   performers: yup.number().min(1, "At least one performer is required"), // TODO: double check this
   costDetails: yup.string().required("Program cost details are required"), // TODO: double check this
+  ticketInvoiceDueDate: yup.string().required("Ticket due date is required"), // TODO: double check this
 });
 
 function NewProgramForm({ selectedArtist = null, onSubmitSuccess = () => {} }) {
