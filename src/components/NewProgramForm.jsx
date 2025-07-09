@@ -16,6 +16,8 @@ import { getCutoffFiscalYearKey } from "@/utils/utils";
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import * as yup from "yup";
+import "yup-phone-lite";
 import DefinitionsDialog from "./DefinitionsDialog";
 import { Button } from "./ui/button";
 import { Checkbox } from "./ui/checkbox";
@@ -34,6 +36,40 @@ import {
 } from "./ui/select";
 import { Textarea } from "./ui/textarea";
 import { useToast } from "./ui/use-toast";
+
+const programSchema = yup.object({
+  title: yup
+    .string()
+    .min(
+      MIN_INPUT_LENGTH,
+      `Title must be at least ${MIN_INPUT_LENGTH} characters long`,
+    )
+    .max()
+    .required("Program name is required"),
+  description: yup
+    .string()
+    .min(
+      MIN_TEXTAREA_LENGTH,
+      `Program description must be at least ${MIN_TEXTAREA_LENGTH} characters`,
+    )
+    .required("Program description is required"),
+  location: yup.string().required("Program location is required"),
+  grades: yup
+    .array()
+    .min(1, "At least one grade is required") // TODO: double check this
+    .required("Grades are required"),
+  category: yup.array().min(1, "At least one category is required"), // TODO: double check this
+  keywords: yup.array().min(1, "At least one keyword is required"), // TODO: double check this
+  cost: yup
+    .number()
+    .min(1, `Program cost must be at least $1`)
+    .typeError("Program cost is required")
+    .required("Program cost is required"),
+  serviceType: yup.string().required("Service type is required"), // TODO: double check this
+  length: yup.string().required("Program length is required"), // TODO: double check this
+  performers: yup.number().min(1, "At least one performer is required"), // TODO: double check this
+  costDetails: yup.string().required("Program cost details are required"), // TODO: double check this
+});
 
 function NewProgramForm({ selectedArtist = null, onSubmitSuccess = () => {} }) {
   const { toast } = useToast();
