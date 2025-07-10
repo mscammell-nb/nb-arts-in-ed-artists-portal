@@ -500,6 +500,8 @@ export const SERVICE_TYPE_DEFINITIONS = [
   },
 ];
 
+export const SERVICE_TYPES = SERVICE_TYPE_DEFINITIONS.map((type) => type.title);
+
 export const PROGRAMS_EDITABLE_FIELDS = new Map([
   ["program", { field: 11, type: "string", options: [] }],
   ["description", { field: 12, type: "string", options: [] }],
@@ -535,7 +537,7 @@ export const PROGRAMS_EDITABLE_FIELDS = new Map([
     {
       field: 23,
       type: "select",
-      options: SERVICE_TYPE_DEFINITIONS.map((type) => type.title),
+      options: SERVICE_TYPES,
     },
   ],
   ["cost", { field: 25, type: "integer", options: [{ min: 1, max: 2000 }] }],
