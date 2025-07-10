@@ -24,6 +24,7 @@ import {
   useAddOrUpdateRecordMutation,
   useQueryForDataQuery,
 } from "@/redux/api/quickbaseApi";
+import { incrementNumberOfPerformers } from "@/redux/slices/artistSlice";
 import { performersColumns } from "@/utils/TableColumns";
 import {
   capitalizeString,
@@ -35,7 +36,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Mail } from "lucide-react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import * as yup from "yup";
 import Spinner from "../components/ui/Spinner";
 
@@ -147,6 +148,7 @@ const AddSheet = ({ open, onOpenChange, sheetProps }) => {
 
 const PerformersPage = () => {
   const artistRecordId = useSelector((state) => state.artist?.artistRecordId);
+  const dispatch = useDispatch();
   const {
     data: performersData,
     isLoading: isPerformersLoading,
@@ -286,7 +288,10 @@ const PerformersPage = () => {
           },
         },
       ],
-    }).then(() => closeSheet());
+    }).then(() => {
+      dispatch(incrementNumberOfPerformers());
+      closeSheet();
+    });
   };
 
   const updateFunction = (records) => {

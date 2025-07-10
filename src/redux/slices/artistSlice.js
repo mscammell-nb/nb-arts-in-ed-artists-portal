@@ -46,6 +46,9 @@ export const artistSlice = createSlice({
     setArtistError: (state, action) => {
       state.error = action.payload;
     },
+    incrementNumberOfPerformers: (state) => {
+      state.numberOfPerformers += 1;
+    },
 
     clearArtistData: (state) => {
       return initialState;
@@ -66,6 +69,7 @@ export const {
   updateArtistOrg,
   setArtistLoading,
   setArtistError,
+  incrementNumberOfPerformers,
   clearArtistData,
 } = artistSlice.actions;
 
