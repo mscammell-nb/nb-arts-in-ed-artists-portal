@@ -175,11 +175,6 @@ function NewProgramForm({ onSubmitSuccess = () => {} }) {
     },
   ] = useAddOrUpdateRecordMutation();
 
-  useEffect(() => {
-    // TODO DELETEME
-    console.log("form values:", control._formValues);
-  }, [watch()]);
-
   const onSubmit = (data) => {
     setTempCategories([]);
     clearAllKeywords();
