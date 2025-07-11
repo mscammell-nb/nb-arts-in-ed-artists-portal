@@ -6,16 +6,19 @@ import {
   MAX_COST_LENGTH,
   MIN_INPUT_LENGTH,
   MIN_TEXTAREA_LENGTH,
+  PROGRAM_LENGTHS,
   SERVICE_TYPE_DEFINITIONS,
+  SERVICE_TYPES,
 } from "@/constants/constants";
-import {
-  useAddOrUpdateRecordMutation,
-  useQueryForDataQuery,
-} from "@/redux/api/quickbaseApi";
+import { useAddOrUpdateRecordMutation } from "@/redux/api/quickbaseApi";
 import { getCutoffFiscalYearKey } from "@/utils/utils";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { useEffect, useRef, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import * as yup from "yup";
+import "yup-phone-lite";
 import DefinitionsDialog from "./DefinitionsDialog";
 import { Button } from "./ui/button";
 import { Checkbox } from "./ui/checkbox";
@@ -35,132 +38,132 @@ import {
 import { Textarea } from "./ui/textarea";
 import { useToast } from "./ui/use-toast";
 
-function NewProgramForm({ selectedArtist = null, onSubmitSuccess = () => {} }) {
+const programSchema = yup.object({
+  title: yup
+    .string()
+    .min(
+      MIN_INPUT_LENGTH,
+      `Title must be at least ${MIN_INPUT_LENGTH} characters long`,
+    )
+    .required("Program name is required"),
+  description: yup
+    .string()
+    .min(
+      MIN_TEXTAREA_LENGTH,
+      `Program description must be at least ${MIN_TEXTAREA_LENGTH} characters long`,
+    )
+    .required("Program description is required"),
+  location: yup
+    .string()
+    .oneOf(["In School", "Out of School"])
+    .required("Location is a required field"),
+  grades: yup.array().min(1, "At least one grade is required"),
+  categories: yup.array().min(1, "At least one category is required"),
+  keywords: yup.array().min(1, "At least one keyword is required"),
+  cost: yup
+    .number()
+    .typeError("Cost must be a number")
+    .min(1, "Cost must be a positive number greater than 0")
+    .required("Cost is required"),
+  serviceType: yup
+    .string()
+    .oneOf(SERVICE_TYPES)
+    .required("Service type is a required field"),
+  length: yup
+    .string()
+    .oneOf(PROGRAM_LENGTHS)
+    .required("Length is a required field"),
+  performers: yup
+    .number()
+    .typeError("Performers must be a number")
+    .min(1, "The performers field must be a positive integer number")
+    .max(999, "Maximum 999 performers allowed"),
+  costDetails: yup
+    .string()
+    .max(MAX_COST_LENGTH, `Maximum ${MAX_COST_LENGTH} characters allowed`)
+    .test(
+      "minOrEmpty",
+      `Cost details must be at least ${MIN_TEXTAREA_LENGTH} characters long`,
+      (val) => !val || val.length === 0 || val.length >= MIN_TEXTAREA_LENGTH,
+    ),
+  ticketInvoiceDueDate: yup.string().when("serviceType", {
+    is: (val) => val === "Ticket Vendor",
+    then: (schema) => schema.required("Ticket invoice due date is required"),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+});
+
+function NewProgramForm({ onSubmitSuccess = () => {} }) {
   const { toast } = useToast();
-  const artistRecordId = selectedArtist
-    ? selectedArtist[3].value
-    : useSelector((state) => state.artist?.artistRecordId);
+  const artistRecordId = useSelector((state) => state.artist?.artistRecordId);
   const programCutoffStartDate = useSelector(
     (state) => state.cutoff.programCutoffStartDate,
   );
   const programCutoffEndDate = useSelector(
     (state) => state.cutoff.programCutoffEndDate,
   );
+  const maxPerformers = useSelector(
+    (state) => state.artist?.numberOfPerformers,
+  );
 
-  const [selectedKeywords, setSelectedKeywords] = useState([]);
-  const [tempCategories, setTempCategories] = useState([]);
   const myRef = useRef();
-  const { data: performersData, isLoading: isPerformersLoading } =
-    useQueryForDataQuery(
-      artistRecordId
-        ? {
-            from: import.meta.env.VITE_QUICKBASE_PERFORMERS_TABLE_ID,
-            select: [3, 9, 10, 11, 14],
-            where: `{14.EX.'${artistRecordId}'} AND {9.EX.Yes} AND {10.EX.Yes} AND {11.EX.Yes}`,
-          }
-        : { skip: true, refetchOnMountOrArgChange: true },
-    );
+  const [tempCategories, setTempCategories] = useState([]);
 
-  const maxPerformers =
-    performersData && !isPerformersLoading ? performersData.data.length : 0;
-
-  // This object handles the fields of the form that don't work well with React Hook Form's validation.
-  const [formValues, setFormValues] = useState({
-    title: "",
-    description: "",
-    location: null,
-    grades: [],
-    categories: [],
-    cost: 0,
-    serviceType: null,
-    length: null,
-    performers: 0,
-    costDetails: "",
-  });
-
-  const [formErrors, setFormErrors] = useState({
-    titleError: {
-      isTriggered: false,
-      message: "",
-    },
-    descriptionError: {
-      isTriggered: false,
-      message: "",
-    },
-    locationError: {
-      isTriggered: false,
-      message: "",
-    },
-    gradesError: {
-      isTriggered: false,
-      message: "",
-    },
-    categoryError: {
-      isTriggered: false,
-      message: "",
-    },
-    keywordsError: {
-      isTriggered: false,
-      message: "",
-    },
-    costError: {
-      isTriggered: false,
-      message: "",
-    },
-    serviceTypeError: {
-      isTriggered: false,
-      message: "",
-    },
-    lengthError: {
-      isTriggered: false,
-      message: "",
-    },
-    performersError: {
-      isTriggered: false,
-      message: "",
-    },
-    costDetailsError: {
-      isTriggered: false,
-      message: "",
-    },
-    costLengthError: {
-      isTriggered: false,
-      message: "",
+  const {
+    control,
+    handleSubmit,
+    reset,
+    setValue,
+    watch,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    resolver: yupResolver(programSchema),
+    defaultValues: {
+      title: "",
+      description: "",
+      location: null,
+      grades: [],
+      categories: [],
+      keywords: [],
+      cost: 0,
+      serviceType: null,
+      length: null,
+      performers: 0,
+      costDetails: "",
+      ticketInvoiceDueDate: "",
     },
   });
 
   const clearAllKeywords = () => {
     myRef.current?.handleClear();
+    setValue("keywords", []);
   };
 
+  // Watch categories for Exploratory Enrichment logic
   useEffect(() => {
-    const exploratoryChecked = formValues.categories.includes(
-      "Exploratory Enrichment",
-    );
-    const VirtualChecked = formValues.categories.includes("Virtual Programs");
-
+    const categories = watch("categories");
+    const exploratoryChecked = categories.includes("Exploratory Enrichment");
+    const VirtualChecked = categories.includes("Virtual Programs");
     if (exploratoryChecked) {
       setTempCategories(
-        formValues.categories.filter(
+        categories.filter(
           (category) =>
             category !== "Exploratory Enrichment" &&
             category !== "Virtual Programs",
         ),
       );
-      setFormValues((prev) => ({
-        ...prev,
-        categories: VirtualChecked
+      setValue(
+        "categories",
+        VirtualChecked
           ? ["Exploratory Enrichment", "Virtual Programs"]
           : ["Exploratory Enrichment"],
-      }));
+      );
     } else {
-      setFormValues((prev) => ({
-        ...prev,
-        categories: [...prev.categories, ...tempCategories],
-      }));
+      setValue("categories", [...categories, ...tempCategories]);
       setTempCategories([]);
     }
-  }, [formValues.categories.includes("Exploratory Enrichment")]);
+    // eslint-disable-next-line
+  }, [watch("categories").includes("Exploratory Enrichment")]);
 
   const [
     addProgram,
@@ -172,214 +175,52 @@ function NewProgramForm({ selectedArtist = null, onSubmitSuccess = () => {} }) {
     },
   ] = useAddOrUpdateRecordMutation();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  useEffect(() => {
+    // TODO DELETEME
+    console.log("form values:", control._formValues);
+  }, [watch()]);
 
-    let isError = false;
-
-    if (formValues.title.length < MIN_INPUT_LENGTH) {
-      isError = true;
-      setFormErrors((prev) => ({
-        ...prev,
-        titleError: {
-          isTriggered: true,
-          message: `Title must be at least ${MIN_INPUT_LENGTH} characters long`,
-        },
-      }));
-    }
-
-    if (formValues.description.length < MIN_TEXTAREA_LENGTH) {
-      isError = true;
-      setFormErrors((prev) => ({
-        ...prev,
-        descriptionError: {
-          isTriggered: true,
-          message: `Description must be at least ${MIN_TEXTAREA_LENGTH} characters long`,
-        },
-      }));
-    }
-
-    if (formValues.location === null) {
-      isError = true;
-      setFormErrors((prev) => ({
-        ...prev,
-        locationError: {
-          isTriggered: true,
-          message: `Location is a required field`,
-        },
-      }));
-    }
-
-    if (formValues.grades.length === 0) {
-      isError = true;
-      setFormErrors((prev) => ({
-        ...prev,
-        gradesError: {
-          isTriggered: true,
-          message: `At least one grade is required`,
-        },
-      }));
-    }
-
-    if (formValues.categories.length === 0) {
-      isError = true;
-      setFormErrors((prev) => ({
-        ...prev,
-        categoryError: {
-          isTriggered: true,
-          message: `At least one category is required`,
-        },
-      }));
-    }
-
-    if (selectedKeywords.length === 0) {
-      isError = true;
-      setFormErrors((prev) => ({
-        ...prev,
-        keywordsError: {
-          isTriggered: true,
-          message: `At least one keyword is required`,
-        },
-      }));
-    }
-
-    if (formValues.cost <= 0) {
-      isError = true;
-      setFormErrors((prev) => ({
-        ...prev,
-        costError: {
-          isTriggered: true,
-          message: `Cost must be a positive number greater than 0`,
-        },
-      }));
-    }
-
-    if (formValues.serviceType === null) {
-      isError = true;
-      setFormErrors((prev) => ({
-        ...prev,
-        serviceTypeError: {
-          isTriggered: true,
-          message: `Service type is a required field`,
-        },
-      }));
-    }
-
-    if (formValues.length === null) {
-      isError = true;
-      setFormErrors((prev) => ({
-        ...prev,
-        lengthError: {
-          isTriggered: true,
-          message: `Length is a required field`,
-        },
-      }));
-    }
-
-    if (formValues.performers <= 0) {
-      isError = true;
-      setFormErrors((prev) => ({
-        ...prev,
-        performersError: {
-          isTriggered: true,
-          message: `The performers field must be a positive integer number`,
-        },
-      }));
-    }
-
-    if (
-      formValues.costDetails.length < MIN_TEXTAREA_LENGTH &&
-      formValues.costDetails.length > 0
-    ) {
-      isError = true;
-      setFormErrors((prev) => ({
-        ...prev,
-        costDetailsError: {
-          isTriggered: true,
-          message: `Cost details must be at least ${MIN_TEXTAREA_LENGTH} characters long`,
-        },
-      }));
-    }
-
-    if (formValues.costDetails.length >= MAX_COST_LENGTH - 50) {
-      setFormErrors((prev) => ({
-        ...prev,
-        costLengthError: {
-          isTriggered: true,
-          message: `${MAX_COST_LENGTH - formValues.costDetails.length} characters left`,
-        },
-      }));
-    }
-
-    if (isError) return;
-
+  const onSubmit = (data) => {
     setTempCategories([]);
-    setSelectedKeywords([]);
-
+    clearAllKeywords();
     const tempCutoffStartDate = new Date(programCutoffStartDate);
     const startMonth = tempCutoffStartDate.getMonth();
     const startDay = tempCutoffStartDate.getDate();
     const tempCutoffEndDate = new Date(programCutoffEndDate);
     const endMonth = tempCutoffEndDate.getMonth();
     const endDay = tempCutoffEndDate.getDate();
-
+    const quickbaseData = {
+      8: { value: artistRecordId },
+      15: {
+        value: getCutoffFiscalYearKey(startMonth, startDay, endMonth, endDay),
+      },
+      11: { value: data.title },
+      12: { value: data.description },
+      13: { value: data.location },
+      27: {
+        value: data.grades.map((grade) =>
+          isNaN(grade) ? grade : String(grade),
+        ),
+      },
+      22: { value: data.categories },
+      20: { value: data.keywords },
+      23: {
+        value: SERVICE_TYPE_DEFINITIONS.find(
+          (service) => service.title === data.serviceType,
+        ).id,
+      },
+      25: { value: data.cost },
+      26: { value: data.length },
+      30: { value: data.performers },
+      29: { value: data.costDetails },
+      32: { value: "Pending Review" },
+    };
+    if (data.serviceType === "Ticket Vendor" && data.ticketInvoiceDueDate) {
+      quickbaseData[57] = { value: data.ticketInvoiceDueDate };
+    }
     addProgram({
       to: import.meta.env.VITE_QUICKBASE_PROGRAMS_TABLE_ID,
-      data: [
-        {
-          8: {
-            value: artistRecordId,
-          },
-          15: {
-            value: getCutoffFiscalYearKey(
-              startMonth,
-              startDay,
-              endMonth,
-              endDay,
-            ),
-          },
-          11: {
-            value: formValues.title,
-          },
-          12: {
-            value: formValues.description,
-          },
-          13: {
-            value: formValues.location,
-          },
-          27: {
-            value: formValues.grades.map((grade) =>
-              isNaN(grade) ? grade : String(grade),
-            ),
-          },
-          22: {
-            value: formValues.categories,
-          },
-          20: {
-            value: selectedKeywords,
-          },
-          23: {
-            value: SERVICE_TYPE_DEFINITIONS.find(
-              (service) => service.title === formValues.serviceType,
-            ).id,
-          },
-          25: {
-            value: formValues.cost,
-          },
-          26: {
-            value: formValues.length,
-          },
-          30: {
-            value: formValues.performers,
-          },
-          29: {
-            value: formValues.costDetails,
-          },
-          32: {
-            value: "Pending Review",
-          },
-        },
-      ],
+      data: [quickbaseData],
     });
   };
 
@@ -390,26 +231,10 @@ function NewProgramForm({ selectedArtist = null, onSubmitSuccess = () => {} }) {
         description: "The new program was added successfully.",
         variant: "success",
       });
-      setFormValues({
-        title: "",
-        description: "",
-        location: null,
-        grades: [],
-        categories: [],
-        cost: 0,
-        serviceType: null,
-        length: null,
-        performers: 0,
-        costDetails: "",
-      });
-      const form = document.getElementById("mainform");
+      reset();
       onSubmitSuccess();
-      form.reset();
-
-      setSelectedKeywords([]);
       clearAllKeywords();
     }
-
     if (isAddProgramError) {
       toast({
         title: "There's been an error",
@@ -417,42 +242,33 @@ function NewProgramForm({ selectedArtist = null, onSubmitSuccess = () => {} }) {
         variant: "destructive",
       });
     }
-  }, [toast, isAddProgramSuccess, isAddProgramError, isAddProgramError]);
+  }, [toast, isAddProgramSuccess, isAddProgramError, reset]);
 
   return (
-    <form id="mainform" onSubmit={handleSubmit} className="mr-3 space-y-5 pl-1">
+    <form
+      id="mainform"
+      onSubmit={handleSubmit(onSubmit)}
+      className="mr-3 space-y-5 pl-1"
+    >
       <div className="space-y-1">
         <Label htmlFor="title">
           Title
           <span className="font-extrabold text-red-500">*</span>
         </Label>
-        <Input
-          id="title"
-          type="text"
-          placeholder="Type here..."
-          value={formValues.title}
-          required
-          onChange={(e) => {
-            setFormValues((prev) => ({
-              ...prev,
-              title: e.target.value,
-            }));
-
-            const isValid = e.target.value.length >= MIN_INPUT_LENGTH;
-            setFormErrors((prev) => ({
-              ...prev,
-              titleError: {
-                isTriggered: isValid ? false : true,
-                message: isValid
-                  ? ""
-                  : `Program title must be at least ${MIN_INPUT_LENGTH} characters long`,
-              },
-            }));
-          }}
+        <Controller
+          name="title"
+          control={control}
+          render={({ field }) => (
+            <Input
+              {...field}
+              id="title"
+              type="text"
+              placeholder="Type here..."
+              required
+            />
+          )}
         />
-        {formErrors.titleError.isTriggered && (
-          <p className="text-red-500">{formErrors.titleError.message}</p>
-        )}
+        {errors.title && <p className="text-red-500">{errors.title.message}</p>}
       </div>
 
       <div className="space-y-1">
@@ -460,126 +276,86 @@ function NewProgramForm({ selectedArtist = null, onSubmitSuccess = () => {} }) {
           Description
           <span className="font-extrabold text-red-500">*</span>
         </Label>
-        <Textarea
-          id="description"
-          type="text"
-          placeholder="Type here..."
-          className="min-h-40"
-          value={formValues.description}
-          minLength={MIN_TEXTAREA_LENGTH}
-          required
-          onChange={(e) => {
-            setFormValues((prev) => ({
-              ...prev,
-              description: e.target.value,
-            }));
-
-            const isValid = e.target.value.length >= MIN_TEXTAREA_LENGTH;
-            setFormErrors((prev) => ({
-              ...prev,
-              descriptionError: {
-                isTriggered: isValid ? false : true,
-                message: isValid
-                  ? ""
-                  : `Program description must be at least ${MIN_TEXTAREA_LENGTH} characters long`,
-              },
-            }));
-          }}
+        <Controller
+          name="description"
+          control={control}
+          render={({ field }) => (
+            <Textarea
+              {...field}
+              id="description"
+              type="text"
+              placeholder="Type here..."
+              className="min-h-40"
+              required
+            />
+          )}
         />
-        {formErrors.descriptionError.isTriggered && (
-          <p className="text-red-500">{formErrors.descriptionError.message}</p>
+        {errors.description && (
+          <p className="text-red-500">{errors.description.message}</p>
         )}
       </div>
 
-      <RadioGroup
-        value={formValues.location}
-        onValueChange={(value) => {
-          setFormValues((prev) => ({ ...prev, location: value }));
-          setFormErrors((prev) => ({
-            ...prev,
-            locationError: { isTriggered: false, message: "" },
-          }));
-        }}
-      >
-        <h2>
-          Location
-          <span className="font-extrabold text-red-500">*</span>
-        </h2>
-        <div className="flex items-center space-x-2">
-          <RadioGroupItem
-            value="In School"
-            id="in-school"
-            onChange={() =>
-              setFormValues((prev) => ({
-                ...prev,
-                location: e.target.value,
-              }))
-            }
-          />
-          <Label htmlFor="in-school">In school</Label>
-        </div>
-        <div className="flex items-center space-x-2">
-          <RadioGroupItem
-            value="Out of School"
-            id="out-of-school"
-            onChange={() =>
-              setFormValues((prev) => ({
-                ...prev,
-                location: e.target.value,
-              }))
-            }
-          />
-          <Label htmlFor="out-of-school">Out of school</Label>
-        </div>
-        {formErrors.locationError.isTriggered && (
-          <p className="text-red-500">{formErrors.locationError.message}</p>
+      <Controller
+        name="location"
+        control={control}
+        render={({ field }) => (
+          <RadioGroup value={field.value} onValueChange={field.onChange}>
+            <h2>
+              Location
+              <span className="font-extrabold text-red-500">*</span>
+            </h2>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="In School" id="in-school" />
+              <Label htmlFor="in-school">In School</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="Out of School" id="out-of-school" />
+              <Label htmlFor="out-of-school">Out of School</Label>
+            </div>
+            {errors.location && (
+              <p className="text-red-500">{errors.location.message}</p>
+            )}
+          </RadioGroup>
         )}
-      </RadioGroup>
+      />
 
       <div>
         <h2>
           Grades<span className="font-extrabold text-red-500">*</span>
         </h2>
-
-        <div className="flex items-center">
-          {GRADES.map((grade) => (
-            <div key={grade} className="pr-1">
-              <Checkbox
-                id={grade}
-                className="my-1 mr-1"
-                value={grade}
-                onCheckedChange={(checked) => {
-                  const newGrades = checked
-                    ? [...formValues.grades, grade]
-                    : formValues.grades.filter((g) => g !== grade);
-
-                  setFormValues((prev) => ({
-                    ...prev,
-                    grades: newGrades,
-                  }));
-
-                  const isValid = newGrades.length > 0;
-                  setFormErrors((prev) => ({
-                    ...prev,
-                    gradesError: {
-                      isTriggered: isValid ? false : true,
-                      message: isValid ? "" : `At least one grade is required`,
-                    },
-                  }));
-                }}
-              />
-              <br />
-              <Label
-                htmlFor={grade}
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                {grade}
-              </Label>
+        <Controller
+          name="grades"
+          control={control}
+          render={({ field }) => (
+            <div className="flex items-center">
+              {GRADES.map((grade) => (
+                <div key={grade} className="pr-1">
+                  <Checkbox
+                    id={grade}
+                    className="my-1 mr-1"
+                    value={grade}
+                    checked={field.value.includes(grade)}
+                    onCheckedChange={(checked) => {
+                      const newGrades = checked
+                        ? [...field.value, grade]
+                        : field.value.filter((g) => g !== grade);
+                      field.onChange(newGrades);
+                    }}
+                  />
+                  <br />
+                  <Label
+                    htmlFor={grade}
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    {grade}
+                  </Label>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-        {formErrors.gradesError.isTriggered && (
-          <p className="text-red-500">{formErrors.gradesError.message}</p>
+          )}
+        />
+        {errors.grades && (
+          <p className="text-red-500">{errors.grades.message}</p>
         )}
       </div>
 
@@ -591,46 +367,42 @@ function NewProgramForm({ selectedArtist = null, onSubmitSuccess = () => {} }) {
           </h2>
           <DefinitionsDialog definitions={CATEGORY_DEFINITIONS} />
         </div>
-        {CATEGORIES.map((category) => (
-          <div key={category}>
-            <Checkbox
-              id={category}
-              className="my-1 mr-1"
-              disabled={
-                formValues.categories.includes("Exploratory Enrichment") &&
-                category !== "Exploratory Enrichment" &&
-                category !== "Virtual Programs"
-              }
-              onCheckedChange={(checked) => {
-                const newCategories = checked
-                  ? [...formValues.categories, category]
-                  : formValues.categories.filter((c) => c !== category);
-
-                setFormValues((prev) => ({
-                  ...prev,
-                  categories: newCategories,
-                }));
-
-                const isValid = newCategories.length > 0;
-                setFormErrors((prev) => ({
-                  ...prev,
-                  categoryError: {
-                    isTriggered: isValid ? false : true,
-                    message: isValid ? "" : "At least one category is required",
-                  },
-                }));
-              }}
-            />
-            <Label
-              htmlFor={category}
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            >
-              {category}
-            </Label>
-          </div>
-        ))}
-        {formErrors.categoryError.isTriggered && (
-          <p className="text-red-500">{formErrors.categoryError.message}</p>
+        <Controller
+          name="categories"
+          control={control}
+          render={({ field }) => (
+            <>
+              {CATEGORIES.map((category) => (
+                <div key={category}>
+                  <Checkbox
+                    id={category}
+                    className="my-1 mr-1"
+                    disabled={
+                      field.value.includes("Exploratory Enrichment") &&
+                      category !== "Exploratory Enrichment" &&
+                      category !== "Virtual Programs"
+                    }
+                    checked={field.value.includes(category)}
+                    onCheckedChange={(checked) => {
+                      const newCategories = checked
+                        ? [...field.value, category]
+                        : field.value.filter((c) => c !== category);
+                      field.onChange(newCategories);
+                    }}
+                  />
+                  <Label
+                    htmlFor={category}
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    {category}
+                  </Label>
+                </div>
+              ))}
+            </>
+          )}
+        />
+        {errors.categories && (
+          <p className="text-red-500">{errors.categories.message}</p>
         )}
       </div>
 
@@ -646,53 +418,48 @@ function NewProgramForm({ selectedArtist = null, onSubmitSuccess = () => {} }) {
             </Button>
           </Link>
         </div>
-        <MultiSelect
-          ref={myRef}
-          options={KEYWORD_GROUPS}
-          onValueChange={setSelectedKeywords}
-          defaultValue={[]}
-          placeholder="Select keywords"
-          variant="inverted"
-          animation={2}
-          maxCount={72}
-          modalPopover={true}
-        />
-        {formErrors.keywordsError.isTriggered &&
-          selectedKeywords.length === 0 && (
-            <p className="text-red-500">{formErrors.keywordsError.message}</p>
+        <Controller
+          name="keywords"
+          control={control}
+          render={({ field }) => (
+            <MultiSelect
+              ref={myRef}
+              options={KEYWORD_GROUPS}
+              onValueChange={field.onChange}
+              defaultValue={[]}
+              value={field.value}
+              placeholder="Select keywords"
+              variant="inverted"
+              animation={2}
+              maxCount={72}
+              modalPopover={true}
+            />
           )}
+        />
+        {errors.keywords && (
+          <p className="text-red-500">{errors.keywords.message}</p>
+        )}
       </div>
 
       <div className="space-y-1">
         <Label htmlFor="cost">
           Cost<span className="font-extrabold text-red-500">*</span>
         </Label>
-        <Input
-          id="cost"
-          type="number"
-          placeholder="Type here..."
-          min="0"
-          value={formValues.cost}
-          required
-          onChange={(e) => {
-            setFormValues((prev) => ({
-              ...prev,
-              cost: e.target.value,
-            }));
-
-            const isValid = e.target.value > 0;
-            setFormErrors((prev) => ({
-              ...prev,
-              costError: {
-                isTriggered: isValid ? false : true,
-                message: isValid ? "" : `Cost must be a positive number`,
-              },
-            }));
-          }}
+        <Controller
+          name="cost"
+          control={control}
+          render={({ field }) => (
+            <Input
+              {...field}
+              id="cost"
+              type="number"
+              placeholder="Type here..."
+              min="0"
+              required
+            />
+          )}
         />
-        {formErrors.costError.isTriggered && (
-          <p className="text-red-500">{formErrors.costError.message}</p>
-        )}
+        {errors.cost && <p className="text-red-500">{errors.cost.message}</p>}
       </div>
 
       <div>
@@ -701,73 +468,95 @@ function NewProgramForm({ selectedArtist = null, onSubmitSuccess = () => {} }) {
           <span className="font-extrabold text-red-500">*</span>
         </Label>
         <DefinitionsDialog definitions={SERVICE_TYPE_DEFINITIONS} />
-        <Select
-          value={formValues.serviceType}
-          id="service-type"
-          onValueChange={(value) => {
-            setFormValues((prev) => ({
-              ...prev,
-              serviceType: value,
-            }));
-            setFormErrors((prev) => ({
-              ...prev,
-              serviceTypeError: {
-                isTriggered: false,
-                message: "",
-              },
-            }));
-          }}
-        >
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Select a service type" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Service Type</SelectLabel>
-              {SERVICE_TYPE_DEFINITIONS.map((definition) => (
-                <SelectItem value={definition.title} key={definition.id}>
-                  {definition.title}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-        {formErrors.serviceTypeError.isTriggered && (
-          <p className="text-red-500">{formErrors.serviceTypeError.message}</p>
+        <Controller
+          name="serviceType"
+          control={control}
+          render={({ field }) => (
+            <Select
+              value={field.value}
+              id="service-type"
+              onValueChange={field.onChange}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Select a service type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Service Type</SelectLabel>
+                  {SERVICE_TYPE_DEFINITIONS.map((definition) => (
+                    <SelectItem value={definition.title} key={definition.id}>
+                      {definition.title}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          )}
+        />
+        {errors.serviceType && (
+          <p className="text-red-500">{errors.serviceType.message}</p>
         )}
       </div>
+
+      {/* Ticket Invoice Due Date - only show if serviceType is Ticket Vendor */}
+      {watch("serviceType") === "Ticket Vendor" && (
+        <div className="space-y-1">
+          <Label htmlFor="ticketInvoiceDueDate">
+            Ticket Invoice Due Date
+            <span className="font-extrabold text-red-500">*</span>
+          </Label>
+          <Controller
+            name="ticketInvoiceDueDate"
+            control={control}
+            render={({ field }) => (
+              <Input
+                {...field}
+                id="ticketInvoiceDueDate"
+                type="text"
+                placeholder="Type here..."
+                required
+              />
+            )}
+          />
+          {errors.ticketInvoiceDueDate && (
+            <p className="text-red-500">
+              {errors.ticketInvoiceDueDate.message}
+            </p>
+          )}
+        </div>
+      )}
 
       <div>
         <Label htmlFor="length">
           Length<span className="font-extrabold text-red-500">*</span>
         </Label>
-        <Select
-          id="length"
-          value={formValues.length}
-          onValueChange={(value) => {
-            setFormValues((prev) => ({ ...prev, length: value }));
-            setFormErrors((prev) => ({
-              ...prev,
-              lengthError: { isTriggered: false, message: "" },
-            }));
-          }}
-        >
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Select length" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Length</SelectLabel>
-              <SelectItem value="30 - 44 min">30 - 44 min</SelectItem>
-              <SelectItem value="45 - 59 min">45 - 59 min</SelectItem>
-              <SelectItem value="60 - 89 min">60 - 89 min</SelectItem>
-              <SelectItem value="90 - 119 min">90 - 119 min</SelectItem>
-              <SelectItem value="120+ min">120+ min</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-        {formErrors.lengthError.isTriggered && (
-          <p className="text-red-500">{formErrors.lengthError.message}</p>
+        <Controller
+          name="length"
+          control={control}
+          render={({ field }) => (
+            <Select
+              id="length"
+              value={field.value}
+              onValueChange={field.onChange}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Select length" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Length</SelectLabel>
+                  <SelectItem value="30 - 44 min">30 - 44 min</SelectItem>
+                  <SelectItem value="45 - 59 min">45 - 59 min</SelectItem>
+                  <SelectItem value="60 - 89 min">60 - 89 min</SelectItem>
+                  <SelectItem value="90 - 119 min">90 - 119 min</SelectItem>
+                  <SelectItem value="120+ min">120+ min</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          )}
+        />
+        {errors.length && (
+          <p className="text-red-500">{errors.length.message}</p>
         )}
       </div>
 
@@ -776,95 +565,62 @@ function NewProgramForm({ selectedArtist = null, onSubmitSuccess = () => {} }) {
           Performers
           <span className="font-extrabold text-red-500">*</span>
         </Label>
-        <Input
-          id="performers"
-          type="number"
-          placeholder="Type here..."
-          min="0"
-          step="1"
-          value={formValues.performers}
-          required
-          onChange={(e) => {
-            const value = parseFloat(e.target.value) || undefined;
-
-            setFormValues((prev) => ({
-              ...prev,
-              performers: value,
-            }));
-
-            const isValid = value > 0 && value <= maxPerformers && value <= 999;
-            Number.isInteger(value);
-            setFormErrors((prev) => ({
-              ...prev,
-              performersError: {
-                isTriggered: isValid ? false : true,
-                message: isValid
-                  ? ""
-                  : `You only have ${maxPerformers} active performers.`,
-              },
-            }));
-          }}
+        <Controller
+          name="performers"
+          control={control}
+          render={({ field }) => (
+            <Input
+              {...field}
+              id="performers"
+              type="number"
+              placeholder="Type here..."
+              min="0"
+              step="1"
+              required
+              onChange={(e) => {
+                let value = parseFloat(e.target.value) || 0;
+                if (value > maxPerformers) value = maxPerformers;
+                field.onChange(value);
+              }}
+            />
+          )}
         />
-        {formErrors.performersError.isTriggered && (
-          <p className="text-red-500">{formErrors.performersError.message}</p>
+        {errors.performers && (
+          <p className="text-red-500">{errors.performers.message}</p>
         )}
       </div>
 
       <div>
         <Label htmlFor="cost-details">Cost Details</Label>
-        <Textarea
-          id="cost-details"
-          placeholder="Type here..."
-          className="min-h-40"
-          value={formValues.costDetails}
-          minLength={MIN_TEXTAREA_LENGTH}
-          maxLength={MAX_COST_LENGTH}
-          onChange={(e) => {
-            setFormValues((prev) => ({
-              ...prev,
-              costDetails: e.target.value,
-            }));
-
-            const isValid =
-              e.target.value.length >= MIN_TEXTAREA_LENGTH ||
-              e.target.value.length === 0;
-
-            const closeToMax = e.target.value.length >= MAX_COST_LENGTH - 50;
-
-            setFormErrors((prev) => ({
-              ...prev,
-              costDetailsError: {
-                isTriggered: isValid ? false : true,
-                message: isValid
-                  ? ""
-                  : `Cost details must be at least ${MIN_TEXTAREA_LENGTH} characters long`,
-              },
-              costLengthError: {
-                isTriggered: closeToMax ? true : false,
-                message: closeToMax
-                  ? `${MAX_COST_LENGTH - e.target.value.length} characters left`
-                  : "",
-              },
-            }));
-
-            setFormErrors((prev) => ({
-              ...prev,
-            }));
-          }}
+        <Controller
+          name="costDetails"
+          control={control}
+          render={({ field }) => (
+            <Textarea
+              {...field}
+              id="cost-details"
+              placeholder="Type here..."
+              className="min-h-40"
+              minLength={MIN_TEXTAREA_LENGTH}
+              maxLength={MAX_COST_LENGTH}
+            />
+          )}
         />
-        {formErrors.costDetailsError.isTriggered && (
-          <p className="text-red-500">{formErrors.costDetailsError.message}</p>
+        {errors.costDetails && (
+          <p className="text-red-500">{errors.costDetails.message}</p>
         )}
-        {formErrors.costLengthError.isTriggered && (
-          <p className="text-red-500">{formErrors.costLengthError.message}</p>
-        )}
+        {/* Show remaining characters if close to max */}
+        {watch("costDetails") &&
+          watch("costDetails").length >= MAX_COST_LENGTH - 50 && (
+            <p className="text-red-500">{`${MAX_COST_LENGTH - watch("costDetails").length} characters left`}</p>
+          )}
       </div>
 
       <Button
         className="w-full"
         size="lg"
         type="submit"
-        isLoading={isAddProgramLoading}
+        isLoading={isAddProgramLoading || isSubmitting}
       >
         Submit
       </Button>

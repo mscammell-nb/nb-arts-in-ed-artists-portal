@@ -344,7 +344,10 @@ export const badgeColumn = (key, color, options = {}) => ({
               <Badge
                 key={element}
                 variant="outline"
-                className={cn("min-w-fit rounded-full border-none", colorClass)}
+                className={cn(
+                  "min-w-fit rounded-[0.7rem] border-none",
+                  colorClass,
+                )}
               >
                 {element}
               </Badge>
