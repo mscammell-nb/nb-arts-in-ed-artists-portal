@@ -55,7 +55,7 @@ const programSchema = yup.object({
     .required("Program description is required"),
   location: yup
     .string()
-    .oneOf(["In school", "Out of school"])
+    .oneOf(["In School", "Out of School"])
     .required("Location is a required field"),
   grades: yup.array().min(1, "At least one grade is required"),
   categories: yup.array().min(1, "At least one category is required"),
@@ -86,6 +86,11 @@ const programSchema = yup.object({
       `Cost details must be at least ${MIN_TEXTAREA_LENGTH} characters long`,
       (val) => !val || val.length === 0 || val.length >= MIN_TEXTAREA_LENGTH,
     ),
+  ticketInvoiceDueDate: yup.string().when("serviceType", {
+    is: (val) => val === "Ticket Vendor",
+    then: (schema) => schema.required("Ticket invoice due date is required"),
+    otherwise: (schema) => schema.notRequired(),
+  }),
 });
 
 function NewProgramForm({ onSubmitSuccess = () => {} }) {
@@ -125,6 +130,7 @@ function NewProgramForm({ onSubmitSuccess = () => {} }) {
       length: null,
       performers: 0,
       costDetails: "",
+      ticketInvoiceDueDate: "",
     },
   });
 
@@ -183,41 +189,38 @@ function NewProgramForm({ onSubmitSuccess = () => {} }) {
     const tempCutoffEndDate = new Date(programCutoffEndDate);
     const endMonth = tempCutoffEndDate.getMonth();
     const endDay = tempCutoffEndDate.getDate();
+    const quickbaseData = {
+      8: { value: artistRecordId },
+      15: {
+        value: getCutoffFiscalYearKey(startMonth, startDay, endMonth, endDay),
+      },
+      11: { value: data.title },
+      12: { value: data.description },
+      13: { value: data.location },
+      27: {
+        value: data.grades.map((grade) =>
+          isNaN(grade) ? grade : String(grade),
+        ),
+      },
+      22: { value: data.categories },
+      20: { value: data.keywords },
+      23: {
+        value: SERVICE_TYPE_DEFINITIONS.find(
+          (service) => service.title === data.serviceType,
+        ).id,
+      },
+      25: { value: data.cost },
+      26: { value: data.length },
+      30: { value: data.performers },
+      29: { value: data.costDetails },
+      32: { value: "Pending Review" },
+    };
+    if (data.serviceType === "Ticket Vendor" && data.ticketInvoiceDueDate) {
+      quickbaseData[57] = { value: data.ticketInvoiceDueDate };
+    }
     addProgram({
       to: import.meta.env.VITE_QUICKBASE_PROGRAMS_TABLE_ID,
-      data: [
-        {
-          8: { value: artistRecordId },
-          15: {
-            value: getCutoffFiscalYearKey(
-              startMonth,
-              startDay,
-              endMonth,
-              endDay,
-            ),
-          },
-          11: { value: data.title },
-          12: { value: data.description },
-          13: { value: data.location },
-          27: {
-            value: data.grades.map((grade) =>
-              isNaN(grade) ? grade : String(grade),
-            ),
-          },
-          22: { value: data.categories },
-          20: { value: data.keywords },
-          23: {
-            value: SERVICE_TYPE_DEFINITIONS.find(
-              (service) => service.title === data.serviceType,
-            ).id,
-          },
-          25: { value: data.cost },
-          26: { value: data.length },
-          30: { value: data.performers },
-          29: { value: data.costDetails },
-          32: { value: "Pending Review" },
-        },
-      ],
+      data: [quickbaseData],
     });
   };
 
@@ -303,11 +306,11 @@ function NewProgramForm({ onSubmitSuccess = () => {} }) {
             </h2>
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="In School" id="in-school" />
-              <Label htmlFor="in-school">In school</Label>
+              <Label htmlFor="in-school">In School</Label>
             </div>
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="Out of School" id="out-of-school" />
-              <Label htmlFor="out-of-school">Out of school</Label>
+              <Label htmlFor="out-of-school">Out of School</Label>
             </div>
             {errors.location && (
               <p className="text-red-500">{errors.location.message}</p>
@@ -494,6 +497,34 @@ function NewProgramForm({ onSubmitSuccess = () => {} }) {
           <p className="text-red-500">{errors.serviceType.message}</p>
         )}
       </div>
+
+      {/* Ticket Invoice Due Date - only show if serviceType is Ticket Vendor */}
+      {watch("serviceType") === "Ticket Vendor" && (
+        <div className="space-y-1">
+          <Label htmlFor="ticketInvoiceDueDate">
+            Ticket Invoice Due Date
+            <span className="font-extrabold text-red-500">*</span>
+          </Label>
+          <Controller
+            name="ticketInvoiceDueDate"
+            control={control}
+            render={({ field }) => (
+              <Input
+                {...field}
+                id="ticketInvoiceDueDate"
+                type="text"
+                placeholder="Type here..."
+                required
+              />
+            )}
+          />
+          {errors.ticketInvoiceDueDate && (
+            <p className="text-red-500">
+              {errors.ticketInvoiceDueDate.message}
+            </p>
+          )}
+        </div>
+      )}
 
       <div>
         <Label htmlFor="length">
