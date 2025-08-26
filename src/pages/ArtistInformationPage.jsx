@@ -807,7 +807,6 @@ const ArtistInformationPage = () => {
       city: data[15].value,
       state: data[16].value,
       zipCode: data[17].value,
-      website: data[31].value,
     };
     informationForm.reset(defaultValues);
   };
