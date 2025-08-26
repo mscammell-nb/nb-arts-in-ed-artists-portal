@@ -53,22 +53,19 @@ RUN npm run build
 # where the necessary files are copied from the build stage.
 FROM base as final
 
-# Install a simple HTTP server globally before switching users
-RUN npm install -g serve
-
 # Run the application as a non-root user.
 USER node
 
 # Copy package.json so that package manager commands can be used.
 COPY package.json .
 
-# Copy the production dependencies from the deps stage and also
-# the built application from the build stage into the image.
-COPY --from=deps /usr/src/app/node_modules ./node_modules
+# Copy ALL dependencies (including devDependencies with vite) from the build stage
+# and the built application.
+COPY --from=build /usr/src/app/node_modules ./node_modules
 COPY --from=build /usr/src/app/dist ./dist
 
 # Expose the port that the application listens on.
 EXPOSE 3000
 
-# Run the application.
-CMD serve -s dist -p 3000
+# Run the application using Vite preview with host binding.
+CMD npm run preview -- --host 0.0.0.0 --port 3000
