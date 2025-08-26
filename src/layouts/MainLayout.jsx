@@ -1,6 +1,6 @@
 import { AppSidebar } from "@/components/app-sidebar";
 import PageHeader from "@/components/PageHeader";
-import RenewRegistrationModal from "@/components/renewRegistrationModal";
+import RenewRegistrationModal from "@/components/RenewRegistrationModal";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/toaster";
 import { useIsMobile } from "@/hooks/use-mobile";

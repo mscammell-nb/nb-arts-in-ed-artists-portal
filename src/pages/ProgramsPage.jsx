@@ -1,5 +1,5 @@
 import DataGrid from "@/components/data-grid/data-grid";
-import { FiscalYearSelector } from "@/components/fiscalYearSelector";
+import { FiscalYearSelector } from "@/components/FiscalYearSelector";
 import NewProgramForm from "@/components/NewProgramForm";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { buttonVariants } from "@/components/ui/button";
